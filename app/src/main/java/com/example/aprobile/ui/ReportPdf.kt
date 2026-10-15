@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import com.example.aprobile.R
 import com.example.aprobile.data.DoseRecordEntity
 import com.example.aprobile.data.MedicationEntity
 import java.io.File
@@ -39,9 +40,9 @@ object ReportPdf {
         var canvas = page.canvas
         var y = 60f
 
-        canvas.drawText("Hora do Remédio - Relatório", MARGIN, y, titlePaint); y += 22f
+        canvas.drawText(context.getString(R.string.pdf_title), MARGIN, y, titlePaint); y += 22f
         canvas.drawText(
-            "Gerado em " + LocalDateTime.now().format(dateTimeFormatter),
+            context.getString(R.string.pdf_generated, LocalDateTime.now().format(dateTimeFormatter)),
             MARGIN, y, smallPaint
         ); y += 26f
 
@@ -49,14 +50,14 @@ object ReportPdf {
         val taken = doses.count { it.status == DoseRecordEntity.STATUS_TAKEN }
         val total = doses.size
 
-        canvas.drawText("Resumo", MARGIN, y, sectionPaint); y += 18f
-        canvas.drawText("Medicamentos cadastrados: ${medications.size}", MARGIN, y, textPaint); y += 14f
-        canvas.drawText("Doses registradas: $total", MARGIN, y, textPaint); y += 14f
-        canvas.drawText("Doses tomadas: $taken", MARGIN, y, textPaint); y += 14f
-        canvas.drawText("Doses não tomadas: ${total - taken}", MARGIN, y, textPaint); y += 24f
+        canvas.drawText(context.getString(R.string.pdf_summary), MARGIN, y, sectionPaint); y += 18f
+        canvas.drawText(context.getString(R.string.pdf_medications_count, medications.size), MARGIN, y, textPaint); y += 14f
+        canvas.drawText(context.getString(R.string.pdf_recorded, total), MARGIN, y, textPaint); y += 14f
+        canvas.drawText(context.getString(R.string.pdf_taken, taken), MARGIN, y, textPaint); y += 14f
+        canvas.drawText(context.getString(R.string.pdf_not_taken, total - taken), MARGIN, y, textPaint); y += 24f
 
-        canvas.drawText("Histórico de Doses", MARGIN, y, sectionPaint); y += 18f
-        canvas.drawText("Data/Hora            Medicamento                 Perfil       Status", MARGIN, y, smallPaint); y += 14f
+        canvas.drawText(context.getString(R.string.pdf_history), MARGIN, y, sectionPaint); y += 18f
+        canvas.drawText(context.getString(R.string.pdf_table_header), MARGIN, y, smallPaint); y += 14f
 
         val zone = ZoneId.systemDefault()
         doses.sortedBy { it.scheduledDateTime }.forEach { dose ->
@@ -73,7 +74,10 @@ object ReportPdf {
                 append(dateTime.format(dateTimeFormatter).padEnd(20))
                 append((med?.name ?: "-").take(24).padEnd(26))
                 append((med?.profile ?: "-").take(10).padEnd(13))
-                append(if (dose.status == DoseRecordEntity.STATUS_TAKEN) "Tomada" else "Não tomada")
+                append(
+                    if (dose.status == DoseRecordEntity.STATUS_TAKEN) context.getString(R.string.status_taken)
+                    else context.getString(R.string.status_not_taken)
+                )
             }
             canvas.drawText(line, MARGIN, y, textPaint)
             y += 14f

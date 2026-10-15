@@ -34,8 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.aprobile.R
 import com.example.aprobile.data.DoseRecordEntity
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.domain.DoseAdherence
@@ -69,7 +71,7 @@ fun MedicationDetailScreen(
     if (medication == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "Medicamento não encontrado.",
+                text = stringResource(R.string.detail_not_found),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -145,7 +147,7 @@ fun MedicationDetailScreen(
                         if (medication.dosage.isNotBlank()) {
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
-                                text = "Dosagem: ${medication.dosage}",
+                                text = stringResource(R.string.detail_dosage, medication.dosage),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -153,7 +155,7 @@ fun MedicationDetailScreen(
 
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Horários: ${medication.times.joinToString(", ")}",
+                            text = stringResource(R.string.detail_times, medication.times.joinToString(", ")),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.primary
@@ -162,7 +164,7 @@ fun MedicationDetailScreen(
                         if (!medication.instructions.isNullOrBlank()) {
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
-                                text = "Instruções: ${medication.instructions}",
+                                text = stringResource(R.string.detail_instructions, medication.instructions),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -184,7 +186,7 @@ fun MedicationDetailScreen(
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
                                 Text(
-                                    text = "Estoque: $qty unidades",
+                                    text = stringResource(R.string.inventory_stock, qty),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = if (qty <= alert) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -207,7 +209,7 @@ fun MedicationDetailScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Próxima dose pendente",
+                            text = stringResource(R.string.detail_next_pending),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -223,7 +225,7 @@ fun MedicationDetailScreen(
                             ) {
                                 Icon(Icons.Default.CheckCircle, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Tomar agora")
+                                Text(stringResource(R.string.detail_take_now))
                             }
                             OutlinedButton(
                                 onClick = { onSnooze(medication) },
@@ -232,7 +234,7 @@ fun MedicationDetailScreen(
                             ) {
                                 Icon(Icons.Default.Schedule, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Adiar 15 min")
+                                Text(stringResource(R.string.detail_snooze))
                             }
                         }
                     }
@@ -258,7 +260,7 @@ fun MedicationDetailScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Adesão",
+                            text = stringResource(R.string.detail_adherence),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -287,7 +289,7 @@ fun MedicationDetailScreen(
 
         item {
             Text(
-                text = "Histórico de Doses",
+                text = stringResource(R.string.detail_history),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp)
@@ -297,7 +299,7 @@ fun MedicationDetailScreen(
         if (history.isEmpty()) {
             item {
                 Text(
-                    text = "Nenhum registro de dose para este medicamento ainda.",
+                    text = stringResource(R.string.detail_no_history),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -356,9 +358,10 @@ private fun DoseHistoryRow(record: DoseRecordEntity, isDarkMode: Boolean) {
                     fontWeight = FontWeight.SemiBold
                 )
                 val subtitle = when {
-                    isTaken -> record.takenAt?.let { "Confirmada em ${formatDetailDateTime(it)}" } ?: "Confirmada"
-                    isFuture -> "Dose agendada"
-                    else -> "Não confirmada"
+                    isTaken -> record.takenAt?.let { stringResource(R.string.detail_confirmed_at, formatDetailDateTime(it)) }
+                        ?: stringResource(R.string.detail_confirmed)
+                    isFuture -> stringResource(R.string.detail_scheduled)
+                    else -> stringResource(R.string.detail_not_confirmed)
                 }
                 Text(
                     text = subtitle,
@@ -371,15 +374,15 @@ private fun DoseHistoryRow(record: DoseRecordEntity, isDarkMode: Boolean) {
             val statusColor: Color
             when {
                 isTaken -> {
-                    statusText = "Tomada"
+                    statusText = stringResource(R.string.status_taken)
                     statusColor = MaterialTheme.colorScheme.primary
                 }
                 isFuture -> {
-                    statusText = "Agendada"
+                    statusText = stringResource(R.string.status_scheduled)
                     statusColor = MaterialTheme.colorScheme.outline
                 }
                 else -> {
-                    statusText = "Não tomada"
+                    statusText = stringResource(R.string.status_not_taken)
                     statusColor = MaterialTheme.colorScheme.error
                 }
             }

@@ -29,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.aprobile.R
 import com.example.aprobile.data.AppointmentEntity
 import java.time.Instant
 import java.time.LocalDateTime
@@ -43,6 +45,7 @@ fun AddEditAppointmentDialog(
     onSave: (title: String, doctor: String?, location: String?, dateTime: Long, notes: String?) -> Unit
 ) {
     val context = LocalContext.current
+    val errApptTitle = stringResource(R.string.err_appt_title)
 
     var title by remember { mutableStateOf(appointmentToEdit?.title ?: "") }
     var doctor by remember { mutableStateOf(appointmentToEdit?.doctor ?: "") }
@@ -91,7 +94,7 @@ fun AddEditAppointmentDialog(
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(
-                    text = if (appointmentToEdit == null) "Nova Consulta" else "Editar Consulta",
+                    text = stringResource(if (appointmentToEdit == null) R.string.appt_dialog_new else R.string.appt_dialog_edit),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -107,8 +110,8 @@ fun AddEditAppointmentDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it; errorMessage = null },
-                    label = { Text("Título *") },
-                    placeholder = { Text("Ex: Cardiologista") },
+                    label = { Text(stringResource(R.string.appt_title_label)) },
+                    placeholder = { Text(stringResource(R.string.appt_title_placeholder)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -123,14 +126,14 @@ fun AddEditAppointmentDialog(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Data")
+                        Text(stringResource(R.string.appt_date))
                     }
                     Button(
                         onClick = { openTimePicker() },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Hora")
+                        Text(stringResource(R.string.appt_time))
                     }
                 }
 
@@ -144,7 +147,7 @@ fun AddEditAppointmentDialog(
                 OutlinedTextField(
                     value = doctor,
                     onValueChange = { doctor = it },
-                    label = { Text("Médico (opcional)") },
+                    label = { Text(stringResource(R.string.appt_doctor_label)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -153,7 +156,7 @@ fun AddEditAppointmentDialog(
                 OutlinedTextField(
                     value = location,
                     onValueChange = { location = it },
-                    label = { Text("Local (opcional)") },
+                    label = { Text(stringResource(R.string.appt_location_label)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -162,7 +165,7 @@ fun AddEditAppointmentDialog(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Observações (opcional)") },
+                    label = { Text(stringResource(R.string.appt_notes_label)) },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -180,19 +183,19 @@ fun AddEditAppointmentDialog(
             Button(
                 onClick = {
                     if (title.isBlank()) {
-                        errorMessage = "Informe um título."
+                        errorMessage = errApptTitle
                         return@Button
                     }
                     onSave(title.trim(), doctor.trim(), location.trim(), dateTime, notes.trim())
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Salvar")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

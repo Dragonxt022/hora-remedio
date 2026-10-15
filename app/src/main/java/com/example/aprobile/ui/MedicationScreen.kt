@@ -225,7 +225,7 @@ fun MedicationScreen(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(18.dp)
                             ) {
-                                Icon(Icons.Default.Add, contentDescription = "Cadastrar Medicamento")
+                                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_medication))
                             }
                         }
                     }
@@ -340,20 +340,20 @@ fun MedicationScreen(
             AlertDialog(
                 onDismissRequest = { viewModel.cancelDeleteAppointment() },
                 shape = RoundedCornerShape(24.dp),
-                title = { Text("Excluir Consulta") },
-                text = { Text("Remover '${appointment.title}' da agenda?") },
+                title = { Text(stringResource(R.string.delete_appt_title)) },
+                text = { Text(stringResource(R.string.delete_appt_text, appointment.title)) },
                 confirmButton = {
                     Button(
                         onClick = { viewModel.confirmDeleteAppointment() },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text("Excluir")
+                        Text(stringResource(R.string.action_delete))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.cancelDeleteAppointment() }) {
-                        Text("Cancelar")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )
@@ -372,20 +372,20 @@ fun MedicationScreen(
             AlertDialog(
                 onDismissRequest = { viewModel.cancelDeleteMedication() },
                 shape = RoundedCornerShape(24.dp),
-                title = { Text("Excluir Medicamento") },
-                text = { Text("Tem certeza que deseja excluir o medicamento '${medToDelete.name}'? Todos os lembretes e históricos associados serão removidos.") },
+                title = { Text(stringResource(R.string.delete_med_title)) },
+                text = { Text(stringResource(R.string.delete_med_text, medToDelete.name)) },
                 confirmButton = {
                     Button(
                         onClick = { viewModel.confirmDeleteMedication() },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                     ) {
-                        Text("Excluir")
+                        Text(stringResource(R.string.action_delete))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.cancelDeleteMedication() }) {
-                        Text("Cancelar")
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
             )

@@ -124,10 +124,10 @@ private fun AppointmentCard(
                     fontWeight = FontWeight.SemiBold
                 )
                 appointment.doctor?.takeIf { it.isNotBlank() }?.let {
-                    Text(text = "Médico: $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = stringResource(R.string.appt_doctor_prefix, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 appointment.location?.takeIf { it.isNotBlank() }?.let {
-                    Text(text = "Local: $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = stringResource(R.string.appt_location_prefix, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 appointment.notes?.takeIf { it.isNotBlank() }?.let {
                     Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -135,13 +135,13 @@ private fun AppointmentCard(
             }
 
             IconButton(onClick = onAddToCalendar) {
-                Icon(Icons.Default.Event, contentDescription = "Adicionar ao calendário")
+                Icon(Icons.Default.Event, contentDescription = stringResource(R.string.cd_add_calendar))
             }
             IconButton(onClick = onEdit) {
-                Icon(Icons.Default.Edit, contentDescription = "Editar")
+                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit))
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Excluir", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete), tint = MaterialTheme.colorScheme.error)
             }
         }
     }

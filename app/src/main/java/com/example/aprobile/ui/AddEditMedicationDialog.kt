@@ -46,9 +46,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.aprobile.R
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.domain.MedicationCatalog
 import java.time.LocalTime
@@ -90,6 +92,8 @@ fun AddEditMedicationDialog(
     ) -> Unit
 ) {
     val context = LocalContext.current
+    val errMedName = stringResource(R.string.err_med_name)
+    val errMedTimes = stringResource(R.string.err_med_times)
 
     var name by remember { mutableStateOf(medicationToEdit?.name ?: "") }
     var dosage by remember { mutableStateOf(medicationToEdit?.dosage ?: "") }
@@ -152,7 +156,7 @@ fun AddEditMedicationDialog(
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(
-                    text = if (medicationToEdit == null) "Novo Medicamento" else "Editar Medicamento",
+                    text = stringResource(if (medicationToEdit == null) R.string.med_dialog_new else R.string.med_dialog_edit),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -171,8 +175,8 @@ fun AddEditMedicationDialog(
                         name = it
                         errorMessage = null
                     },
-                    label = { Text("Nome do Medicamento *") },
-                    placeholder = { Text("Ex: Paracetamol") },
+                    label = { Text(stringResource(R.string.med_name_label)) },
+                    placeholder = { Text(stringResource(R.string.med_name_placeholder)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -202,8 +206,8 @@ fun AddEditMedicationDialog(
                 OutlinedTextField(
                     value = dosage,
                     onValueChange = { dosage = it },
-                    label = { Text("Dosagem (opcional)") },
-                    placeholder = { Text("Ex: 500 mg ou 1 comprimido") },
+                    label = { Text(stringResource(R.string.med_dosage_label)) },
+                    placeholder = { Text(stringResource(R.string.med_dosage_placeholder)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -218,7 +222,7 @@ fun AddEditMedicationDialog(
                         value = profile,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Perfil / Responsável") },
+                        label = { Text(stringResource(R.string.med_profile_label)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedProfile) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
@@ -251,7 +255,7 @@ fun AddEditMedicationDialog(
                         value = colorTag,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Cor de Destaque") },
+                        label = { Text(stringResource(R.string.med_color_label)) },
                         leadingIcon = {
                             Box(modifier = Modifier.width(16.dp).height(16.dp).clip(CircleShape).background(colVal))
                         },
@@ -291,8 +295,8 @@ fun AddEditMedicationDialog(
                     OutlinedTextField(
                         value = currentQuantityStr,
                         onValueChange = { currentQuantityStr = it.filter { char -> char.isDigit() } },
-                        label = { Text("Estoque Atual") },
-                        placeholder = { Text("Ex: 20") },
+                        label = { Text(stringResource(R.string.med_stock_label)) },
+                        placeholder = { Text(stringResource(R.string.med_stock_placeholder)) },
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -302,8 +306,8 @@ fun AddEditMedicationDialog(
                     OutlinedTextField(
                         value = lowStockAlertStr,
                         onValueChange = { lowStockAlertStr = it.filter { char -> char.isDigit() } },
-                        label = { Text("Aviso Baixo") },
-                        placeholder = { Text("Ex: 5") },
+                        label = { Text(stringResource(R.string.med_low_label)) },
+                        placeholder = { Text(stringResource(R.string.med_low_placeholder)) },
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -314,8 +318,8 @@ fun AddEditMedicationDialog(
                 OutlinedTextField(
                     value = instructions,
                     onValueChange = { instructions = it },
-                    label = { Text("Instruções de uso (opcional)") },
-                    placeholder = { Text("Ex: Tomar após o almoço") },
+                    label = { Text(stringResource(R.string.med_instructions_label)) },
+                    placeholder = { Text(stringResource(R.string.med_instructions_placeholder)) },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -325,9 +329,9 @@ fun AddEditMedicationDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "Som no lembrete", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = stringResource(R.string.med_sound), style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            text = "Tocar som ao notificar",
+                            text = stringResource(R.string.med_sound_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -340,9 +344,9 @@ fun AddEditMedicationDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "Vibração no lembrete", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = stringResource(R.string.med_vibrate), style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            text = "Vibrar ao notificar",
+                            text = stringResource(R.string.med_vibrate_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -351,7 +355,7 @@ fun AddEditMedicationDialog(
                 }
 
                 Text(
-                    text = "Horários do Lembrete *",
+                    text = stringResource(R.string.med_times_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 4.dp)
@@ -378,7 +382,7 @@ fun AddEditMedicationDialog(
                             IconButton(onClick = { times.removeAt(index) }) {
                                 Icon(
                                     Icons.Default.Delete,
-                                    contentDescription = "Remover horário",
+                                    contentDescription = stringResource(R.string.cd_remove_time),
                                     tint = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -393,7 +397,7 @@ fun AddEditMedicationDialog(
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Adicionar outro horário")
+                    Text(stringResource(R.string.med_add_time))
                 }
 
                 if (errorMessage != null) {
@@ -409,11 +413,11 @@ fun AddEditMedicationDialog(
             Button(
                 onClick = {
                     if (name.isBlank()) {
-                        errorMessage = "Por favor, informe o nome do medicamento."
+                        errorMessage = errMedName
                         return@Button
                     }
                     if (times.isEmpty()) {
-                        errorMessage = "Adicione ao menos um horário."
+                        errorMessage = errMedTimes
                         return@Button
                     }
                     val qty = currentQuantityStr.toIntOrNull()
@@ -422,12 +426,12 @@ fun AddEditMedicationDialog(
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Salvar")
+                Text(stringResource(R.string.action_save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.action_cancel))
             }
         }
     )

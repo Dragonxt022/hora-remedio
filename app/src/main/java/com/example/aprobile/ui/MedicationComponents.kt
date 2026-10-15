@@ -350,13 +350,13 @@ fun DoseItemCard(
                     if (isTaken) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Marcar como pendente",
+                            contentDescription = stringResource(R.string.cd_mark_pending),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = "Marcar como tomado",
+                            contentDescription = stringResource(R.string.cd_mark_taken),
                             tint = MaterialTheme.colorScheme.outline
                         )
                     }
@@ -365,7 +365,7 @@ fun DoseItemCard(
                 IconButton(onClick = onEdit) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar",
+                        contentDescription = stringResource(R.string.action_edit),
                         tint = MaterialTheme.colorScheme.outline
                     )
                 }
@@ -440,14 +440,14 @@ fun MedicationMasterCard(
                         if (medication.enabled) {
                             Icon(
                                 Icons.Default.Notifications,
-                                contentDescription = "Ativo",
+                                contentDescription = stringResource(R.string.cd_active),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(2.dp)
                             )
                         } else {
                             Icon(
                                 Icons.Default.NotificationsOff,
-                                contentDescription = "Desativado",
+                                contentDescription = stringResource(R.string.cd_inactive),
                                 tint = MaterialTheme.colorScheme.outline,
                                 modifier = Modifier.padding(2.dp)
                             )
@@ -478,13 +478,13 @@ fun MedicationMasterCard(
                 )
 
                 IconButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = "Editar")
+                    Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_edit))
                 }
 
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Excluir",
+                        contentDescription = stringResource(R.string.action_delete),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -509,11 +509,12 @@ fun DonutChart(
     val primaryColor = MaterialTheme.colorScheme.primary
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
+    val adherenceContentDescription = stringResource(R.string.adherence_content_description, taken, total)
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(160.dp)
-            .semantics { contentDescription = "$taken de $total doses tomadas" }
+            .semantics { contentDescription = adherenceContentDescription }
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val strokeWidth = 32f
