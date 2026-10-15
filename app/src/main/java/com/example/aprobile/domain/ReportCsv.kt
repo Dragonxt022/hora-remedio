@@ -1,0 +1,39 @@
+package com.example.aprobile.domain
+
+import com.example.aprobile.data.DoseRecordEntity
+import com.example.aprobile.data.MedicationEntity
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
+object ReportCsv {
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    fun buildCsv(
+        medications: List<MedicationEntity>,
+        doses: List<DoseRecordEntity>,
+        zone: ZoneId = ZoneId.systemDefault()
+    ): String {
+        val medMap = medications.associateBy { it.id }
+        val sb = StringBuilder()
+        sb.append("Data;Hora;Medicamento;Perfil;Dosagem;Status\n")
+
+        doses.sortedBy { it.scheduledDateTime }.forEach { dose ->
+            val med = medMap[dose.medicationId] ?: return@forEach
+            val dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(dose.scheduledDateTime), zone)
+            sb.append(dateTime.format(dateFormatter)).append(';')
+                .append(dateTime.format(timeFormatter)).append(';')
+                .append(escape(med.name)).append(';')
+                .append(escape(med.profile)).append(';')
+                .append(escape(med.dosage)).append(';')
+                .append(if (dose.status == DoseRecordEntity.STATUS_TAKEN) "Tomada" else "Não tomada")
+                .append('\n')
+        }
+        return sb.toString()
+    }
+
+    private fun escape(value: String): String = value.replace(';', ',').replace('\n', ' ')
+}

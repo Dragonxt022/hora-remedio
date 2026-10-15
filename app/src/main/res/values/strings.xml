@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">Hora do Remédio</string>
+
+    <string name="nav_doses">Doses</string>
+    <string name="nav_medications">Remédios</string>
+    <string name="nav_appointments">Consultas</string>
+    <string name="nav_statistics">Estatísticas</string>
+    <string name="nav_profile">Perfil</string>
+
+    <string name="title_doses">Hora do Remédio</string>
+    <string name="title_medications">Meus Remédios</string>
+    <string name="title_appointments">Consultas e Exames</string>
+    <string name="title_statistics">Estatísticas e Adesão</string>
+    <string name="title_profile">Meu Perfil</string>
+    <string name="title_detail">Detalhes do Medicamento</string>
+    <string name="action_back">Voltar</string>
+    <string name="action_toggle_theme">Alternar Tema</string>
+
+    <string name="onboarding_skip">Pular</string>
+    <string name="onboarding_next">Próximo</string>
+    <string name="onboarding_start">Começar</string>
+    <string name="onboarding_title_1">Bem-vindo ao Hora do Remédio</string>
+    <string name="onboarding_desc_1">Nunca mais esqueça um medicamento. Cadastre seus remédios e receba lembretes no horário certo.</string>
+    <string name="onboarding_title_2">Um perfil para cada pessoa</string>
+    <string name="onboarding_desc_2">Gerencie remédios para você, sua mãe, seu pai ou até seu pet, com histórico e estoque separados.</string>
+    <string name="onboarding_title_3">Lembretes confiáveis</string>
+    <string name="onboarding_desc_3">Permita notificações e alarmes para garantir que os lembretes toquem mesmo com o app fechado.</string>
+
+    <string name="inventory_stock">Estoque: %1$d unidades</string>
+    <string name="inventory_runs_out">Acaba em %1$d dias</string>
+    <string name="inventory_runs_out_soon">Acaba hoje ou amanhã</string>
+    <string name="inventory_reorder">Recompra sugerida</string>
+    <string name="streak_title">Sequência de adesão</string>
+    <string name="streak_days">%1$d dias em sequência</string>
+    <string name="streak_none">Nenhuma sequência ainda</string>
+
+    <string name="paywall_title">Seja Premium</string>
+    <string name="paywall_subtitle">Desbloqueie todo o potencial do Hora do Remédio</string>
+    <string name="paywall_benefit_1">Medicamentos e perfis ilimitados</string>
+    <string name="paywall_benefit_2">Relatórios e exportação (CSV)</string>
+    <string name="paywall_benefit_3">Estatísticas avançadas por período e medicamento</string>
+    <string name="paywall_benefit_4">Sincronização em breve</string>
+    <string name="paywall_price">R$ 9,90 / mês</string>
+    <string name="paywall_subscribe">Assinar Premium</string>
+    <string name="paywall_restore">Restaurar compra</string>
+    <string name="paywall_later">Agora não</string>
+    <string name="paywall_note">Cobrança pela Google Play (integração em breve)</string>
+    <string name="premium_active">Premium ativo</string>
+    <string name="premium_go">Seja Premium</string>
+    <string name="premium_cta_desc">Desbloqueie relatórios e medicamentos ilimitados</string>
+    <string name="export_report">Exportar relatório (CSV)</string>
+    <string name="export_locked">Exportar relatório (Premium)</string>
+
+    <string name="widget_desc">Mostra a próxima dose agendada</string>
+
+    <string name="lock_title">Desbloquear</string>
+    <string name="lock_subtitle">Use sua biometria ou a senha do dispositivo</string>
+    <string name="lock_locked">Aplicativo bloqueado</string>
+    <string name="lock_unlock">Desbloquear</string>
+    <string name="app_lock_setting">Bloqueio do aplicativo</string>
+    <string name="app_lock_setting_desc">Exigir biometria ou senha ao abrir</string>
+    <string name="privacy_section">Privacidade e dados</string>
+    <string name="privacy_open">Privacidade e dados</string>
+    <string name="privacy_note">Seus dados ficam apenas neste aparelho.</string>
+    <string name="privacy_export">Exportar backup (JSON)</string>
+    <string name="privacy_import">Importar backup (JSON)</string>
+    <string name="privacy_delete">Excluir todos os dados</string>
+    <string name="privacy_delete_title">Excluir todos os dados?</string>
+    <string name="privacy_delete_text">Todos os medicamentos, históricos e configurações serão removidos. Esta ação não pode ser desfeita.</string>
+    <string name="privacy_export_ok">Backup exportado com sucesso</string>
+    <string name="privacy_import_ok">Backup importado com sucesso</string>
+    <string name="privacy_import_fail">Não foi possível importar o backup</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Excluir</string>
+
+    <string name="notification_channel_name">Lembretes de Medicamentos</string>
+    <string name="notification_channel_desc">Notificações para os horários dos remédios</string>
+    <string name="notification_channel_silent_name">Lembretes silenciosos</string>
+    <string name="notification_channel_silent_desc">Lembretes sem som e sem vibração</string>
+    <string name="notification_title">Hora do Remédio: %1$s</string>
+    <string name="notification_action_taken">Tomar Agora</string>
+    <string name="notification_action_snooze">Adiar</string>
+</resources>
