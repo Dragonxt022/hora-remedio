@@ -50,6 +50,7 @@ fun PrivacyScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showPolicy by remember { mutableStateOf(false) }
 
     val createDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -110,6 +111,10 @@ fun PrivacyScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
+        TextButton(onClick = { showPolicy = true }) {
+            Text(stringResource(R.string.privacy_policy_open))
+        }
+
         Button(
             onClick = { createDocumentLauncher.launch("hora-do-remedio-backup.json") },
             modifier = Modifier.fillMaxWidth(),
@@ -158,6 +163,23 @@ fun PrivacyScreen(
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
                     Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
+
+    if (showPolicy) {
+        AlertDialog(
+            onDismissRequest = { showPolicy = false },
+            title = { Text(stringResource(R.string.privacy_policy_title)) },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Text(stringResource(R.string.privacy_policy_body))
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPolicy = false }) {
+                    Text("OK")
                 }
             }
         )

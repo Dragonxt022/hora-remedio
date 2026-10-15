@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.aprobile.R
 
 @Composable
 fun PermissionHandler() {
@@ -51,8 +53,8 @@ fun PermissionHandler() {
     if (showExactAlarmDialog) {
         AlertDialog(
             onDismissRequest = { showExactAlarmDialog = false },
-            title = { Text("Permissão para Alarmes Exatos") },
-            text = { Text("Para garantir que os lembretes toquem no horário exato, permita o agendamento de alarmes exatos nas configurações.") },
+            title = { Text(stringResource(R.string.perm_exact_title)) },
+            text = { Text(stringResource(R.string.perm_exact_text)) },
             confirmButton = {
                 TextButton(onClick = {
                     showExactAlarmDialog = false
@@ -67,20 +69,20 @@ fun PermissionHandler() {
                         }
                     }
                 }) {
-                    Text("Abrir Configurações")
+                    Text(stringResource(R.string.perm_open_settings))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showExactAlarmDialog = false }) {
-                    Text("Agora Não")
+                    Text(stringResource(R.string.perm_not_now))
                 }
             }
         )
     } else if (showBatteryDialog) {
         AlertDialog(
             onDismissRequest = { showBatteryDialog = false },
-            title = { Text("Permitir Execução em Segundo Plano") },
-            text = { Text("Alguns aparelhos encerram os lembretes para economizar bateria. Desative a otimização de bateria para este app garantir que os alarmes funcionem.") },
+            title = { Text(stringResource(R.string.perm_battery_title)) },
+            text = { Text(stringResource(R.string.perm_battery_text)) },
             confirmButton = {
                 TextButton(onClick = {
                     showBatteryDialog = false
@@ -93,12 +95,12 @@ fun PermissionHandler() {
                         e.printStackTrace()
                     }
                 }) {
-                    Text("Permitir")
+                    Text(stringResource(R.string.perm_allow))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showBatteryDialog = false }) {
-                    Text("Agora Não")
+                    Text(stringResource(R.string.perm_not_now))
                 }
             }
         )

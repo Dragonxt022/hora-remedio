@@ -111,12 +111,12 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = if (isLoggedIn) "Sincronizado na Nuvem" else "Modo Convidado (Offline)",
+                        text = stringResource(if (isLoggedIn) R.string.profile_synced else R.string.profile_offline),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = if (isLoggedIn) "Seus dados estão seguros na nuvem." else "Faça login com o Google para salvar seus registros.",
+                        text = stringResource(if (isLoggedIn) R.string.profile_synced_desc else R.string.profile_offline_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -173,7 +173,7 @@ fun ProfileScreen(
                 editableName = it
                 onUpdateName(it)
             },
-            label = { Text("Seu Nome") },
+            label = { Text(stringResource(R.string.profile_name)) },
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier.fillMaxWidth()
@@ -197,12 +197,12 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Tempo de soneca",
+                    text = stringResource(R.string.snooze_setting),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Intervalo aplicado ao adiar um lembrete",
+                    text = stringResource(R.string.snooze_setting_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -211,7 +211,7 @@ fun ProfileScreen(
                         FilterChip(
                             selected = snoozeMinutes == minutes,
                             onClick = { onSnoozeChange(minutes) },
-                            label = { Text("$minutes min") }
+                            label = { Text(stringResource(R.string.snooze_minutes, minutes)) }
                         )
                     }
                 }
@@ -269,7 +269,7 @@ fun ProfileScreen(
             ) {
                 Icon(Icons.Default.Login, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Entrar com o Google")
+                Text(stringResource(R.string.profile_google_login))
             }
         } else {
             Button(
@@ -280,7 +280,7 @@ fun ProfileScreen(
             ) {
                 Icon(Icons.Default.Logout, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Sair da Conta")
+                Text(stringResource(R.string.profile_logout))
             }
         }
     }

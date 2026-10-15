@@ -50,6 +50,7 @@ fun StatisticsScreen(
     onUpgrade: () -> Unit
 ) {
     val context = LocalContext.current
+    val shareReportTitle = stringResource(R.string.share_report)
     val glassColor = if (uiState.isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
     val borderColor = if (uiState.isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
 
@@ -110,7 +111,7 @@ fun StatisticsScreen(
         }
 
         Text(
-            text = "Visão Geral",
+            text = stringResource(R.string.stats_overview),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
@@ -131,7 +132,7 @@ fun StatisticsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Gráfico de Pizza (Adesão)",
+                    text = stringResource(R.string.stats_pie),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -156,19 +157,19 @@ fun StatisticsScreen(
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    text = "Resumo do Histórico",
+                    text = stringResource(R.string.stats_history_summary),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("• Doses registradas: ${uiState.overallTotal}")
-                Text("• Doses tomadas: ${uiState.overallTaken}")
-                Text("• Doses perdidas/pendentes: ${uiState.overallTotal - uiState.overallTaken}")
+                Text(stringResource(R.string.stats_recorded, uiState.overallTotal))
+                Text(stringResource(R.string.stats_taken, uiState.overallTaken))
+                Text(stringResource(R.string.stats_missed, uiState.overallTotal - uiState.overallTaken))
             }
         }
 
         Text(
-            text = "Adesão por Perfil",
+            text = stringResource(R.string.stats_by_profile),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
@@ -176,7 +177,7 @@ fun StatisticsScreen(
 
         if (uiState.profileStats.isEmpty()) {
             Text(
-                text = "Nenhum perfil com histórico registrado ainda.",
+                text = stringResource(R.string.stats_no_profile),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth()
@@ -188,7 +189,7 @@ fun StatisticsScreen(
         }
 
         Text(
-            text = "Adesão por Medicamento",
+            text = stringResource(R.string.stats_by_medication),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth()
@@ -196,7 +197,7 @@ fun StatisticsScreen(
 
         if (uiState.medicationStats.isEmpty()) {
             Text(
-                text = "Nenhum medicamento com histórico no período.",
+                text = stringResource(R.string.stats_no_medication),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth()
@@ -216,7 +217,7 @@ fun StatisticsScreen(
                         putExtra(Intent.EXTRA_SUBJECT, "Relatório - Hora do Remédio")
                         putExtra(Intent.EXTRA_TEXT, csv)
                     }
-                    context.startActivity(Intent.createChooser(intent, "Compartilhar relatório"))
+                    context.startActivity(Intent.createChooser(intent, shareReportTitle))
                 } else {
                     onUpgrade()
                 }
@@ -244,7 +245,7 @@ fun StatisticsScreen(
                             putExtra(Intent.EXTRA_STREAM, uri)
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }
-                        context.startActivity(Intent.createChooser(intent, "Compartilhar relatório"))
+                        context.startActivity(Intent.createChooser(intent, shareReportTitle))
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -257,7 +258,7 @@ fun StatisticsScreen(
         ) {
             Icon(Icons.Default.Share, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Exportar relatório (PDF)")
+            Text(stringResource(R.string.export_pdf))
         }
     }
 }
@@ -351,7 +352,7 @@ private fun StatRow(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "$taken de $total doses tomadas",
+                text = stringResource(R.string.stats_doses_taken_of, taken, total),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

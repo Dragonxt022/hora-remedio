@@ -1,0 +1,133 @@
+<resources>
+    <string name="app_name">Med Reminder</string>
+
+    <string name="nav_doses">Doses</string>
+    <string name="nav_medications">Meds</string>
+    <string name="nav_appointments">Visits</string>
+    <string name="nav_statistics">Stats</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="title_doses">Med Reminder</string>
+    <string name="title_medications">My Meds</string>
+    <string name="title_appointments">Appointments &amp; Exams</string>
+    <string name="title_statistics">Statistics &amp; Adherence</string>
+    <string name="title_profile">My Profile</string>
+    <string name="title_detail">Medication Details</string>
+    <string name="action_back">Back</string>
+    <string name="action_toggle_theme">Toggle theme</string>
+
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_title_1">Welcome to Med Reminder</string>
+    <string name="onboarding_desc_1">Never forget a medication again. Add your meds and get reminders at the right time.</string>
+    <string name="onboarding_title_2">A profile for each person</string>
+    <string name="onboarding_desc_2">Manage meds for you, your mother, your father or even your pet, with separate history and stock.</string>
+    <string name="onboarding_title_3">Reliable reminders</string>
+    <string name="onboarding_desc_3">Allow notifications and alarms so reminders fire even when the app is closed.</string>
+
+    <string name="inventory_stock">Stock: %1$d units</string>
+    <string name="inventory_runs_out">Runs out in %1$d days</string>
+    <string name="inventory_runs_out_soon">Runs out today or tomorrow</string>
+    <string name="inventory_reorder">Refill suggested</string>
+    <string name="streak_title">Adherence streak</string>
+    <string name="streak_days">%1$d days in a row</string>
+    <string name="streak_none">No streak yet</string>
+
+    <string name="paywall_title">Go Premium</string>
+    <string name="paywall_subtitle">Unlock the full potential of Med Reminder</string>
+    <string name="paywall_benefit_1">Unlimited medications and profiles</string>
+    <string name="paywall_benefit_2">Reports and export (CSV)</string>
+    <string name="paywall_benefit_3">Advanced stats by period and medication</string>
+    <string name="paywall_benefit_4">Sync coming soon</string>
+    <string name="paywall_price">$4.99 / month</string>
+    <string name="paywall_subscribe">Subscribe to Premium</string>
+    <string name="paywall_restore">Restore purchase</string>
+    <string name="paywall_later">Not now</string>
+    <string name="paywall_note">Billed by Google Play (integration coming soon)</string>
+    <string name="premium_active">Premium active</string>
+    <string name="premium_go">Go Premium</string>
+    <string name="premium_cta_desc">Unlock reports and unlimited medications</string>
+    <string name="export_report">Export report (CSV)</string>
+    <string name="export_locked">Export report (Premium)</string>
+
+    <string name="stats_overview">Overview</string>
+    <string name="stats_pie">Adherence pie chart</string>
+    <string name="stats_history_summary">History summary</string>
+    <string name="stats_recorded">• Recorded doses: %1$d</string>
+    <string name="stats_taken">• Taken doses: %1$d</string>
+    <string name="stats_missed">• Missed/pending doses: %1$d</string>
+    <string name="stats_by_profile">Adherence by profile</string>
+    <string name="stats_by_medication">Adherence by medication</string>
+    <string name="stats_no_profile">No profile with recorded history yet.</string>
+    <string name="stats_no_medication">No medication with history in the period.</string>
+    <string name="stats_doses_taken_of">%1$d of %2$d doses taken</string>
+    <string name="stats_comparison">Dose comparison</string>
+    <string name="stats_bar_taken">Taken</string>
+    <string name="stats_bar_pending">Pending</string>
+    <string name="export_pdf">Export report (PDF)</string>
+    <string name="share_report">Share report</string>
+
+    <string name="profile_name">Your name</string>
+    <string name="profile_google_login">Sign in with Google</string>
+    <string name="profile_logout">Sign out</string>
+    <string name="profile_synced">Synced to the cloud</string>
+    <string name="profile_offline">Guest mode (offline)</string>
+    <string name="profile_synced_desc">Your data is safe in the cloud.</string>
+    <string name="profile_offline_desc">Sign in with Google to save your records.</string>
+    <string name="snooze_setting">Snooze time</string>
+    <string name="snooze_setting_desc">Interval applied when snoozing a reminder</string>
+    <string name="snooze_minutes">%1$d min</string>
+
+    <string name="search_placeholder">Search medication…</string>
+    <string name="daily_progress">Today\'s progress</string>
+    <string name="daily_complete">🎉 Well done! Day complete!</string>
+    <string name="daily_taken_of">%1$d of %2$d taken</string>
+    <string name="low_stock_warning">Low stock (%1$d left)</string>
+    <string name="empty_doses">No doses scheduled for today.\nTap \'+\' to add a medication.</string>
+    <string name="empty_medications">You don\'t have any\nmedications yet.</string>
+    <string name="empty_add_button">Add medication</string>
+    <string name="empty_appointments">No appointments or exams scheduled.\nTap \'+\' to add one.</string>
+
+    <string name="widget_desc">Shows the next scheduled dose</string>
+
+    <string name="lock_title">Unlock</string>
+    <string name="lock_subtitle">Use your biometrics or device PIN</string>
+    <string name="lock_locked">App locked</string>
+    <string name="lock_unlock">Unlock</string>
+    <string name="app_lock_setting">App lock</string>
+    <string name="app_lock_setting_desc">Require biometrics or PIN on open</string>
+    <string name="privacy_section">Privacy &amp; data</string>
+    <string name="privacy_open">Privacy &amp; data</string>
+    <string name="privacy_note">Your data stays only on this device.</string>
+    <string name="privacy_export">Export backup (JSON)</string>
+    <string name="privacy_import">Import backup (JSON)</string>
+    <string name="privacy_delete">Delete all data</string>
+    <string name="privacy_delete_title">Delete all data?</string>
+    <string name="privacy_delete_text">All medications, history and settings will be removed. This cannot be undone.</string>
+    <string name="privacy_export_ok">Backup exported successfully</string>
+    <string name="privacy_import_ok">Backup imported successfully</string>
+    <string name="privacy_import_fail">Could not import the backup</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+
+    <string name="perm_exact_title">Exact alarm permission</string>
+    <string name="perm_exact_text">To make sure reminders fire at the exact time, allow exact alarms in settings.</string>
+    <string name="perm_battery_title">Allow background execution</string>
+    <string name="perm_battery_text">Some devices stop reminders to save battery. Turn off battery optimization for this app so alarms keep working.</string>
+    <string name="perm_open_settings">Open settings</string>
+    <string name="perm_allow">Allow</string>
+    <string name="perm_not_now">Not now</string>
+
+    <string name="privacy_policy_open">View privacy policy</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_body">Med Reminder respects your privacy.\n\nData processed: name, profiles, medications, times, dose history and notes you enter.\n\nWhere it lives: all data is stored only on your device (local database). We do not send your data to servers.\n\nSharing: we do not share your data with third parties. Reports are generated locally and shared only when you choose to.\n\nPermissions: notifications and alarms are used only for reminders; biometrics (optional) are used to lock the app.\n\nYour rights: you can export, import or delete all data at any time on this screen.\n\nContact: support@medreminder.app</string>
+
+    <string name="notification_channel_name">Medication reminders</string>
+    <string name="notification_channel_desc">Notifications for your medication times</string>
+    <string name="notification_channel_silent_name">Silent reminders</string>
+    <string name="notification_channel_silent_desc">Reminders without sound or vibration</string>
+    <string name="notification_title">Med reminder: %1$s</string>
+    <string name="notification_action_taken">Take now</string>
+    <string name="notification_action_snooze">Snooze</string>
+</resources>

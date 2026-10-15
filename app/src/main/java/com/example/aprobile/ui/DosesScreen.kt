@@ -10,7 +10,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.aprobile.R
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
 import java.time.Instant
@@ -63,7 +65,7 @@ fun DosesScreen(
             LoadingStateView()
         } else if (uiState.todayDoses.isEmpty()) {
             EmptyStateView(
-                message = "Nenhuma dose agendada para hoje.\nToque no '+' para cadastrar um medicamento.",
+                message = stringResource(R.string.empty_doses),
                 onAddClick = onAddClick,
                 isDarkMode = uiState.isDarkMode
             )

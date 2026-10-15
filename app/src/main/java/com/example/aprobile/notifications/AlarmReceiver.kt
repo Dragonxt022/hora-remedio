@@ -177,7 +177,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .addAction(0, context.getString(R.string.notification_action_taken), takenIntent)
-            .addAction(0, "${context.getString(R.string.notification_action_snooze)} ($time)", snoozeIntent)
+            .addAction(0, context.getString(R.string.notification_action_snooze), snoozeIntent)
 
         builder.setSilent(!soundEnabled)
 

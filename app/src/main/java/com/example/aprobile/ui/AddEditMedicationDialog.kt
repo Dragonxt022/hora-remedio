@@ -26,6 +26,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -63,7 +64,7 @@ fun formatDisplayTime(timeStr: String): String {
             hour < 18 -> "Tarde"
             else -> "Noite"
         }
-        val formatted12 = time.format(DateTimeFormatter.ofPattern("hh:mm a", Locale("pt", "BR")))
+        val formatted12 = time.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.forLanguageTag("pt-BR")))
         "$formatted12 ($period)"
     } catch (e: Exception) {
         timeStr
@@ -221,7 +222,7 @@ fun AddEditMedicationDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedProfile) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
-                            .menuAnchor()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
@@ -257,7 +258,7 @@ fun AddEditMedicationDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedColor) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
-                            .menuAnchor()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(

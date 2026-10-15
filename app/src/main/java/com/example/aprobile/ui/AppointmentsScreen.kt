@@ -33,9 +33,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.aprobile.R
 import com.example.aprobile.data.AppointmentEntity
 
 fun addAppointmentToCalendar(context: Context, appointment: AppointmentEntity) {
@@ -180,7 +182,7 @@ private fun EmptyAppointmentsView(isDarkMode: Boolean) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Nenhuma consulta ou exame agendado.\nToque no '+' para adicionar.",
+                    text = stringResource(R.string.empty_appointments),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant

@@ -51,6 +51,44 @@
     <string name="export_report">Exportar relatório (CSV)</string>
     <string name="export_locked">Exportar relatório (Premium)</string>
 
+    <string name="stats_overview">Visão Geral</string>
+    <string name="stats_pie">Gráfico de Pizza (Adesão)</string>
+    <string name="stats_history_summary">Resumo do Histórico</string>
+    <string name="stats_recorded">• Doses registradas: %1$d</string>
+    <string name="stats_taken">• Doses tomadas: %1$d</string>
+    <string name="stats_missed">• Doses perdidas/pendentes: %1$d</string>
+    <string name="stats_by_profile">Adesão por Perfil</string>
+    <string name="stats_by_medication">Adesão por Medicamento</string>
+    <string name="stats_no_profile">Nenhum perfil com histórico registrado ainda.</string>
+    <string name="stats_no_medication">Nenhum medicamento com histórico no período.</string>
+    <string name="stats_doses_taken_of">%1$d de %2$d doses tomadas</string>
+    <string name="stats_comparison">Comparativo de Doses</string>
+    <string name="stats_bar_taken">Tomadas</string>
+    <string name="stats_bar_pending">Pendentes</string>
+    <string name="export_pdf">Exportar relatório (PDF)</string>
+    <string name="share_report">Compartilhar relatório</string>
+
+    <string name="profile_name">Seu Nome</string>
+    <string name="profile_google_login">Entrar com o Google</string>
+    <string name="profile_logout">Sair da Conta</string>
+    <string name="profile_synced">Sincronizado na Nuvem</string>
+    <string name="profile_offline">Modo Convidado (Offline)</string>
+    <string name="profile_synced_desc">Seus dados estão seguros na nuvem.</string>
+    <string name="profile_offline_desc">Faça login com o Google para salvar seus registros.</string>
+    <string name="snooze_setting">Tempo de soneca</string>
+    <string name="snooze_setting_desc">Intervalo aplicado ao adiar um lembrete</string>
+    <string name="snooze_minutes">%1$d min</string>
+
+    <string name="search_placeholder">Pesquisar remédio…</string>
+    <string name="daily_progress">Progresso de Hoje</string>
+    <string name="daily_complete">🎉 Parabéns! Dia Concluído!</string>
+    <string name="daily_taken_of">%1$d de %2$d tomadas</string>
+    <string name="low_stock_warning">Estoque baixo (%1$d restantes)</string>
+    <string name="empty_doses">Nenhuma dose agendada para hoje.\nToque no \'+\' para cadastrar um medicamento.</string>
+    <string name="empty_medications">Você ainda não possui\nmedicamentos cadastrados.</string>
+    <string name="empty_add_button">Cadastrar Medicamento</string>
+    <string name="empty_appointments">Nenhuma consulta ou exame agendado.\nToque no \'+\' para adicionar.</string>
+
     <string name="widget_desc">Mostra a próxima dose agendada</string>
 
     <string name="lock_title">Desbloquear</string>
@@ -72,6 +110,18 @@
     <string name="privacy_import_fail">Não foi possível importar o backup</string>
     <string name="action_cancel">Cancelar</string>
     <string name="action_delete">Excluir</string>
+
+    <string name="perm_exact_title">Permissão para Alarmes Exatos</string>
+    <string name="perm_exact_text">Para garantir que os lembretes toquem no horário exato, permita o agendamento de alarmes exatos nas configurações.</string>
+    <string name="perm_battery_title">Permitir Execução em Segundo Plano</string>
+    <string name="perm_battery_text">Alguns aparelhos encerram os lembretes para economizar bateria. Desative a otimização de bateria para este app garantir que os alarmes funcionem.</string>
+    <string name="perm_open_settings">Abrir Configurações</string>
+    <string name="perm_allow">Permitir</string>
+    <string name="perm_not_now">Agora Não</string>
+
+    <string name="privacy_policy_open">Ver política de privacidade</string>
+    <string name="privacy_policy_title">Política de Privacidade</string>
+    <string name="privacy_policy_body">O Hora do Remédio respeita a sua privacidade.\n\nDados tratados: nome, perfis, medicamentos, horários, histórico de doses e observações que você cadastra.\n\nOnde ficam: todos os dados são armazenados apenas no seu aparelho (banco de dados local). Não enviamos seus dados para servidores.\n\nCompartilhamento: não compartilhamos seus dados com terceiros. Relatórios são gerados localmente e compartilhados apenas quando você escolhe.\n\nPermissões: notificações e alarmes são usados apenas para os lembretes; a biometria (opcional) serve para bloquear o app.\n\nSeus direitos: você pode exportar, importar ou excluir todos os dados a qualquer momento nesta tela.\n\nContato: suporte@horadoremedio.app</string>
 
     <string name="notification_channel_name">Lembretes de Medicamentos</string>
     <string name="notification_channel_desc">Notificações para os horários dos remédios</string>

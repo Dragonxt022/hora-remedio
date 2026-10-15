@@ -137,7 +137,7 @@ fun SearchAndFilterBar(
         OutlinedTextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Pesquisar remédio...") },
+            placeholder = { Text(stringResource(R.string.search_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             singleLine = true,
             shape = RoundedCornerShape(20.dp),
@@ -191,13 +191,13 @@ fun DailySummaryCard(takenCount: Int, totalCount: Int, streak: Int, isDarkMode: 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (isComplete) "🎉 Parabéns! Dia Concluído!" else "Progresso de Hoje",
+                    text = stringResource(if (isComplete) R.string.daily_complete else R.string.daily_progress),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "$takenCount de $totalCount tomadas",
+                    text = stringResource(R.string.daily_taken_of, takenCount, totalCount),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -337,7 +337,7 @@ fun DoseItemCard(
                             Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.height(14.dp).width(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Estoque baixo ($qty restantes)",
+                                text = stringResource(R.string.low_stock_warning, qty),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error,
                                 fontWeight = FontWeight.SemiBold
@@ -576,14 +576,14 @@ fun BarChart(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Comparativo de Doses",
+                text = stringResource(R.string.stats_comparison),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Tomadas", modifier = Modifier.width(80.dp), style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.stats_bar_taken), modifier = Modifier.width(80.dp), style = MaterialTheme.typography.bodyMedium)
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -606,7 +606,7 @@ fun BarChart(
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Pendentes", modifier = Modifier.width(80.dp), style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.stats_bar_pending), modifier = Modifier.width(80.dp), style = MaterialTheme.typography.bodyMedium)
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -701,7 +701,7 @@ fun EmptyStateView(
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Cadastrar Medicamento")
+                    Text(stringResource(R.string.empty_add_button))
                 }
             }
         }
