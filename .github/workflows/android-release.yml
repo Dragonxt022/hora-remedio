@@ -79,6 +79,9 @@ jobs:
           mkdir -p dist
           cp app/build/outputs/apk/release/app-release.apk "dist/hora-do-remedio-${{ steps.ver.outputs.version }}.apk"
           cp app/build/outputs/bundle/release/app-release.aab "dist/hora-do-remedio-${{ steps.ver.outputs.version }}.aab"
+          # nomes estaveis (para links "latest/download")
+          cp app/build/outputs/apk/release/app-release.apk "dist/hora-do-remedio.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "dist/hora-do-remedio.aab"
           ls -la dist
 
       - name: Publicar release no GitHub

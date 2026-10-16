@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hora do Remédio — Lembretes de medicamentos</title>
+<meta name="description" content="Lembretes de medicamentos, controle de estoque, perfis e diário de saúde. Tudo offline e criptografado. Baixe o app para Android." />
+<style>
+  :root{
+    --brand:#0e7c6b;
+    --brand-2:#12b39a;
+    --mint:#e8f4f0;
+    --mint-2:#d2ebe4;
+    --ink:#0f1a17;
+    --muted:#4a5f59;
+    --card:rgba(255,255,255,.72);
+    --border:rgba(14,124,107,.18);
+    --bg-1:#e8f4f0;
+    --bg-2:#d2ebe4;
+    --shadow:0 12px 40px rgba(14,124,107,.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#eafaf6;
+      --muted:#9fc4bb;
+      --card:rgba(22,34,31,.66);
+      --border:rgba(255,255,255,.10);
+      --bg-1:#0f1715;
+      --bg-2:#1b2a26;
+      --shadow:0 12px 40px rgba(0,0,0,.45);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg-1),var(--bg-2));
+    background-attachment:fixed;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  header.hero{
+    text-align:center;
+    padding:72px 0 40px;
+  }
+  .logo{
+    width:96px;height:96px;border-radius:26px;
+    background:linear-gradient(140deg,var(--brand),var(--brand-2));
+    display:inline-flex;align-items:center;justify-content:center;
+    box-shadow:var(--shadow);
+    margin-bottom:20px;
+  }
+  .logo svg{width:54px;height:54px;fill:#fff}
+  h1{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 10px;letter-spacing:-.02em}
+  .tagline{font-size:clamp(1.02rem,2.4vw,1.3rem);color:var(--muted);max-width:640px;margin:0 auto 26px}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+  .badge{
+    font-size:.82rem;font-weight:600;padding:7px 14px;border-radius:999px;
+    background:var(--card);border:1px solid var(--border);color:var(--muted);
+    backdrop-filter:blur(8px);
+  }
+  .cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:1.02rem;font-weight:700;text-decoration:none;
+    padding:15px 28px;border-radius:16px;transition:transform .15s ease, box-shadow .15s ease;
+    border:1px solid transparent;
+  }
+  .btn svg{width:22px;height:22px;fill:currentColor}
+  .btn.primary{background:linear-gradient(140deg,var(--brand),var(--brand-2));color:#fff;box-shadow:var(--shadow)}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--border);backdrop-filter:blur(8px)}
+  .btn:hover{transform:translateY(-2px)}
+  .note{font-size:.85rem;color:var(--muted);margin-top:16px}
+
+  section{padding:44px 0}
+  h2{font-size:1.6rem;margin:0 0 22px;text-align:center;letter-spacing:-.01em}
+  .shots{
+    display:flex;gap:18px;overflow-x:auto;padding:8px 4px 20px;
+    scroll-snap-type:x mandatory;
+  }
+  .shots img{
+    height:460px;width:auto;border-radius:22px;flex:0 0 auto;
+    box-shadow:var(--shadow);border:1px solid var(--border);
+    scroll-snap-align:center;background:#fff;
+  }
+  .grid{
+    display:grid;gap:16px;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  }
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:20px;
+    padding:22px;backdrop-filter:blur(10px);box-shadow:var(--shadow);
+  }
+  .card .ic{
+    width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(140deg,var(--brand),var(--brand-2));margin-bottom:12px;
+  }
+  .card .ic svg{width:24px;height:24px;fill:#fff}
+  .card h3{margin:0 0 6px;font-size:1.06rem}
+  .card p{margin:0;color:var(--muted);font-size:.92rem}
+  .privacy{text-align:center;max-width:720px;margin:0 auto;color:var(--muted)}
+  footer{
+    text-align:center;padding:40px 20px 60px;color:var(--muted);font-size:.85rem;
+  }
+  footer a{color:var(--brand-2);text-decoration:none}
+  .disclaimer{font-size:.8rem;opacity:.85;max-width:640px;margin:12px auto 0}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6 2h12v3H6V2zm-1 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm7 3v3H9v2h3v3h2v-3h3v-2h-3v-3h-2z"/></svg>
+    </div>
+    <h1>Hora do Remédio</h1>
+    <p class="tagline">Lembretes de medicamentos, controle de estoque, perfis e diário de saúde — tudo no seu aparelho, offline e criptografado.</p>
+    <div class="badges">
+      <span class="badge">📱 Android</span>
+      <span class="badge">🔒 AES‑256 (SQLCipher)</span>
+      <span class="badge">☁️ Sem enviar dados</span>
+      <span class="badge">🌎 PT · EN · ES</span>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/Dragonxt022/hora-remedio/releases/latest/download/hora-do-remedio.apk">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 7.3 11.7l1.4-1.4L12 13.6V3zM5 19h14v2H5z"/></svg>
+        Baixar para Android
+      </a>
+      <a class="btn ghost" href="https://github.com/Dragonxt022/hora-remedio/releases">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.1-1.47-1.1-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>
+        Ver no GitHub
+      </a>
+    </div>
+    <p class="note">APK assinado · Android 8.0+ · instale permitindo "fontes desconhecidas".</p>
+  </header>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>Veja o app</h2>
+    <div class="shots">
+      <img src="screenshots/01-doses.png" alt="Tela de doses do dia" loading="lazy" />
+      <img src="screenshots/02-remedios.png" alt="Meus medicamentos" loading="lazy" />
+      <img src="screenshots/03-consultas.png" alt="Consultas e exames" loading="lazy" />
+      <img src="screenshots/04-saude.png" alt="Diário de saúde" loading="lazy" />
+      <img src="screenshots/05-estatisticas.png" alt="Estatísticas de adesão" loading="lazy" />
+      <img src="screenshots/06-perfil.png" alt="Perfil e configurações" loading="lazy" />
+      <img src="screenshots/07-detalhe.png" alt="Detalhes do medicamento" loading="lazy" />
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>Principais recursos</h2>
+    <div class="grid">
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm1-15h-2v6l5 3 1-1.7-4-2.3V7z"/></svg></div><h3>Lembretes confiáveis</h3><p>Alarme no horário exato, com som e vibração, mesmo com o app fechado.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2z"/></svg></div><h3>Esquemas flexíveis</h3><p>Diário, dias da semana ou "quando necessário" (SOS).</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 6h18v3H3zm0 5h18v3H3zm0 5h12v3H3z"/></svg></div><h3>Doses agrupadas</h3><p>Tudo do dia num só cartão, com barra de progresso do que já tomou.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4 8 4 8-4zm-8 6l-8-4v8l8 4 8-4V9l-8 4z"/></svg></div><h3>Controle de estoque</h3><p>Baixa a cada dose e avisa quando estiver acabando ou esgotar.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm-8 1a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.7 0-8 1.3-8 4v3h9v-3c0-1 .4-2 1-2.7A6 6 0 0 0 8 14zm8 0c-2.7 0-8 1.3-8 4v3h16v-3c0-2.7-5.3-4-8-4z"/></svg></div><h3>Perfis</h3><p>Você, sua mãe, seu pai ou até seu pet — separados e com foto.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 13h4l3 8 4-16 3 8h4v2h-5.5L14 9l-4 16-3-8H3z"/></svg></div><h3>Diário & gráficos</h3><p>Febre, pressão e glicemia com gráficos ao longo do tempo.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM8 13h8v2H8zm0 4h8v2H8z"/></svg></div><h3>Relatórios PDF/CSV</h3><p>Leve adesão, sintomas e estoque para a consulta.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 9.3-8 10-4.6-.7-8-5-8-10V6l8-4zm-1 12l5-5-1.4-1.4L11 11.2 9.4 9.6 8 11l3 3z"/></svg></div><h3>Backup e criptografia</h3><p>Backup completo (inclui fotos) e banco protegido com AES‑256.</p></div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>Privacidade em primeiro lugar</h2>
+    <p class="privacy">Seus dados ficam apenas no seu aparelho, protegidos por criptografia. Sem cadastro obrigatório e nada é enviado a servidores. Você pode exportar, importar ou excluir tudo quando quiser.</p>
+  </section>
+</div>
+
+<footer>
+  <p>Hora do Remédio · feito com 💚<br/>
+  <a href="https://github.com/Dragonxt022/hora-remedio">github.com/Dragonxt022/hora-remedio</a></p>
+  <p class="disclaimer">Este app não substitui orientação médica. Siga sempre a prescrição do seu profissional de saúde.</p>
+</footer>
+
+</body>
+</html>
