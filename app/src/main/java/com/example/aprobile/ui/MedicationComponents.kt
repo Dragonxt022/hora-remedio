@@ -63,6 +63,8 @@ import com.example.aprobile.data.DoseRecordEntity
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.domain.InventoryForecast
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceColor
 import java.time.LocalDate
 
 fun getColorTag(tag: String): Color {
@@ -173,8 +175,8 @@ fun SearchAndFilterBar(
 @Composable
 fun DailySummaryCard(takenCount: Int, totalCount: Int, streak: Int, isDarkMode: Boolean) {
     val isComplete = totalCount > 0 && takenCount == totalCount
-    val glassColor = if (isDarkMode) Color(0xFF1F332E).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.8f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.9f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = Modifier
@@ -249,7 +251,7 @@ fun DoseItemCard(
     } else {
         if (isTaken) Color(0xFFE2F3F0).copy(alpha = 0.7f) else Color.White.copy(alpha = 0.9f)
     }
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = Modifier
@@ -385,8 +387,8 @@ fun MedicationMasterCard(
     isDarkMode: Boolean
 ) {
     val accentColor = getColorTag(medication.colorTag)
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = Modifier
@@ -565,8 +567,8 @@ fun BarChart(
 
     val primaryColor = MaterialTheme.colorScheme.primary
     val errorColor = MaterialTheme.colorScheme.error
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = modifier
@@ -647,8 +649,8 @@ fun EmptyStateView(
     onAddClick: () -> Unit,
     isDarkMode: Boolean
 ) {
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Box(
         modifier = Modifier

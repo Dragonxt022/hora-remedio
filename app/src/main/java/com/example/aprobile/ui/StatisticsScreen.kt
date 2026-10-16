@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.example.aprobile.R
 import com.example.aprobile.domain.ReportCsv
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceColor
 
 @Composable
 fun StatisticsScreen(
@@ -52,14 +54,14 @@ fun StatisticsScreen(
 ) {
     val context = LocalContext.current
     val shareReportTitle = stringResource(R.string.share_report)
-    val glassColor = if (uiState.isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (uiState.isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(uiState.isDarkMode)
+    val borderColor = glassBorderColor(uiState.isDarkMode)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(20.dp),
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -302,8 +304,8 @@ private fun StatRow(
     accentColor: Color?,
     isDarkMode: Boolean
 ) {
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = Modifier

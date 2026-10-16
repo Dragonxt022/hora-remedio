@@ -39,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.aprobile.R
 import com.example.aprobile.data.AppointmentEntity
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceColor
 
 fun addAppointmentToCalendar(context: Context, appointment: AppointmentEntity) {
     val intent = Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI).apply {
@@ -94,8 +96,8 @@ private fun AppointmentCard(
     onDelete: () -> Unit,
     onAddToCalendar: () -> Unit
 ) {
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = Modifier
@@ -149,8 +151,8 @@ private fun AppointmentCard(
 
 @Composable
 private fun EmptyAppointmentsView(isDarkMode: Boolean) {
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Box(
         modifier = Modifier

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import com.example.aprobile.R
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceElevatedColor
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -83,14 +87,12 @@ fun DosesScreen(
             )
         }
 
-        if (uiState.availableProfiles.size > 1) {
-            DailySummaryCard(
-                takenCount = uiState.takenDosesCount,
-                totalCount = uiState.totalDosesCount,
-                streak = uiState.currentStreak,
-                isDarkMode = uiState.isDarkMode
-            )
-        }
+        DailySummaryCard(
+            takenCount = uiState.takenDosesCount,
+            totalCount = uiState.totalDosesCount,
+            streak = uiState.currentStreak,
+            isDarkMode = uiState.isDarkMode
+        )
 
         if (uiState.isLoading && uiState.todayDoses.isEmpty()) {
             LoadingStateView()
@@ -128,11 +130,12 @@ fun DosesScreen(
 
 @Composable
 private fun SmartTipCard(profileName: String, isDarkMode: Boolean, onClick: () -> Unit) {
-    val glassColor = if (isDarkMode) Color(0xFF1F332E).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.9f)
+    val glassColor = glassSurfaceElevatedColor(isDarkMode)
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .border(BorderStroke(1.2.dp, glassBorderColor(isDarkMode)), RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)

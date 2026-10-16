@@ -63,6 +63,8 @@ import com.example.aprobile.R
 import com.example.aprobile.data.HealthEventEntity
 import com.example.aprobile.domain.HealthMetrics
 import com.example.aprobile.domain.ReportCsv
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceColor
 import java.io.File
 
 @Composable
@@ -75,8 +77,8 @@ fun HealthScreen(
 ) {
     val context = LocalContext.current
     val shareTitle = stringResource(R.string.share_report)
-    val glassColor = if (uiState.isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (uiState.isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(uiState.isDarkMode)
+    val borderColor = glassBorderColor(uiState.isDarkMode)
     val realProfiles = uiState.availableProfiles.filter { it != "Todos" }
 
     LazyColumn(

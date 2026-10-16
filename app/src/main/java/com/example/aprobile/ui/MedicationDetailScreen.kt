@@ -41,6 +41,8 @@ import com.example.aprobile.R
 import com.example.aprobile.data.DoseRecordEntity
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.domain.DoseAdherence
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceColor
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -91,8 +93,8 @@ fun MedicationDetailScreen(
     val adherence = DoseAdherence.computeRate(taken, elapsed.size)
 
     val accentColor = getColorTag(medication.colorTag)
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -316,8 +318,8 @@ fun MedicationDetailScreen(
 private fun DoseHistoryRow(record: DoseRecordEntity, isDarkMode: Boolean) {
     val isTaken = record.status == DoseRecordEntity.STATUS_TAKEN
     val isFuture = record.scheduledDateTime > System.currentTimeMillis()
-    val glassColor = if (isDarkMode) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.9f)
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.8f)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
 
     Card(
         modifier = Modifier
