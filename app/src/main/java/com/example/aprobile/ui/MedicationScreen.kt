@@ -39,6 +39,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,6 +59,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -155,6 +158,7 @@ fun MedicationScreen(
         ?: AppDestination.DOSES
     val isDetail = currentRoute?.startsWith("medication/") == true
     val isSubScreen = currentRoute == NOTIFICATIONS_ROUTE || currentRoute == SETTINGS_ROUTE
+    val isWide = LocalConfiguration.current.screenWidthDp >= 600
     val topTitleRes = when (currentRoute) {
         NOTIFICATIONS_ROUTE -> R.string.notifications_row
         SETTINGS_ROUTE -> R.string.settings_row
@@ -250,7 +254,7 @@ fun MedicationScreen(
                         )
                     },
                     bottomBar = {
-                        if (!isSubScreen) {
+                        if (!isSubScreen && !isWide) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -314,10 +318,29 @@ fun MedicationScreen(
                         }
                     }
                 ) { innerPadding ->
+                    Row(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                    ) {
+                    if (isWide && !isSubScreen) {
+                        AppNavigationRail(
+                            currentRoute = currentRoute,
+                            onNavigate = { dest ->
+                                if (currentRoute != dest.route) {
+                                    navController.navigate(dest.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            }
+                        )
+                    }
                     NavHost(
                         navController = navController,
                         startDestination = AppDestination.DOSES.route,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.weight(1f)
                     ) {
                         composable(AppDestination.DOSES.route) {
                             DosesScreen(
@@ -436,6 +459,7 @@ fun MedicationScreen(
                                 onSnooze = { viewModel.snoozeNextDose(it) }
                             )
                         }
+                    }
                     }
                 }
             }
@@ -618,6 +642,35 @@ private fun RowScope.BottomNavItem(
                 contentDescription = stringResource(destination.labelRes),
                 tint = contentColor,
                 modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppNavigationRail(
+    currentRoute: String?,
+    onNavigate: (AppDestination) -> Unit
+) {
+    NavigationRail(
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+    ) {
+        AppDestination.entries.filter { it != AppDestination.PROFILE }.forEach { dest ->
+            NavigationRailItem(
+                selected = currentRoute == dest.route,
+                onClick = { onNavigate(dest) },
+                icon = {
+                    Icon(
+                        imageVector = dest.icon,
+                        contentDescription = stringResource(dest.labelRes)
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(dest.labelRes),
+                        maxLines = 1
+                    )
+                }
             )
         }
     }
