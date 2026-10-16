@@ -77,10 +77,18 @@ class MedicationRepository(
         var date = from
         while (!date.isAfter(to)) {
             for (medication in activeMedications) {
+                if (medication.scheduleType == MedicationEntity.SCHEDULE_AS_NEED) continue
+
                 val start = Instant.ofEpochMilli(medication.startDate).atZone(zone).toLocalDate()
                 if (date.isBefore(start)) continue
                 val end = medication.endDate?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() }
                 if (end != null && date.isAfter(end)) continue
+
+                if (medication.scheduleType == MedicationEntity.SCHEDULE_WEEKLY_DAYS) {
+                    val dayOfWeek = date.dayOfWeek.value // 1 = segunda ... 7 = domingo
+                    val allowed = medication.daysOfWeek.split(",").mapNotNull { it.trim().toIntOrNull() }
+                    if (dayOfWeek !in allowed) continue
+                }
 
                 for (timeStr in medication.times) {
                     try {
@@ -236,4 +244,24 @@ class MedicationRepository(
         }
     }
 
+    /** Registra um uso de medicamento "quando necessário" (SOS): cria uma dose tomada agora e baixa o estoque. */
+    suspend fun logAsNeededDose(medication: MedicationEntity) {
+        val now = System.currentTimeMillis()
+        medicationDao.insertDoseRecord(
+            DoseRecordEntity(
+                medicationId = medication.id,
+                scheduledDateTime = now,
+                status = DoseRecordEntity.STATUS_TAKEN,
+                takenAt = now
+            )
+        )
+        if (medication.currentQuantity != null && medication.currentQuantity > 0) {
+            val updated = medication.copy(currentQuantity = medication.currentQuantity - 1)
+            medicationDao.updateMedication(updated)
+            val qty = updated.currentQuantity ?: 0
+            if (qty <= (updated.lowStockAlert ?: 5)) {
+                com.example.aprobile.notifications.Notifier.notifyRefill(context, updated.id, updated.name, qty)
+            }
+        }
+    }
 }

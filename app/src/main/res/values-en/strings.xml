@@ -163,10 +163,25 @@
     <string name="med_sound_desc">Play sound on notification</string>
     <string name="med_vibrate">Reminder vibration</string>
     <string name="med_vibrate_desc">Vibrate on notification</string>
+    <string name="med_schedule_title">Schedule</string>
+    <string name="schedule_daily">Daily</string>
+    <string name="schedule_weekly">Days of week</string>
+    <string name="schedule_as_needed">As needed</string>
+    <string name="schedule_as_needed_hint">As-needed medication — no fixed times. Log usage from the Doses screen.</string>
+    <string name="weekday_mon">Mon</string>
+    <string name="weekday_tue">Tue</string>
+    <string name="weekday_wed">Wed</string>
+    <string name="weekday_thu">Thu</string>
+    <string name="weekday_fri">Fri</string>
+    <string name="weekday_sat">Sat</string>
+    <string name="weekday_sun">Sun</string>
+    <string name="sos_section">As needed</string>
+    <string name="sos_log">Log usage</string>
     <string name="med_times_title">Reminder times *</string>
     <string name="med_add_time">Add another time</string>
     <string name="err_med_name">Please enter the medication name.</string>
     <string name="err_med_times">Add at least one time.</string>
+    <string name="err_med_days">Select at least one day of the week.</string>
 
     <string name="appt_dialog_new">New appointment</string>
     <string name="appt_dialog_edit">Edit appointment</string>

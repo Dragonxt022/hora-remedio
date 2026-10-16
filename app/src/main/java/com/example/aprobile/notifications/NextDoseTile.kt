@@ -1,5 +1,6 @@
 package com.example.aprobile.notifications
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
@@ -26,16 +27,21 @@ class NextDoseTile : TileService() {
         tile.label = getString(R.string.app_name)
         tile.state = Tile.STATE_INACTIVE
         tile.icon = Icon.createWithResource(this, R.drawable.ic_stat_medication)
-        tile.subtitle = getString(R.string.tile_loading)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            tile.subtitle = getString(R.string.tile_loading)
+        }
         tile.updateTile()
 
         CoroutineScope(Dispatchers.IO).launch {
             val text = loadNextDoseText()
-            tile.subtitle = text
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                tile.subtitle = text
+            }
             tile.updateTile()
         }
     }
 
+    @SuppressLint("StartActivityAndCollapseDeprecated")
     override fun onClick() {
         super.onClick()
         val intent = Intent(this, MainActivity::class.java).apply {

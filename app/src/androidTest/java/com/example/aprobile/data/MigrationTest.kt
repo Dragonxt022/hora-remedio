@@ -119,6 +119,25 @@ class MigrationTest {
         db.close()
     }
 
+    @Test
+    fun migrate9To10_addsScheduleColumns() {
+        var db = helper.createDatabase(TEST_DB_9_10, 9)
+        db.close()
+
+        db = helper.runMigrationsAndValidate(TEST_DB_9_10, 10, true, AppDatabase.MIGRATION_9_10)
+
+        db.execSQL(
+            "INSERT INTO medications (name, dosage, times, startDate, enabled, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek) " +
+                "VALUES ('X', '1', '08:00', 1, 1, 'Eu', 'Azul', 1, 1, 'WEEKLY_DAYS', '1,2')"
+        )
+        val cursor = db.query("SELECT scheduleType, daysOfWeek FROM medications")
+        assertTrue(cursor.moveToFirst())
+        assertEquals("WEEKLY_DAYS", cursor.getString(0))
+        assertEquals("1,2", cursor.getString(1))
+        cursor.close()
+        db.close()
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
         private const val TEST_DB_4_5 = "migration-test-4-5"
@@ -126,5 +145,6 @@ class MigrationTest {
         private const val TEST_DB_6_7 = "migration-test-6-7"
         private const val TEST_DB_7_8 = "migration-test-7-8"
         private const val TEST_DB_8_9 = "migration-test-8-9"
+        private const val TEST_DB_9_10 = "migration-test-9-10"
     }
 }

@@ -564,7 +564,9 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         profile: String,
         colorTag: String,
         soundEnabled: Boolean,
-        vibrateEnabled: Boolean
+        vibrateEnabled: Boolean,
+        scheduleType: String,
+        daysOfWeek: String
     ) {
         viewModelScope.launch {
             val medToEdit = _uiState.value.medicationToEdit
@@ -579,7 +581,9 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     profile = profile.ifBlank { "Eu" },
                     colorTag = colorTag,
                     soundEnabled = soundEnabled,
-                    vibrateEnabled = vibrateEnabled
+                    vibrateEnabled = vibrateEnabled,
+                    scheduleType = scheduleType,
+                    daysOfWeek = daysOfWeek
                 )
                 repository.insertMedication(newMed)
             } else {
@@ -593,11 +597,19 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     profile = profile.ifBlank { "Eu" },
                     colorTag = colorTag,
                     soundEnabled = soundEnabled,
-                    vibrateEnabled = vibrateEnabled
+                    vibrateEnabled = vibrateEnabled,
+                    scheduleType = scheduleType,
+                    daysOfWeek = daysOfWeek
                 )
                 repository.updateMedication(updated, medToEdit.times)
             }
             closeAddEditDialog()
+        }
+    }
+
+    fun logAsNeededDose(medication: MedicationEntity) {
+        viewModelScope.launch {
+            repository.logAsNeededDose(medication)
         }
     }
 

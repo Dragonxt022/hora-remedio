@@ -19,5 +19,13 @@ data class MedicationEntity(
     val profile: String = "Eu", // e.g. "Eu", "Mãe", "Pai", "Pet"
     val colorTag: String = "Azul", // e.g. "Azul", "Verde", "Vermelho", "Roxo", "Laranja"
     val soundEnabled: Boolean = true,
-    val vibrateEnabled: Boolean = true
-)
+    val vibrateEnabled: Boolean = true,
+    val scheduleType: String = SCHEDULE_DAILY,
+    val daysOfWeek: String = "" // "1,3,5" (seg=1 ... dom=7), usado quando scheduleType = WEEKLY_DAYS
+) {
+    companion object {
+        const val SCHEDULE_DAILY = "DAILY"
+        const val SCHEDULE_WEEKLY_DAYS = "WEEKLY_DAYS"
+        const val SCHEDULE_AS_NEED = "AS_NEED"
+    }
+}

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -35,6 +36,7 @@ import com.example.aprobile.R
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceColor
 import com.example.aprobile.ui.theme.glassSurfaceElevatedColor
 import java.time.Instant
 import java.time.LocalDateTime
@@ -60,7 +62,8 @@ fun DosesScreen(
     onEdit: (MedicationEntity) -> Unit,
     onDelete: (MedicationEntity) -> Unit,
     onOpenDetail: (MedicationEntity) -> Unit,
-    onOpenHealth: () -> Unit
+    onOpenHealth: () -> Unit,
+    onLogAsNeeded: (MedicationEntity) -> Unit
 ) {
     val view = LocalView.current
 
@@ -93,6 +96,11 @@ fun DosesScreen(
             streak = uiState.currentStreak,
             isDarkMode = uiState.isDarkMode
         )
+
+        val sosMeds = uiState.medications.filter { it.scheduleType == MedicationEntity.SCHEDULE_AS_NEED }
+        if (sosMeds.isNotEmpty()) {
+            SosSection(meds = sosMeds, isDarkMode = uiState.isDarkMode, onLog = onLogAsNeeded)
+        }
 
         if (uiState.isLoading && uiState.todayDoses.isEmpty()) {
             LoadingStateView()
@@ -167,6 +175,63 @@ private fun SmartTipCard(profileName: String, isDarkMode: Boolean, onClick: () -
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = onClick, shape = RoundedCornerShape(12.dp)) {
                 Text(stringResource(R.string.tip_complete_health_action))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SosSection(meds: List<MedicationEntity>, isDarkMode: Boolean, onLog: (MedicationEntity) -> Unit) {
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.sos_section),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        meds.forEach { med ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .border(BorderStroke(1.2.dp, borderColor), RoundedCornerShape(16.dp)),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = glassColor),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = med.name,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (med.dosage.isNotBlank()) {
+                            Text(
+                                text = med.dosage,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    Button(onClick = { onLog(med) }, shape = RoundedCornerShape(12.dp)) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.width(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(stringResource(R.string.sos_log))
+                    }
+                }
             }
         }
     }

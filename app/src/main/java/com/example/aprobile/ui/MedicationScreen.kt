@@ -324,7 +324,8 @@ fun MedicationScreen(
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                }
+                                },
+                                onLogAsNeeded = { viewModel.logAsNeededDose(it) }
                             )
                         }
 
@@ -416,8 +417,8 @@ fun MedicationScreen(
                 allergies = uiState.activeHealthProfile?.allergies,
                 profileOptions = uiState.managedProfiles.ifEmpty { listOf("Eu") },
                 onDismiss = { viewModel.closeAddEditDialog() },
-                onSave = { name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled ->
-                    viewModel.saveMedication(name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled)
+                onSave = { name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek ->
+                    viewModel.saveMedication(name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek)
                 }
             )
         }

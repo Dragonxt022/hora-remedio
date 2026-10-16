@@ -29,6 +29,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -92,12 +93,15 @@ fun AddEditMedicationDialog(
         profile: String,
         colorTag: String,
         soundEnabled: Boolean,
-        vibrateEnabled: Boolean
+        vibrateEnabled: Boolean,
+        scheduleType: String,
+        daysOfWeek: String
     ) -> Unit
 ) {
     val context = LocalContext.current
     val errMedName = stringResource(R.string.err_med_name)
     val errMedTimes = stringResource(R.string.err_med_times)
+    val errMedDays = stringResource(R.string.err_med_days)
 
     var name by remember { mutableStateOf(medicationToEdit?.name ?: "") }
     var dosage by remember { mutableStateOf(medicationToEdit?.dosage ?: "") }
@@ -108,6 +112,15 @@ fun AddEditMedicationDialog(
     var colorTag by remember { mutableStateOf(medicationToEdit?.colorTag ?: "Azul") }
     var soundEnabled by remember { mutableStateOf(medicationToEdit?.soundEnabled ?: true) }
     var vibrateEnabled by remember { mutableStateOf(medicationToEdit?.vibrateEnabled ?: true) }
+    var scheduleType by remember { mutableStateOf(medicationToEdit?.scheduleType ?: MedicationEntity.SCHEDULE_DAILY) }
+    val daysSelected = remember {
+        mutableStateListOf<Int>().apply {
+            medicationToEdit?.daysOfWeek
+                ?.split(",")
+                ?.mapNotNull { it.trim().toIntOrNull() }
+                ?.let { addAll(it) }
+        }
+    }
 
     val colorOptions = listOf("Azul", "Verde", "Vermelho", "Roxo", "Laranja")
 
@@ -383,49 +396,96 @@ fun AddEditMedicationDialog(
                 }
 
                 Text(
-                    text = stringResource(R.string.med_times_title),
+                    text = stringResource(R.string.med_schedule_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 4.dp)
                 )
 
-                times.forEachIndexed { index, time ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp)
-                    ) {
-                        Button(
-                            onClick = { openTimePicker(index) },
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Default.Schedule, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = formatDisplayTime(time), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                        }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(
+                        MedicationEntity.SCHEDULE_DAILY to R.string.schedule_daily,
+                        MedicationEntity.SCHEDULE_WEEKLY_DAYS to R.string.schedule_weekly,
+                        MedicationEntity.SCHEDULE_AS_NEED to R.string.schedule_as_needed
+                    ).forEach { (value, labelRes) ->
+                        FilterChip(
+                            selected = scheduleType == value,
+                            onClick = { scheduleType = value },
+                            label = { Text(stringResource(labelRes)) }
+                        )
+                    }
+                }
 
-                        if (times.size > 1) {
-                            IconButton(onClick = { times.removeAt(index) }) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = stringResource(R.string.cd_remove_time),
-                                    tint = MaterialTheme.colorScheme.error
-                                )
-                            }
+                if (scheduleType == MedicationEntity.SCHEDULE_WEEKLY_DAYS) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf(
+                            1 to R.string.weekday_mon, 2 to R.string.weekday_tue, 3 to R.string.weekday_wed,
+                            4 to R.string.weekday_thu, 5 to R.string.weekday_fri, 6 to R.string.weekday_sat,
+                            7 to R.string.weekday_sun
+                        ).forEach { (value, labelRes) ->
+                            FilterChip(
+                                selected = daysSelected.contains(value),
+                                onClick = {
+                                    if (daysSelected.contains(value)) daysSelected.remove(value) else daysSelected.add(value)
+                                },
+                                label = { Text(stringResource(labelRes)) }
+                            )
                         }
                     }
                 }
 
-                TextButton(
-                    onClick = {
-                        times.add("12:00")
+                if (scheduleType == MedicationEntity.SCHEDULE_AS_NEED) {
+                    Text(
+                        text = stringResource(R.string.schedule_as_needed_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.med_times_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    times.forEachIndexed { index, time ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp)
+                        ) {
+                            Button(
+                                onClick = { openTimePicker(index) },
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Schedule, contentDescription = null)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = formatDisplayTime(time), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                            }
+
+                            if (times.size > 1) {
+                                IconButton(onClick = { times.removeAt(index) }) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.cd_remove_time),
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
                     }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(stringResource(R.string.med_add_time))
+
+                    TextButton(
+                        onClick = {
+                            times.add("12:00")
+                        }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(stringResource(R.string.med_add_time))
+                    }
                 }
 
                 if (errorMessage != null) {
@@ -444,13 +504,18 @@ fun AddEditMedicationDialog(
                         errorMessage = errMedName
                         return@Button
                     }
-                    if (times.isEmpty()) {
+                    if (scheduleType != MedicationEntity.SCHEDULE_AS_NEED && times.isEmpty()) {
                         errorMessage = errMedTimes
+                        return@Button
+                    }
+                    if (scheduleType == MedicationEntity.SCHEDULE_WEEKLY_DAYS && daysSelected.isEmpty()) {
+                        errorMessage = errMedDays
                         return@Button
                     }
                     val qty = currentQuantityStr.toIntOrNull()
                     val alert = lowStockAlertStr.toIntOrNull()
-                    onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled)
+                    val days = daysSelected.sorted().joinToString(",")
+                    onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, days)
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {

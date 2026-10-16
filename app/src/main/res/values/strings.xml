@@ -163,10 +163,25 @@
     <string name="med_sound_desc">Tocar som ao notificar</string>
     <string name="med_vibrate">Vibração no lembrete</string>
     <string name="med_vibrate_desc">Vibrar ao notificar</string>
+    <string name="med_schedule_title">Esquema de uso</string>
+    <string name="schedule_daily">Diário</string>
+    <string name="schedule_weekly">Dias da semana</string>
+    <string name="schedule_as_needed">Quando necessário</string>
+    <string name="schedule_as_needed_hint">Medicamento de uso conforme necessário — sem horários fixos. Registre o uso na tela de Doses.</string>
+    <string name="weekday_mon">Seg</string>
+    <string name="weekday_tue">Ter</string>
+    <string name="weekday_wed">Qua</string>
+    <string name="weekday_thu">Qui</string>
+    <string name="weekday_fri">Sex</string>
+    <string name="weekday_sat">Sáb</string>
+    <string name="weekday_sun">Dom</string>
+    <string name="sos_section">Uso quando necessário</string>
+    <string name="sos_log">Registrar uso</string>
     <string name="med_times_title">Horários do Lembrete *</string>
     <string name="med_add_time">Adicionar outro horário</string>
     <string name="err_med_name">Por favor, informe o nome do medicamento.</string>
     <string name="err_med_times">Adicione ao menos um horário.</string>
+    <string name="err_med_days">Selecione ao menos um dia da semana.</string>
 
     <string name="appt_dialog_new">Nova Consulta</string>
     <string name="appt_dialog_edit">Editar Consulta</string>
