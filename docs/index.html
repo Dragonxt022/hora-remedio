@@ -137,13 +137,14 @@
   @media(min-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:940px){.grid{grid-template-columns:repeat(4,1fr)}}
   .card{
-    background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;
+    background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px 20px;
     transition:transform .18s ease, background .18s ease, border-color .18s ease;
+    text-align:center;
   }
   .card:hover{transform:translateY(-4px);background:var(--card-2);border-color:rgba(47,224,192,.35)}
   .card .ic{
-    width:46px;height:46px;border-radius:14px;background:var(--grad);
-    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+    width:52px;height:52px;border-radius:15px;background:var(--grad);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
     box-shadow:0 8px 22px rgba(18,179,154,.3);
   }
   .card .ic svg{width:24px;height:24px;fill:#04120f}
