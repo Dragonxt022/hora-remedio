@@ -1,0 +1,92 @@
+name: Android Release
+
+# Publica o APK e o AAB assinados automaticamente a cada tag "v*" (ex.: v1.2).
+# Também pode ser disparado manualmente (workflow_dispatch) informando a tag.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag/versão a publicar (ex: v1.2)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Aceitar licenças e instalar SDK
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" > /dev/null 2>&1 || true
+          sdkmanager "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
+            || sdkmanager --channel=3 "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
+            || true
+
+      - name: Escrever configuração de assinatura
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p keystore
+          echo "$KEYSTORE_BASE64" | base64 -d > keystore/aprobile-release.jks
+          cat > keystore.properties <<EOF
+          storeFile=keystore/aprobile-release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Permissão do gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build release (APK + AAB)
+        run: ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace
+
+      - name: Definir versão/tag
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            RAW="${{ github.event.inputs.tag }}"
+          else
+            RAW="${GITHUB_REF_NAME}"
+          fi
+          echo "version=${RAW#v}" >> "$GITHUB_OUTPUT"
+          echo "tag=$RAW" >> "$GITHUB_OUTPUT"
+
+      - name: Preparar artefatos
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk "dist/hora-do-remedio-${{ steps.ver.outputs.version }}.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "dist/hora-do-remedio-${{ steps.ver.outputs.version }}.aab"
+          ls -la dist
+
+      - name: Publicar release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: Hora do Remédio v${{ steps.ver.outputs.version }}
+          generate_release_notes: true
+          files: |
+            dist/*.apk
+            dist/*.aab
