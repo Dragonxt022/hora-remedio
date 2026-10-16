@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +32,12 @@ class SettingsRepository(private val context: Context) {
     }
 
     val dailyCheckInEnabled: Flow<Boolean> = context.dataStore.data.map { it[DAILY_CHECKIN] ?: true }
+
+    val lastBackupAt: Flow<Long> = context.dataStore.data.map { it[LAST_BACKUP] ?: 0L }
+
+    suspend fun setLastBackupAt(value: Long) {
+        context.dataStore.edit { it[LAST_BACKUP] = value }
+    }
 
     suspend fun setDarkMode(value: Boolean) {
         context.dataStore.edit { it[DARK_MODE] = value }
@@ -79,5 +86,6 @@ class SettingsRepository(private val context: Context) {
         private val APP_LOCK = booleanPreferencesKey("app_lock")
         private val CUSTOM_SYMPTOMS = stringPreferencesKey("custom_symptoms")
         private val DAILY_CHECKIN = booleanPreferencesKey("daily_checkin")
+        private val LAST_BACKUP = longPreferencesKey("last_backup_at")
     }
 }

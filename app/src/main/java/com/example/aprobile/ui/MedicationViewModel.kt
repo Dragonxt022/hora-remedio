@@ -242,6 +242,15 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                 _uiState.update { it.copy(dailyCheckInEnabled = enabled) }
             }
         }
+        viewModelScope.launch {
+            settingsRepository.lastBackupAt.collect { at ->
+                _uiState.update { it.copy(lastBackupAt = at) }
+            }
+        }
+    }
+
+    fun markBackupDone() {
+        viewModelScope.launch { settingsRepository.setLastBackupAt(System.currentTimeMillis()) }
     }
 
     fun addCustomSymptom(name: String) {

@@ -96,6 +96,7 @@ data class MedicationUiState(
     val healthEventToEdit: HealthEventEntity? = null,
     val customSymptoms: List<String> = emptyList(),
     val dailyCheckInEnabled: Boolean = true,
+    val lastBackupAt: Long = 0L,
     val healthEventToDelete: HealthEventEntity? = null,
     val isLoading: Boolean = true,
     val adherenceRate: Int = 0,

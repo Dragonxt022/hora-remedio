@@ -122,6 +122,11 @@
     <string name="privacy_delete">Delete all data</string>
     <string name="privacy_delete_title">Delete all data?</string>
     <string name="privacy_delete_text">All medications, history and settings will be removed. This cannot be undone.</string>
+    <string name="backup_last">Last backup: %1$s</string>
+    <string name="backup_never">You haven\'t backed up yet.</string>
+    <string name="backup_tip_title">Protect your data</string>
+    <string name="backup_tip_text">Save a backup copy to your account (e.g., Google Drive).</string>
+    <string name="backup_tip_action">Back up now</string>
     <string name="privacy_export_ok">Backup exported successfully</string>
     <string name="privacy_import_ok">Backup imported successfully</string>
     <string name="privacy_import_fail">Could not import the backup</string>

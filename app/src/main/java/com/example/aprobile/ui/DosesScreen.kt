@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -65,7 +66,8 @@ fun DosesScreen(
     onDelete: (MedicationEntity) -> Unit,
     onOpenDetail: (MedicationEntity) -> Unit,
     onOpenHealth: () -> Unit,
-    onLogAsNeeded: (MedicationEntity) -> Unit
+    onLogAsNeeded: (MedicationEntity) -> Unit,
+    onOpenBackup: () -> Unit
 ) {
     val view = LocalView.current
 
@@ -99,6 +101,15 @@ fun DosesScreen(
                     isDarkMode = uiState.isDarkMode,
                     onClick = onOpenHealth
                 )
+            }
+        }
+
+        val hasData = uiState.allMedications.isNotEmpty()
+        val backupStale = uiState.lastBackupAt == 0L ||
+            (System.currentTimeMillis() - uiState.lastBackupAt) > 14L * 24 * 60 * 60 * 1000
+        if (hasData && backupStale) {
+            item {
+                BackupTipCard(isDarkMode = uiState.isDarkMode, onClick = onOpenBackup)
             }
         }
 
@@ -273,6 +284,50 @@ private fun SosSection(meds: List<MedicationEntity>, isDarkMode: Boolean, onLog:
                         Text(stringResource(R.string.sos_log))
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BackupTipCard(isDarkMode: Boolean, onClick: () -> Unit) {
+    val glassColor = glassSurfaceElevatedColor(isDarkMode)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .border(BorderStroke(1.2.dp, glassBorderColor(isDarkMode)), RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = glassColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Cloud,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.backup_tip_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.backup_tip_text),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = onClick, shape = RoundedCornerShape(12.dp)) {
+                Text(stringResource(R.string.backup_tip_action))
             }
         }
     }

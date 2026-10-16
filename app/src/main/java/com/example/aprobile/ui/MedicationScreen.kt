@@ -128,8 +128,10 @@ fun MedicationScreen(
         AprobileTheme(darkTheme = uiState.isDarkMode) {
             PrivacyScreen(
                 onDismiss = { viewModel.closePrivacy() },
+                lastBackupAt = uiState.lastBackupAt,
                 onExport = { viewModel.exportBackup() },
                 onImport = { viewModel.importBackup(it) },
+                onBackupSuccess = { viewModel.markBackupDone() },
                 onDeleteAll = { viewModel.deleteAllData() }
             )
         }
@@ -359,7 +361,8 @@ fun MedicationScreen(
                                         restoreState = true
                                     }
                                 },
-                                onLogAsNeeded = { viewModel.logAsNeededDose(it) }
+                                onLogAsNeeded = { viewModel.logAsNeededDose(it) },
+                                onOpenBackup = { viewModel.openPrivacy() }
                             )
                         }
 

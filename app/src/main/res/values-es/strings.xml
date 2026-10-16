@@ -122,6 +122,11 @@
     <string name="privacy_delete">Eliminar todos los datos</string>
     <string name="privacy_delete_title">¿Eliminar todos los datos?</string>
     <string name="privacy_delete_text">Se eliminarán todos los medicamentos, historiales y configuraciones. Esta acción no se puede deshacer.</string>
+    <string name="backup_last">Última copia: %1$s</string>
+    <string name="backup_never">Aún no has hecho copia de seguridad.</string>
+    <string name="backup_tip_title">Protege tus datos</string>
+    <string name="backup_tip_text">Guarda una copia de seguridad en tu cuenta (ej.: Google Drive).</string>
+    <string name="backup_tip_action">Hacer copia</string>
     <string name="privacy_export_ok">Copia exportada con éxito</string>
     <string name="privacy_import_ok">Copia importada con éxito</string>
     <string name="privacy_import_fail">No se pudo importar la copia</string>

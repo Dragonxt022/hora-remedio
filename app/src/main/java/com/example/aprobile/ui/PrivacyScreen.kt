@@ -40,17 +40,29 @@ import androidx.compose.ui.unit.dp
 import com.example.aprobile.R
 import kotlinx.coroutines.launch
 
+private fun formatBackupDate(millis: Long): String = try {
+    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(millis), java.time.ZoneId.systemDefault())
+        .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+} catch (e: Exception) {
+    ""
+}
+
 @Composable
 fun PrivacyScreen(
     onDismiss: () -> Unit,
+    lastBackupAt: Long = 0L,
     onExport: suspend () -> String,
     onImport: suspend (String) -> Unit,
+    onBackupSuccess: () -> Unit = {},
     onDeleteAll: suspend () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showPolicy by remember { mutableStateOf(false) }
+    val backupFileName = remember {
+        "hora-do-remedio-backup-" + java.time.LocalDate.now().toString() + ".json"
+    }
 
     val createDocumentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -60,6 +72,7 @@ fun PrivacyScreen(
                 try {
                     val json = onExport()
                     context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                    onBackupSuccess()
                     Toast.makeText(context, R.string.privacy_export_ok, Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Toast.makeText(context, R.string.privacy_import_fail, Toast.LENGTH_SHORT).show()
@@ -115,8 +128,18 @@ fun PrivacyScreen(
             Text(stringResource(R.string.privacy_policy_open))
         }
 
+        Text(
+            text = if (lastBackupAt > 0L) {
+                stringResource(R.string.backup_last, formatBackupDate(lastBackupAt))
+            } else {
+                stringResource(R.string.backup_never)
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
         Button(
-            onClick = { createDocumentLauncher.launch("hora-do-remedio-backup.json") },
+            onClick = { createDocumentLauncher.launch(backupFileName) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp)
         ) {
