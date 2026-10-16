@@ -88,6 +88,11 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".notifications.CheckInReplyReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>

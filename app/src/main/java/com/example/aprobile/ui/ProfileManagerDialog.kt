@@ -1,14 +1,22 @@
 package com.example.aprobile.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,23 +39,49 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.aprobile.R
+import java.io.File
 
 @Composable
 fun ProfileManagerDialog(
     profiles: List<String>,
     inUseProfiles: Set<String>,
+    photos: Map<String, String> = emptyMap(),
     onDismiss: () -> Unit,
     onAdd: (String) -> Unit,
     onRename: (String, String) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onSetPhoto: (String, String?) -> Unit = { _, _ -> }
 ) {
     var newProfile by remember { mutableStateOf("") }
     var renamingName by remember { mutableStateOf<String?>(null) }
     var renameText by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    var photoTarget by remember { mutableStateOf<String?>(null) }
+    val photoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        val target = photoTarget
+        if (uri != null && target != null) {
+            try {
+                val dir = File(context.filesDir, "photos").apply { mkdirs() }
+                val file = File(dir, "profile_${System.currentTimeMillis()}.jpg")
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    file.outputStream().use { output -> input.copyTo(output) }
+                }
+                onSetPhoto(target, file.absolutePath)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        photoTarget = null
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -91,6 +125,35 @@ fun ProfileManagerDialog(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                    .clickable {
+                                        photoTarget = profile
+                                        photoLauncher.launch("image/*")
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                val photo = photos[profile]
+                                if (photo != null) {
+                                    AsyncImage(
+                                        model = File(photo),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    Text(
+                                        text = if (profile.isNotBlank()) profile.take(1).uppercase() else "?",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = profile,
                                 style = MaterialTheme.typography.bodyLarge,

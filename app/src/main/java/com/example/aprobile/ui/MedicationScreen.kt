@@ -357,6 +357,7 @@ fun MedicationScreen(
                                 uiState = uiState,
                                 onSelectHealthProfile = { viewModel.selectHealthProfile(it) },
                                 onEditProfile = { viewModel.openEditHealthProfileDialog() },
+                                onEditEvent = { viewModel.openEditHealthEventDialog(it) },
                                 onDeleteEvent = { viewModel.requestDeleteHealthEvent(it) },
                                 onUpgrade = { viewModel.openPaywall() }
                             )
@@ -379,13 +380,16 @@ fun MedicationScreen(
                                 snoozeMinutes = uiState.snoozeMinutes,
                                 isPremium = uiState.isPremium,
                                 appLockEnabled = uiState.appLockEnabled,
+                                dailyCheckInEnabled = uiState.dailyCheckInEnabled,
                                 onRenameMainProfile = { viewModel.renameMainProfile(it) },
                                 onSetProfilePhoto = { viewModel.setMainProfilePhoto(it) },
                                 onSnoozeChange = { viewModel.setSnoozeMinutes(it) },
                                 onAppLockChange = { viewModel.setAppLockEnabled(it) },
+                                onDailyCheckInChange = { viewModel.setDailyCheckInEnabled(it) },
                                 onOpenPrivacy = { viewModel.openPrivacy() },
                                 onManageProfiles = { viewModel.openProfileManager() },
                                 onSeedDemo = { viewModel.seedDemoData() },
+                                onTestCheckIn = { viewModel.sendCheckInNow() },
                                 onUpgrade = { viewModel.openPaywall() },
                                 onLoginGoogle = { viewModel.loginWithGoogle() },
                                 onLogout = { viewModel.logout() }
@@ -460,10 +464,12 @@ fun MedicationScreen(
             ProfileManagerDialog(
                 profiles = uiState.managedProfiles,
                 inUseProfiles = uiState.allMedications.map { it.profile }.toSet(),
+                photos = uiState.profilePhotos,
                 onDismiss = { viewModel.closeProfileManager() },
                 onAdd = { viewModel.addProfile(it) },
                 onRename = { old, new -> viewModel.renameProfile(old, new) },
-                onDelete = { viewModel.deleteProfile(it) }
+                onDelete = { viewModel.deleteProfile(it) },
+                onSetPhoto = { profile, path -> viewModel.setProfilePhoto(profile, path) }
             )
         }
 
@@ -478,7 +484,20 @@ fun MedicationScreen(
         }
 
         if (uiState.isHealthEventDialogOpen) {
+            val defaultSymptoms = listOf(
+                stringResource(R.string.symptom_headache),
+                stringResource(R.string.symptom_fever),
+                stringResource(R.string.symptom_nausea),
+                stringResource(R.string.symptom_cough),
+                stringResource(R.string.symptom_fatigue),
+                stringResource(R.string.symptom_body_ache),
+                stringResource(R.string.symptom_insomnia),
+                stringResource(R.string.symptom_allergy)
+            )
             AddEditHealthEventDialog(
+                eventToEdit = uiState.healthEventToEdit,
+                symptomOptions = defaultSymptoms + uiState.customSymptoms,
+                onAddSymptom = { viewModel.addCustomSymptom(it) },
                 onDismiss = { viewModel.closeHealthEventDialog() },
                 onSave = { type, title, value, notes, timestamp, photoUri ->
                     viewModel.saveHealthEvent(type, title, value, notes, timestamp, photoUri)

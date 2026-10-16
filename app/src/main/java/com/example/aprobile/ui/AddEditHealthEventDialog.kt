@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,9 +21,14 @@ import java.io.File
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,6 +49,7 @@ import com.example.aprobile.data.HealthEventEntity
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 private val eventTypeOptions: List<Pair<String, Int>> = listOf(
     HealthEventEntity.TYPE_SYMPTOM to R.string.health_type_symptom,
@@ -53,19 +60,36 @@ private val eventTypeOptions: List<Pair<String, Int>> = listOf(
     "OTHER" to R.string.health_type_other
 )
 
+private fun fmtDate(ts: Long): String = try {
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(ts), ZoneId.systemDefault())
+        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+} catch (e: Exception) {
+    "--/--/----"
+}
+
+private fun fmtTime(ts: Long): String = try {
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(ts), ZoneId.systemDefault())
+        .format(DateTimeFormatter.ofPattern("HH:mm"))
+} catch (e: Exception) {
+    "--:--"
+}
+
 @Composable
 fun AddEditHealthEventDialog(
+    eventToEdit: HealthEventEntity? = null,
+    symptomOptions: List<String> = emptyList(),
+    onAddSymptom: (String) -> Unit = {},
     onDismiss: () -> Unit,
     onSave: (type: String, title: String, value: String?, notes: String?, timestamp: Long, photoUri: String?) -> Unit
 ) {
     val context = LocalContext.current
     val errTitle = stringResource(R.string.err_health_title)
 
-    var type by remember { mutableStateOf(HealthEventEntity.TYPE_SYMPTOM) }
-    var title by remember { mutableStateOf("") }
-    var value by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
-    var photoPath by remember { mutableStateOf<String?>(null) }
+    var type by remember { mutableStateOf(eventToEdit?.type ?: HealthEventEntity.TYPE_SYMPTOM) }
+    var title by remember { mutableStateOf(eventToEdit?.title ?: "") }
+    var value by remember { mutableStateOf(eventToEdit?.value ?: "") }
+    var notes by remember { mutableStateOf(eventToEdit?.notes ?: "") }
+    var photoPath by remember { mutableStateOf(eventToEdit?.photoUri) }
 
     val photoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
@@ -81,8 +105,9 @@ fun AddEditHealthEventDialog(
             }
         }
     }
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var timestamp by remember { mutableLongStateOf(eventToEdit?.timestamp ?: System.currentTimeMillis()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var showAddSymptom by remember { mutableStateOf(false) }
 
     fun openDatePicker() {
         val current = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
@@ -115,7 +140,14 @@ fun AddEditHealthEventDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(24.dp),
-        title = { Text(stringResource(R.string.health_add_event), fontWeight = FontWeight.Bold) },
+        title = {
+            Text(
+                stringResource(
+                    if (eventToEdit == null) R.string.health_add_event else R.string.health_edit_event
+                ),
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Column(
                 modifier = Modifier
@@ -123,18 +155,40 @@ fun AddEditHealthEventDialog(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(stringResource(R.string.health_event_type), style = androidx.compose.material3.MaterialTheme.typography.labelLarge)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Text(stringResource(R.string.health_event_type), style = MaterialTheme.typography.labelLarge)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     eventTypeOptions.forEach { (key, labelRes) ->
                         FilterChip(
                             selected = type == key,
                             onClick = { type = key },
                             label = { Text(stringResource(labelRes)) }
+                        )
+                    }
+                }
+
+                if (type == HealthEventEntity.TYPE_SYMPTOM && symptomOptions.isNotEmpty()) {
+                    Text(stringResource(R.string.health_symptom_quick), style = MaterialTheme.typography.labelLarge)
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        symptomOptions.distinct().forEach { symptom ->
+                            FilterChip(
+                                selected = title.equals(symptom, ignoreCase = true),
+                                onClick = { title = symptom },
+                                label = { Text(symptom) }
+                            )
+                        }
+                        FilterChip(
+                            selected = false,
+                            onClick = { showAddSymptom = true },
+                            label = { Text(stringResource(R.string.health_symptom_add)) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                            }
                         )
                     }
                 }
@@ -168,24 +222,26 @@ fun AddEditHealthEventDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                Text(stringResource(R.string.health_event_datetime), style = MaterialTheme.typography.labelLarge)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(onClick = { openDatePicker() }, shape = RoundedCornerShape(12.dp), modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.health_event_date))
+                    OutlinedButton(
+                        onClick = { openDatePicker() },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("\uD83D\uDCC5 ${fmtDate(timestamp)}", maxLines = 1)
                     }
-                    Button(onClick = { openTimePicker() }, shape = RoundedCornerShape(12.dp), modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.health_event_time))
+                    OutlinedButton(
+                        onClick = { openTimePicker() },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("\uD83D\uDD52 ${fmtTime(timestamp)}", maxLines = 1)
                     }
                 }
-
-                Text(
-                    text = formatDetailDateTime(timestamp),
-                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
-                )
 
                 OutlinedTextField(
                     value = notes,
@@ -230,8 +286,8 @@ fun AddEditHealthEventDialog(
                 if (errorMessage != null) {
                     Text(
                         text = errorMessage!!,
-                        color = androidx.compose.material3.MaterialTheme.colorScheme.error,
-                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
@@ -256,4 +312,41 @@ fun AddEditHealthEventDialog(
             }
         }
     )
+
+    if (showAddSymptom) {
+        var newSymptom by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showAddSymptom = false },
+            shape = RoundedCornerShape(24.dp),
+            title = { Text(stringResource(R.string.health_symptom_add_title), fontWeight = FontWeight.Bold) },
+            text = {
+                OutlinedTextField(
+                    value = newSymptom,
+                    onValueChange = { newSymptom = it },
+                    label = { Text(stringResource(R.string.health_symptom_name)) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val symptom = newSymptom.trim()
+                    if (symptom.isNotEmpty()) {
+                        onAddSymptom(symptom)
+                        title = symptom
+                        errorMessage = null
+                    }
+                    showAddSymptom = false
+                }) {
+                    Text(stringResource(R.string.action_add))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddSymptom = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
+        )
+    }
 }

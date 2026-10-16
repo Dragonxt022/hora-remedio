@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
@@ -70,13 +71,16 @@ fun ProfileScreen(
     snoozeMinutes: Int,
     isPremium: Boolean,
     appLockEnabled: Boolean,
+    dailyCheckInEnabled: Boolean,
     onRenameMainProfile: (String) -> Unit,
     onSetProfilePhoto: (String?) -> Unit,
     onSnoozeChange: (Int) -> Unit,
     onAppLockChange: (Boolean) -> Unit,
+    onDailyCheckInChange: (Boolean) -> Unit,
     onOpenPrivacy: () -> Unit,
     onManageProfiles: () -> Unit,
     onSeedDemo: () -> Unit,
+    onTestCheckIn: () -> Unit,
     onUpgrade: () -> Unit,
     onLoginGoogle: () -> Unit,
     onLogout: () -> Unit
@@ -335,6 +339,41 @@ fun ProfileScreen(
             }
         }
 
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.checkin_setting),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = stringResource(R.string.checkin_setting_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(checked = dailyCheckInEnabled, onCheckedChange = onDailyCheckInChange)
+            }
+        }
+
         TextButton(onClick = onManageProfiles, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Default.Group, contentDescription = null)
             Text("  " + stringResource(R.string.manage_profiles))
@@ -395,6 +434,9 @@ fun ProfileScreen(
                     )
                     Button(onClick = onSeedDemo, shape = RoundedCornerShape(12.dp)) {
                         Text(stringResource(R.string.dev_seed_year))
+                    }
+                    Button(onClick = onTestCheckIn, shape = RoundedCornerShape(12.dp)) {
+                        Text(stringResource(R.string.dev_test_checkin))
                     }
                 }
             }

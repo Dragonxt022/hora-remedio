@@ -8,9 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -50,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -57,14 +61,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.aprobile.R
 import com.example.aprobile.data.DoseRecordEntity
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
+import coil.compose.AsyncImage
 import com.example.aprobile.domain.InventoryForecast
 import com.example.aprobile.ui.theme.glassBorderColor
 import com.example.aprobile.ui.theme.glassSurfaceColor
+import java.io.File
 import java.time.LocalDate
 
 fun getColorTag(tag: String): Color {
@@ -197,13 +204,19 @@ fun DailySummaryCard(takenCount: Int, totalCount: Int, streak: Int, isDarkMode: 
                     text = stringResource(if (isComplete) R.string.daily_complete else R.string.daily_progress),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = stringResource(R.string.daily_taken_of, takenCount, totalCount),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    softWrap = false
                 )
             }
 
@@ -241,7 +254,9 @@ fun DoseItemCard(
     onToggleStatus: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    isDarkMode: Boolean
+    isDarkMode: Boolean,
+    profilePhoto: String? = null,
+    showProfileAvatar: Boolean = false
 ) {
     val isTaken = doseWithMed.doseRecord.status == DoseRecordEntity.STATUS_TAKEN
     val accentColor = getColorTag(doseWithMed.medication.colorTag)
@@ -279,6 +294,15 @@ fun DoseItemCard(
                     .weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (showProfileAvatar) {
+                    ProfileAvatar(
+                        name = doseWithMed.medication.profile,
+                        photoPath = profilePhoto,
+                        sizeDp = 34
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
+
                 Box(
                     modifier = Modifier
                         .background(
@@ -305,7 +329,10 @@ fun DoseItemCard(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             textDecoration = if (isTaken) TextDecoration.LineThrough else TextDecoration.None,
-                            color = if (isTaken) MaterialTheme.colorScheme.outline.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface
+                            color = if (isTaken) MaterialTheme.colorScheme.outline.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Box(
@@ -329,7 +356,9 @@ fun DoseItemCard(
                         Text(
                             text = doseWithMed.medication.dosage,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
@@ -710,6 +739,158 @@ fun EmptyStateView(
                     Text(stringResource(R.string.empty_add_button))
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun DoseGroupCard(
+    doses: List<DoseWithMedication>,
+    onClick: () -> Unit,
+    onToggleDose: (DoseWithMedication) -> Unit,
+    isDarkMode: Boolean,
+    profilePhoto: String? = null,
+    showProfileAvatar: Boolean = false
+) {
+    val med = doses.first().medication
+    val accentColor = getColorTag(med.colorTag)
+    val glassColor = glassSurfaceColor(isDarkMode)
+    val borderColor = glassBorderColor(isDarkMode)
+    val takenCount = doses.count { it.doseRecord.status == DoseRecordEntity.STATUS_TAKEN }
+    val total = doses.size
+    val progress = if (total > 0) takenCount.toFloat() / total.toFloat() else 0f
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(BorderStroke(1.2.dp, borderColor), RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = glassColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .width(8.dp)
+                    .height(IntrinsicSize.Min)
+                    .background(accentColor)
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(onClick = onClick)
+                    .padding(14.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (showProfileAvatar) {
+                        ProfileAvatar(name = med.profile, photoPath = profilePhoto, sizeDp = 30)
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                    Text(
+                        text = med.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(6.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = med.profile,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                if (med.dosage.isNotBlank()) {
+                    Text(
+                        text = med.dosage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp)),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = stringResource(R.string.daily_taken_of, takenCount, total),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    doses.forEach { doseWithMed ->
+                        val isTaken = doseWithMed.doseRecord.status == DoseRecordEntity.STATUS_TAKEN
+                        FilterChip(
+                            selected = isTaken,
+                            onClick = { onToggleDose(doseWithMed) },
+                            label = { Text(formatScheduledTime(doseWithMed.doseRecord.scheduledDateTime)) },
+                            leadingIcon = if (isTaken) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            } else null
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileAvatar(name: String, photoPath: String?, sizeDp: Int, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(sizeDp.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        contentAlignment = Alignment.Center
+    ) {
+        if (photoPath != null) {
+            AsyncImage(
+                model = File(photoPath),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Text(
+                text = if (name.isNotBlank()) name.take(1).uppercase() else "?",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }

@@ -126,8 +126,9 @@ class MedicationRepository(
                 val updatedMed = medication.copy(currentQuantity = medication.currentQuantity - 1)
                 medicationDao.updateMedication(updatedMed)
                 val newQty = updatedMed.currentQuantity ?: 0
-                if (newQty <= (updatedMed.lowStockAlert ?: 5)) {
-                    com.example.aprobile.notifications.Notifier.notifyRefill(context, updatedMed.id, updatedMed.name, newQty)
+                when {
+                    newQty <= 0 -> com.example.aprobile.notifications.Notifier.notifyOutOfStock(context, updatedMed.id, updatedMed.name)
+                    newQty <= (updatedMed.lowStockAlert ?: 5) -> com.example.aprobile.notifications.Notifier.notifyRefill(context, updatedMed.id, updatedMed.name, newQty)
                 }
             }
         }
@@ -259,8 +260,9 @@ class MedicationRepository(
             val updated = medication.copy(currentQuantity = medication.currentQuantity - 1)
             medicationDao.updateMedication(updated)
             val qty = updated.currentQuantity ?: 0
-            if (qty <= (updated.lowStockAlert ?: 5)) {
-                com.example.aprobile.notifications.Notifier.notifyRefill(context, updated.id, updated.name, qty)
+            when {
+                qty <= 0 -> com.example.aprobile.notifications.Notifier.notifyOutOfStock(context, updated.id, updated.name)
+                qty <= (updated.lowStockAlert ?: 5) -> com.example.aprobile.notifications.Notifier.notifyRefill(context, updated.id, updated.name, qty)
             }
         }
     }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -78,6 +79,7 @@ fun HealthScreen(
     uiState: MedicationUiState,
     onSelectHealthProfile: (String) -> Unit,
     onEditProfile: () -> Unit,
+    onEditEvent: (HealthEventEntity) -> Unit,
     onDeleteEvent: (HealthEventEntity) -> Unit,
     onUpgrade: () -> Unit
 ) {
@@ -268,23 +270,27 @@ fun HealthScreen(
             items(filteredTimeline) { item ->
                 when (item) {
                     is HealthTimelineItem.Dose -> TimelineRow(
-                        icon = Icons.Default.Medication,
                         title = "${stringResource(R.string.health_dose_taken)}: ${item.medication.name}",
                         subtitle = formatDetailDateTime(item.record.scheduledDateTime) +
                             (if (item.medication.dosage.isNotBlank()) " • ${item.medication.dosage}" else ""),
+                        onClick = null,
                         onDelete = null,
                         photoPath = null,
+                        profileName = item.medication.profile,
+                        profilePhoto = uiState.profilePhotos[item.medication.profile],
                         glassColor = glassColor,
                         borderColor = borderColor
                     )
 
                     is HealthTimelineItem.Event -> TimelineRow(
-                        icon = Icons.Default.FavoriteBorder,
                         title = listOfNotNull(item.event.title, item.event.value).joinToString(" — "),
                         subtitle = formatDetailDateTime(item.event.timestamp) +
                             (item.event.notes?.let { " • $it" } ?: ""),
+                        onClick = { onEditEvent(item.event) },
                         onDelete = { onDeleteEvent(item.event) },
                         photoPath = item.event.photoUri,
+                        profileName = item.event.profile,
+                        profilePhoto = uiState.profilePhotos[item.event.profile],
                         glassColor = glassColor,
                         borderColor = borderColor
                     )
@@ -402,17 +408,20 @@ private fun HealthRecordCard(
 
 @Composable
 private fun TimelineRow(
-    icon: ImageVector,
     title: String,
     subtitle: String,
+    onClick: (() -> Unit)?,
     onDelete: (() -> Unit)?,
     photoPath: String?,
+    profileName: String,
+    profilePhoto: String?,
     glassColor: Color,
     borderColor: Color
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .border(BorderStroke(1.dp, borderColor), shape = RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),
@@ -424,7 +433,14 @@ private fun TimelineRow(
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            ProfileAvatar(name = profileName, photoPath = profilePhoto, sizeDp = 40)
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
             if (photoPath != null) {
+                Spacer(modifier = Modifier.width(8.dp))
                 AsyncImage(
                     model = File(photoPath),
                     contentDescription = null,
@@ -433,20 +449,6 @@ private fun TimelineRow(
                         .size(44.dp)
                         .clip(RoundedCornerShape(10.dp))
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                }
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if (onDelete != null) {
                 IconButton(onClick = onDelete) {

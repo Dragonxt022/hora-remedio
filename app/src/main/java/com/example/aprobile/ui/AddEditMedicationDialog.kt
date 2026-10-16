@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -102,6 +103,7 @@ fun AddEditMedicationDialog(
     val errMedName = stringResource(R.string.err_med_name)
     val errMedTimes = stringResource(R.string.err_med_times)
     val errMedDays = stringResource(R.string.err_med_days)
+    val errMedQty = stringResource(R.string.err_med_qty)
 
     var name by remember { mutableStateOf(medicationToEdit?.name ?: "") }
     var dosage by remember { mutableStateOf(medicationToEdit?.dosage ?: "") }
@@ -112,6 +114,7 @@ fun AddEditMedicationDialog(
     var colorTag by remember { mutableStateOf(medicationToEdit?.colorTag ?: "Azul") }
     var soundEnabled by remember { mutableStateOf(medicationToEdit?.soundEnabled ?: true) }
     var vibrateEnabled by remember { mutableStateOf(medicationToEdit?.vibrateEnabled ?: true) }
+    var trackStock by remember { mutableStateOf(medicationToEdit?.currentQuantity != null) }
     var scheduleType by remember { mutableStateOf(medicationToEdit?.scheduleType ?: MedicationEntity.SCHEDULE_DAILY) }
     val daysSelected = remember {
         mutableStateListOf<Int>().apply {
@@ -331,29 +334,46 @@ fun AddEditMedicationDialog(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
-                        value = currentQuantityStr,
-                        onValueChange = { currentQuantityStr = it.filter { char -> char.isDigit() } },
-                        label = { Text(stringResource(R.string.med_stock_label)) },
-                        placeholder = { Text(stringResource(R.string.med_stock_placeholder)) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
-                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = stringResource(R.string.stock_track_title), style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = stringResource(R.string.stock_track_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(checked = trackStock, onCheckedChange = { trackStock = it })
+                }
 
-                    OutlinedTextField(
-                        value = lowStockAlertStr,
-                        onValueChange = { lowStockAlertStr = it.filter { char -> char.isDigit() } },
-                        label = { Text(stringResource(R.string.med_low_label)) },
-                        placeholder = { Text(stringResource(R.string.med_low_placeholder)) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
-                    )
+                if (trackStock) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = currentQuantityStr,
+                            onValueChange = { currentQuantityStr = it.filter { char -> char.isDigit() } },
+                            label = { Text(stringResource(R.string.med_stock_label)) },
+                            placeholder = { Text(stringResource(R.string.med_stock_placeholder)) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        OutlinedTextField(
+                            value = lowStockAlertStr,
+                            onValueChange = { lowStockAlertStr = it.filter { char -> char.isDigit() } },
+                            label = { Text(stringResource(R.string.med_low_label)) },
+                            placeholder = { Text(stringResource(R.string.med_low_placeholder)) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
 
                 OutlinedTextField(
@@ -402,7 +422,10 @@ fun AddEditMedicationDialog(
                     modifier = Modifier.padding(top = 4.dp)
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     listOf(
                         MedicationEntity.SCHEDULE_DAILY to R.string.schedule_daily,
                         MedicationEntity.SCHEDULE_WEEKLY_DAYS to R.string.schedule_weekly,
@@ -417,7 +440,10 @@ fun AddEditMedicationDialog(
                 }
 
                 if (scheduleType == MedicationEntity.SCHEDULE_WEEKLY_DAYS) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
                         listOf(
                             1 to R.string.weekday_mon, 2 to R.string.weekday_tue, 3 to R.string.weekday_wed,
                             4 to R.string.weekday_thu, 5 to R.string.weekday_fri, 6 to R.string.weekday_sat,
@@ -512,8 +538,12 @@ fun AddEditMedicationDialog(
                         errorMessage = errMedDays
                         return@Button
                     }
-                    val qty = currentQuantityStr.toIntOrNull()
-                    val alert = lowStockAlertStr.toIntOrNull()
+                    if (trackStock && currentQuantityStr.isBlank()) {
+                        errorMessage = errMedQty
+                        return@Button
+                    }
+                    val qty = if (trackStock) currentQuantityStr.toIntOrNull() else null
+                    val alert = if (trackStock) lowStockAlertStr.toIntOrNull() else null
                     val days = daysSelected.sorted().joinToString(",")
                     onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, days)
                 },

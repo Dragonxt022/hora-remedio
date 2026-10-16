@@ -8,5 +8,6 @@ class AprobileApp : Application() {
         super.onCreate()
         WorkScheduler.schedulePeriodic(this)
         WorkScheduler.runNow(this)
+        WorkScheduler.scheduleCheckIn(this)
     }
 }

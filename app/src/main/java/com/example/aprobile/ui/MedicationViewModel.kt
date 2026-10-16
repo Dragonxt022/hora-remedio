@@ -93,6 +93,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                         managedProfiles = names,
                         mainProfileName = names.firstOrNull() ?: "Eu",
                         mainProfilePhoto = profiles.firstOrNull()?.photoUri,
+                        profilePhotos = profiles.mapNotNull { p -> p.photoUri?.let { p.name to it } }.toMap(),
                         availableProfiles = listOf("Todos") + names,
                         healthProfileName = newHealth,
                         selectedProfile = newSelected,
@@ -133,6 +134,10 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     fun setMainProfilePhoto(path: String?) {
         val name = _uiState.value.mainProfileName
         viewModelScope.launch { profileRepository.setProfilePhoto(name, path) }
+    }
+
+    fun setProfilePhoto(profile: String, path: String?) {
+        viewModelScope.launch { profileRepository.setProfilePhoto(profile, path) }
     }
 
     private fun resolveHealthProfile(profile: String): String {
@@ -224,6 +229,28 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                 }
             }
         }
+        viewModelScope.launch {
+            settingsRepository.customSymptoms.collect { symptoms ->
+                _uiState.update { it.copy(customSymptoms = symptoms) }
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.dailyCheckInEnabled.collect { enabled ->
+                _uiState.update { it.copy(dailyCheckInEnabled = enabled) }
+            }
+        }
+    }
+
+    fun addCustomSymptom(name: String) {
+        viewModelScope.launch { settingsRepository.addCustomSymptom(name) }
+    }
+
+    fun setDailyCheckInEnabled(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.setDailyCheckInEnabled(enabled) }
+    }
+
+    fun sendCheckInNow() {
+        com.example.aprobile.notifications.Notifier.notifyCheckIn(getApplication())
     }
 
     fun setAppLockEnabled(enabled: Boolean) {
@@ -738,11 +765,15 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun openAddHealthEventDialog() {
-        _uiState.update { it.copy(isHealthEventDialogOpen = true) }
+        _uiState.update { it.copy(isHealthEventDialogOpen = true, healthEventToEdit = null) }
+    }
+
+    fun openEditHealthEventDialog(event: HealthEventEntity) {
+        _uiState.update { it.copy(isHealthEventDialogOpen = true, healthEventToEdit = event) }
     }
 
     fun closeHealthEventDialog() {
-        _uiState.update { it.copy(isHealthEventDialogOpen = false) }
+        _uiState.update { it.copy(isHealthEventDialogOpen = false, healthEventToEdit = null) }
     }
 
     fun saveHealthEvent(
@@ -754,10 +785,12 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         photoUri: String?
     ) {
         val profileName = _healthProfileName.value
+        val editing = _uiState.value.healthEventToEdit
         viewModelScope.launch {
             healthRepository.insertEvent(
                 HealthEventEntity(
-                    profile = profileName,
+                    id = editing?.id ?: 0,
+                    profile = editing?.profile ?: profileName,
                     timestamp = timestamp,
                     type = type,
                     title = title,

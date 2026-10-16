@@ -117,19 +117,40 @@ fun DosesScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.todayDoses, key = { it.doseRecord.id }) { doseWithMed ->
-                    DoseItemCard(
-                        doseWithMed = doseWithMed,
-                        formattedTime = formatScheduledTime(doseWithMed.doseRecord.scheduledDateTime),
-                        onClick = { onOpenDetail(doseWithMed.medication) },
-                        onToggleStatus = {
-                            view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
-                            onToggleDose(doseWithMed)
-                        },
-                        onEdit = { onEdit(doseWithMed.medication) },
-                        onDelete = { onDelete(doseWithMed.medication) },
-                        isDarkMode = uiState.isDarkMode
-                    )
+                val doseGroups = uiState.todayDoses
+                    .groupBy { it.medication.id }
+                    .values
+                    .map { group -> group.sortedBy { it.doseRecord.scheduledDateTime } }
+                items(doseGroups, key = { it.first().medication.id }) { group ->
+                    if (group.size == 1) {
+                        val doseWithMed = group.first()
+                        DoseItemCard(
+                            doseWithMed = doseWithMed,
+                            formattedTime = formatScheduledTime(doseWithMed.doseRecord.scheduledDateTime),
+                            onClick = { onOpenDetail(doseWithMed.medication) },
+                            onToggleStatus = {
+                                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                                onToggleDose(doseWithMed)
+                            },
+                            onEdit = { onEdit(doseWithMed.medication) },
+                            onDelete = { onDelete(doseWithMed.medication) },
+                            isDarkMode = uiState.isDarkMode,
+                            profilePhoto = uiState.profilePhotos[doseWithMed.medication.profile],
+                            showProfileAvatar = uiState.selectedProfile == "Todos"
+                        )
+                    } else {
+                        DoseGroupCard(
+                            doses = group,
+                            onClick = { onOpenDetail(group.first().medication) },
+                            onToggleDose = {
+                                view.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
+                                onToggleDose(it)
+                            },
+                            isDarkMode = uiState.isDarkMode,
+                            profilePhoto = uiState.profilePhotos[group.first().medication.profile],
+                            showProfileAvatar = uiState.selectedProfile == "Todos"
+                        )
+                    }
                 }
             }
         }
