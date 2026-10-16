@@ -57,8 +57,26 @@ class MigrationTest {
         db.close()
     }
 
+    @Test
+    fun migrate5To6_createsHealthTables() {
+        var db = helper.createDatabase(TEST_DB_5_6, 5)
+        db.close()
+
+        db = helper.runMigrationsAndValidate(TEST_DB_5_6, 6, true, AppDatabase.MIGRATION_5_6)
+
+        db.execSQL("INSERT INTO health_profiles (profile, bloodType) VALUES ('Eu', 'O+')")
+        db.execSQL("INSERT INTO health_events (profile, timestamp, type, title) VALUES ('Eu', 1000, 'FEVER', 'Febre')")
+
+        val cursor = db.query("SELECT bloodType FROM health_profiles WHERE profile = 'Eu'")
+        assertTrue(cursor.moveToFirst())
+        assertEquals("O+", cursor.getString(0))
+        cursor.close()
+        db.close()
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
         private const val TEST_DB_4_5 = "migration-test-4-5"
+        private const val TEST_DB_5_6 = "migration-test-5-6"
     }
 }

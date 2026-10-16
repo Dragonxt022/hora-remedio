@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.Person
@@ -72,6 +73,7 @@ enum class AppDestination(
     DOSES("doses", R.string.nav_doses, R.string.title_doses, Icons.Default.Today, true),
     MEDICATIONS("medications", R.string.nav_medications, R.string.title_medications, Icons.Default.Medication, true),
     APPOINTMENTS("appointments", R.string.nav_appointments, R.string.title_appointments, Icons.Default.Event, true),
+    HEALTH("health", R.string.nav_health, R.string.title_health, Icons.Default.FavoriteBorder, true),
     STATISTICS("statistics", R.string.nav_statistics, R.string.title_statistics, Icons.Default.BarChart, false),
     PROFILE("profile", R.string.nav_profile, R.string.title_profile, Icons.Default.Person, false)
 }
@@ -216,10 +218,10 @@ fun MedicationScreen(
                         if (currentDestination.showFab && !isDetail) {
                             FloatingActionButton(
                                 onClick = {
-                                    if (currentDestination == AppDestination.APPOINTMENTS) {
-                                        viewModel.openAddAppointmentDialog()
-                                    } else {
-                                        viewModel.openAddMedicationDialog()
+                                    when (currentDestination) {
+                                        AppDestination.APPOINTMENTS -> viewModel.openAddAppointmentDialog()
+                                        AppDestination.HEALTH -> viewModel.openAddHealthEventDialog()
+                                        else -> viewModel.openAddMedicationDialog()
                                     }
                                 },
                                 containerColor = MaterialTheme.colorScheme.primary,
@@ -268,6 +270,16 @@ fun MedicationScreen(
                                 onEdit = { viewModel.openEditAppointmentDialog(it) },
                                 onDelete = { viewModel.requestDeleteAppointment(it) },
                                 onAddToCalendar = { addAppointmentToCalendar(context, it) }
+                            )
+                        }
+
+                        composable(AppDestination.HEALTH.route) {
+                            HealthScreen(
+                                uiState = uiState,
+                                onSelectProfile = { viewModel.selectProfile(it) },
+                                onEditProfile = { viewModel.openEditHealthProfileDialog() },
+                                onDeleteEvent = { viewModel.requestDeleteHealthEvent(it) },
+                                onUpgrade = { viewModel.openPaywall() }
                             )
                         }
 
@@ -353,6 +365,48 @@ fun MedicationScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.cancelDeleteAppointment() }) {
+                        Text(stringResource(R.string.action_cancel))
+                    }
+                }
+            )
+        }
+
+        if (uiState.isHealthProfileDialogOpen) {
+            AddEditHealthProfileDialog(
+                profile = uiState.healthProfile,
+                onDismiss = { viewModel.closeHealthProfileDialog() },
+                onSave = { bloodType, allergies, conditions, weight, height, emergencyContact, notes ->
+                    viewModel.saveHealthProfile(bloodType, allergies, conditions, weight, height, emergencyContact, notes)
+                }
+            )
+        }
+
+        if (uiState.isHealthEventDialogOpen) {
+            AddEditHealthEventDialog(
+                onDismiss = { viewModel.closeHealthEventDialog() },
+                onSave = { type, title, value, notes, timestamp ->
+                    viewModel.saveHealthEvent(type, title, value, notes, timestamp)
+                }
+            )
+        }
+
+        uiState.healthEventToDelete?.let {
+            AlertDialog(
+                onDismissRequest = { viewModel.cancelDeleteHealthEvent() },
+                shape = RoundedCornerShape(24.dp),
+                title = { Text(stringResource(R.string.health_delete_title)) },
+                text = { Text(stringResource(R.string.health_delete_text)) },
+                confirmButton = {
+                    Button(
+                        onClick = { viewModel.confirmDeleteHealthEvent() },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(stringResource(R.string.action_delete))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.cancelDeleteHealthEvent() }) {
                         Text(stringResource(R.string.action_cancel))
                     }
                 }
