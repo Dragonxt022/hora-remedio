@@ -62,6 +62,16 @@
     <string name="stats_taken">• Taken doses: %1$d</string>
     <string name="stats_missed">• Missed/pending doses: %1$d</string>
     <string name="stats_by_profile">Adherence by profile</string>
+    <string name="action_close">Close</string>
+    <string name="stats_detail_adherence_title">Adherence details</string>
+    <string name="stats_detail_subtitle">Summary for the selected period</string>
+    <string name="stats_detail_period">Period</string>
+    <string name="stats_detail_total">Total doses</string>
+    <string name="stats_detail_taken">Taken doses</string>
+    <string name="stats_detail_missed">Missed doses</string>
+    <string name="stats_detail_success">Success rate</string>
+    <string name="stats_streak_current">Current streak</string>
+    <string name="stats_streak_help">Consecutive days where you took 100% of the elapsed doses.</string>
     <string name="stats_by_medication">Adherence by medication</string>
     <string name="stats_no_profile">No profile with recorded history yet.</string>
     <string name="stats_no_medication">No medication with history in the period.</string>

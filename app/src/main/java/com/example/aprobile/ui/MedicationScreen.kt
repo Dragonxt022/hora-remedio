@@ -2,10 +2,14 @@ package com.example.aprobile.ui
 
 import android.app.Activity
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,6 +45,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,6 +64,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aprobile.ui.theme.AprobileTheme
+import com.example.aprobile.ui.theme.glassBorderColor
+import com.example.aprobile.ui.theme.glassSurfaceElevatedColor
 
 private const val DETAIL_ROUTE = "medication/{medicationId}"
 
@@ -204,26 +212,41 @@ fun MedicationScreen(
                         )
                     },
                     bottomBar = {
-                        NavigationBar(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 10.dp)
                         ) {
-                            AppDestination.entries.filter { it != AppDestination.PROFILE }.forEach { dest ->
-                                NavigationBarItem(
-                                    selected = currentRoute == dest.route,
-                                    onClick = {
-                                        if (currentRoute != dest.route) {
-                                            navController.navigate(dest.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
+                            NavigationBar(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(64.dp)
+                                    .shadow(12.dp, RoundedCornerShape(28.dp))
+                                    .clip(RoundedCornerShape(28.dp))
+                                    .border(
+                                        BorderStroke(1.dp, glassBorderColor(uiState.isDarkMode)),
+                                        RoundedCornerShape(28.dp)
+                                    ),
+                                containerColor = glassSurfaceElevatedColor(uiState.isDarkMode),
+                                tonalElevation = 0.dp
+                            ) {
+                                AppDestination.entries.filter { it != AppDestination.PROFILE }.forEach { dest ->
+                                    NavigationBarItem(
+                                        selected = currentRoute == dest.route,
+                                        onClick = {
+                                            if (currentRoute != dest.route) {
+                                                navController.navigate(dest.route) {
+                                                    popUpTo(navController.graph.findStartDestination().id) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
                                                 }
-                                                launchSingleTop = true
-                                                restoreState = true
                                             }
-                                        }
-                                    },
-                                    icon = { Icon(dest.icon, contentDescription = stringResource(dest.labelRes)) },
-                                    label = { Text(stringResource(dest.labelRes)) }
-                                )
+                                        },
+                                        icon = { Icon(dest.icon, contentDescription = stringResource(dest.labelRes)) }
+                                    )
+                                }
                             }
                         }
                     },

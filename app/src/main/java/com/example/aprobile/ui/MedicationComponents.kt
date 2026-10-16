@@ -557,7 +557,8 @@ fun BarChart(
     taken: Int,
     total: Int,
     isDarkMode: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     val missed = maxOf(0, total - taken)
     val maxVal = maxOf(1, total).toFloat()
@@ -573,6 +574,7 @@ fun BarChart(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),

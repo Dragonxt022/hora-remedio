@@ -62,6 +62,16 @@
     <string name="stats_taken">• Doses tomadas: %1$d</string>
     <string name="stats_missed">• Doses perdidas/pendentes: %1$d</string>
     <string name="stats_by_profile">Adesão por Perfil</string>
+    <string name="action_close">Fechar</string>
+    <string name="stats_detail_adherence_title">Detalhes da adesão</string>
+    <string name="stats_detail_subtitle">Resumo do período selecionado</string>
+    <string name="stats_detail_period">Período</string>
+    <string name="stats_detail_total">Total de doses</string>
+    <string name="stats_detail_taken">Doses tomadas</string>
+    <string name="stats_detail_missed">Doses não tomadas</string>
+    <string name="stats_detail_success">Índice de sucesso</string>
+    <string name="stats_streak_current">Sequência atual</string>
+    <string name="stats_streak_help">Dias consecutivos em que você tomou 100% das doses vencidas.</string>
     <string name="stats_by_medication">Adesão por Medicamento</string>
     <string name="stats_no_profile">Nenhum perfil com histórico registrado ainda.</string>
     <string name="stats_no_medication">Nenhum medicamento com histórico no período.</string>

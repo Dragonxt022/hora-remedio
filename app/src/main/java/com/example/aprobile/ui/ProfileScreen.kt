@@ -46,6 +46,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.draw.clip
@@ -277,12 +278,22 @@ fun ProfileScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     listOf(5, 10, 15, 30).forEach { minutes ->
                         FilterChip(
                             selected = snoozeMinutes == minutes,
                             onClick = { onSnoozeChange(minutes) },
-                            label = { Text(stringResource(R.string.snooze_minutes, minutes)) }
+                            label = {
+                                Text(
+                                    text = stringResource(R.string.snooze_minutes, minutes),
+                                    maxLines = 1
+                                )
+                            }
                         )
                     }
                 }

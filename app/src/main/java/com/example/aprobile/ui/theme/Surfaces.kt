@@ -15,14 +15,14 @@ val ChipRadius = 20.dp
 val ScreenHorizontalPadding = 16.dp
 val ScreenVerticalPadding = 8.dp
 
-/** Cor de fundo "vidro" usada nos cards sobre o gradiente. */
+/** Cor de fundo sólida dos cards (evita "banding" do gradiente através da transparência). */
 fun glassSurfaceColor(isDark: Boolean): Color =
-    if (isDark) Color(0xFF16221F).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.90f)
+    if (isDark) Color(0xFF16241F) else Color(0xFFF3FAF7)
 
-/** Variante mais clara (destaque) do fundo de card. */
+/** Variante de destaque (mais clara) do fundo de card. */
 fun glassSurfaceElevatedColor(isDark: Boolean): Color =
-    if (isDark) Color(0xFF1F332E).copy(alpha = 0.90f) else Color.White.copy(alpha = 0.90f)
+    if (isDark) Color(0xFF1E302A) else Color(0xFFFFFFFF)
 
 /** Borda sutil dos cards. */
 fun glassBorderColor(isDark: Boolean): Color =
-    if (isDark) Color.White.copy(alpha = 0.10f) else Color.White.copy(alpha = 0.80f)
+    if (isDark) Color.White.copy(alpha = 0.12f) else Color(0xFFE2EEE9)

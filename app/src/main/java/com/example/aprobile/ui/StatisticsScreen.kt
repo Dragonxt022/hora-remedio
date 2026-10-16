@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,13 +18,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -31,10 +40,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -56,6 +70,44 @@ fun StatisticsScreen(
     val shareReportTitle = stringResource(R.string.share_report)
     val glassColor = glassSurfaceColor(uiState.isDarkMode)
     val borderColor = glassBorderColor(uiState.isDarkMode)
+    var detail by remember { mutableStateOf<StatDetail?>(null) }
+
+    val adherenceRows = listOf(
+        stringResource(R.string.stats_detail_success) to "${uiState.adherenceRate}%",
+        stringResource(R.string.stats_detail_taken) to uiState.overallTaken.toString(),
+        stringResource(R.string.stats_detail_missed) to (uiState.overallTotal - uiState.overallTaken).toString(),
+        stringResource(R.string.stats_detail_total) to uiState.overallTotal.toString(),
+        stringResource(R.string.stats_detail_period) to uiState.statsPeriod.label
+    )
+    val streakValue = if (uiState.currentStreak > 0) {
+        "\uD83D\uDD25 " + pluralStringResource(R.plurals.streak_days, uiState.currentStreak, uiState.currentStreak)
+    } else {
+        stringResource(R.string.streak_none)
+    }
+    val streakDetail = StatDetail(
+        title = stringResource(R.string.streak_title),
+        subtitle = stringResource(R.string.stats_streak_help),
+        icon = Icons.Default.Star,
+        rows = listOf(stringResource(R.string.stats_streak_current) to streakValue)
+    )
+    val adherenceDetail = StatDetail(
+        title = stringResource(R.string.stats_detail_adherence_title),
+        subtitle = stringResource(R.string.stats_detail_subtitle),
+        icon = Icons.Default.BarChart,
+        rows = adherenceRows
+    )
+    val comparisonDetail = StatDetail(
+        title = stringResource(R.string.stats_comparison),
+        subtitle = stringResource(R.string.stats_detail_subtitle),
+        icon = Icons.Default.BarChart,
+        rows = adherenceRows
+    )
+    val historyDetail = StatDetail(
+        title = stringResource(R.string.stats_history_summary),
+        subtitle = stringResource(R.string.stats_detail_subtitle),
+        icon = Icons.Default.Info,
+        rows = adherenceRows
+    )
 
     Column(
         modifier = Modifier
@@ -76,6 +128,7 @@ fun StatisticsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { detail = streakDetail }
                     .padding(16.dp)
             ) {
                 Text(
@@ -85,11 +138,7 @@ fun StatisticsScreen(
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = if (uiState.currentStreak > 0) {
-                        "\uD83D\uDD25 " + pluralStringResource(R.plurals.streak_days, uiState.currentStreak, uiState.currentStreak)
-                    } else {
-                        stringResource(R.string.streak_none)
-                    },
+                    text = streakValue,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = if (uiState.currentStreak > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -130,6 +179,7 @@ fun StatisticsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { detail = adherenceDetail }
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -146,7 +196,8 @@ fun StatisticsScreen(
         BarChart(
             taken = uiState.overallTaken,
             total = uiState.overallTotal,
-            isDarkMode = uiState.isDarkMode
+            isDarkMode = uiState.isDarkMode,
+            onClick = { detail = comparisonDetail }
         )
 
         Card(
@@ -157,7 +208,12 @@ fun StatisticsScreen(
             colors = CardDefaults.cardColors(containerColor = glassColor),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
-            Column(modifier = Modifier.padding(20.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { detail = historyDetail }
+                    .padding(20.dp)
+            ) {
                 Text(
                     text = stringResource(R.string.stats_history_summary),
                     style = MaterialTheme.typography.titleMedium,
@@ -178,15 +234,30 @@ fun StatisticsScreen(
         )
 
         if (uiState.profileStats.isEmpty()) {
-            Text(
-                text = stringResource(R.string.stats_no_profile),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth()
+            StatsEmptyCard(
+                icon = Icons.Default.Person,
+                message = stringResource(R.string.stats_no_profile),
+                glassColor = glassColor,
+                borderColor = borderColor
             )
         } else {
             uiState.profileStats.forEach { stat ->
-                ProfileStatCard(stat = stat, isDarkMode = uiState.isDarkMode)
+                val profileDetail = StatDetail(
+                    title = stat.profile,
+                    subtitle = stringResource(R.string.stats_by_profile),
+                    icon = Icons.Default.Person,
+                    rows = listOf(
+                        stringResource(R.string.stats_detail_success) to "${stat.adherence}%",
+                        stringResource(R.string.stats_detail_taken) to stat.taken.toString(),
+                        stringResource(R.string.stats_detail_missed) to (stat.total - stat.taken).toString(),
+                        stringResource(R.string.stats_detail_total) to stat.total.toString()
+                    )
+                )
+                ProfileStatCard(
+                    stat = stat,
+                    isDarkMode = uiState.isDarkMode,
+                    onClick = { detail = profileDetail }
+                )
             }
         }
 
@@ -198,15 +269,30 @@ fun StatisticsScreen(
         )
 
         if (uiState.medicationStats.isEmpty()) {
-            Text(
-                text = stringResource(R.string.stats_no_medication),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth()
+            StatsEmptyCard(
+                icon = Icons.Default.Medication,
+                message = stringResource(R.string.stats_no_medication),
+                glassColor = glassColor,
+                borderColor = borderColor
             )
         } else {
             uiState.medicationStats.forEach { stat ->
-                MedicationStatCard(stat = stat, isDarkMode = uiState.isDarkMode)
+                val medicationDetail = StatDetail(
+                    title = stat.name,
+                    subtitle = stringResource(R.string.stats_by_medication),
+                    icon = Icons.Default.Medication,
+                    rows = listOf(
+                        stringResource(R.string.stats_detail_success) to "${stat.adherence}%",
+                        stringResource(R.string.stats_detail_taken) to stat.taken.toString(),
+                        stringResource(R.string.stats_detail_missed) to (stat.total - stat.taken).toString(),
+                        stringResource(R.string.stats_detail_total) to stat.total.toString()
+                    )
+                )
+                MedicationStatCard(
+                    stat = stat,
+                    isDarkMode = uiState.isDarkMode,
+                    onClick = { detail = medicationDetail }
+                )
             }
         }
 
@@ -268,29 +354,35 @@ fun StatisticsScreen(
             Text(stringResource(R.string.export_pdf))
         }
     }
+
+    detail?.let {
+        StatDetailDialog(detail = it, onDismiss = { detail = null })
+    }
 }
 
 @Composable
-fun ProfileStatCard(stat: ProfileStat, isDarkMode: Boolean) {
+fun ProfileStatCard(stat: ProfileStat, isDarkMode: Boolean, onClick: () -> Unit) {
     StatRow(
         title = stat.profile,
         adherence = stat.adherence,
         taken = stat.taken,
         total = stat.total,
         accentColor = null,
-        isDarkMode = isDarkMode
+        isDarkMode = isDarkMode,
+        onClick = onClick
     )
 }
 
 @Composable
-fun MedicationStatCard(stat: MedicationStat, isDarkMode: Boolean) {
+fun MedicationStatCard(stat: MedicationStat, isDarkMode: Boolean, onClick: () -> Unit) {
     StatRow(
         title = stat.name,
         adherence = stat.adherence,
         taken = stat.taken,
         total = stat.total,
         accentColor = getColorTag(stat.colorTag),
-        isDarkMode = isDarkMode
+        isDarkMode = isDarkMode,
+        onClick = onClick
     )
 }
 
@@ -301,7 +393,8 @@ private fun StatRow(
     taken: Int,
     total: Int,
     accentColor: Color?,
-    isDarkMode: Boolean
+    isDarkMode: Boolean,
+    onClick: () -> Unit
 ) {
     val glassColor = glassSurfaceColor(isDarkMode)
     val borderColor = glassBorderColor(isDarkMode)
@@ -309,6 +402,7 @@ private fun StatRow(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),
@@ -365,4 +459,99 @@ private fun StatRow(
             )
         }
     }
+}
+
+@Composable
+private fun StatsEmptyCard(
+    icon: ImageVector,
+    message: String,
+    glassColor: Color,
+    borderColor: Color
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = glassColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+private data class StatDetail(
+    val title: String,
+    val subtitle: String,
+    val icon: ImageVector,
+    val rows: List<Pair<String, String>>
+)
+
+@Composable
+private fun StatDetailDialog(detail: StatDetail, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        icon = { Icon(detail.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        title = { Text(detail.title, fontWeight = FontWeight.Bold) },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = detail.subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                detail.rows.forEach { (label, value) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = value,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_close))
+            }
+        }
+    )
 }
