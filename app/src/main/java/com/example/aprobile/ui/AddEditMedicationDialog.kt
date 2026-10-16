@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,12 +23,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,10 +36,12 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -55,6 +59,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.aprobile.R
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.domain.AllergyMatcher
@@ -197,31 +203,72 @@ fun AddEditMedicationDialog(
             .addOnFailureListener { errorMessage = errMedScan }
     }
 
-    AlertDialog(
+    fun attemptSave() {
+        if (name.isBlank()) {
+            errorMessage = errMedName
+            return
+        }
+        if (scheduleType != MedicationEntity.SCHEDULE_AS_NEED && times.isEmpty()) {
+            errorMessage = errMedTimes
+            return
+        }
+        if (scheduleType == MedicationEntity.SCHEDULE_WEEKLY_DAYS && daysSelected.isEmpty()) {
+            errorMessage = errMedDays
+            return
+        }
+        if (trackStock && currentQuantityStr.isBlank()) {
+            errorMessage = errMedQty
+            return
+        }
+        val qty = if (trackStock) currentQuantityStr.toIntOrNull() else null
+        val alert = if (trackStock) lowStockAlertStr.toIntOrNull() else null
+        val days = daysSelected.sorted().joinToString(",")
+        onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, days, barcode?.trim()?.ifBlank { null })
+    }
+
+    Dialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(24.dp),
-        title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Medication,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(
-                    text = stringResource(if (medicationToEdit == null) R.string.med_dialog_new else R.string.med_dialog_edit),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Medication,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                    )
+                    Text(
+                        text = stringResource(if (medicationToEdit == null) R.string.med_dialog_new else R.string.med_dialog_edit),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.action_cancel)
+                        )
+                    }
+                }
+                HorizontalDivider()
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = {
@@ -582,41 +629,27 @@ fun AddEditMedicationDialog(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (name.isBlank()) {
-                        errorMessage = errMedName
-                        return@Button
+                }
+                HorizontalDivider()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.action_cancel))
                     }
-                    if (scheduleType != MedicationEntity.SCHEDULE_AS_NEED && times.isEmpty()) {
-                        errorMessage = errMedTimes
-                        return@Button
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = { attemptSave() },
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(stringResource(R.string.action_save))
                     }
-                    if (scheduleType == MedicationEntity.SCHEDULE_WEEKLY_DAYS && daysSelected.isEmpty()) {
-                        errorMessage = errMedDays
-                        return@Button
-                    }
-                    if (trackStock && currentQuantityStr.isBlank()) {
-                        errorMessage = errMedQty
-                        return@Button
-                    }
-                    val qty = if (trackStock) currentQuantityStr.toIntOrNull() else null
-                    val alert = if (trackStock) lowStockAlertStr.toIntOrNull() else null
-                    val days = daysSelected.sorted().joinToString(",")
-                    onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, days, barcode?.trim()?.ifBlank { null })
-                },
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(stringResource(R.string.action_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
+                }
             }
         }
-    )
+    }
 }
