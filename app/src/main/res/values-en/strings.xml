@@ -254,6 +254,9 @@
     <string name="med_allergy_warning">Warning: recorded allergy to \"%1$s\"</string>
     <string name="profile_version">Med Reminder • version %1$s (build %2$d)</string>
     <string name="manage_profiles">Manage profiles</string>
+    <string name="dev_tools">Developer tools</string>
+    <string name="dev_seed_year">Simulate 1 year of data</string>
+    <string name="dev_seed_desc">Generates ~1 year of dose history and some fever episodes to test filters and charts. Only shown in debug builds.</string>
     <string name="profile_new_placeholder">New profile (e.g. Mom, Dad, Pet)</string>
     <string name="action_add">Add</string>
     <string name="action_rename">Rename</string>

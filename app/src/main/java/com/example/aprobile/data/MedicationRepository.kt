@@ -164,6 +164,73 @@ class MedicationRepository(
     suspend fun existingProfileNames(): List<String> =
         medicationDao.getAllMedicationsSync().map { it.profile.ifBlank { "Eu" } }.distinct()
 
+    /**
+     * Gera ~1 ano de histórico de doses (e alguns episódios de febre) para simulação/testes.
+     * Não faz nada se já houver muitos registros.
+     */
+    suspend fun seedOneYearData(
+        healthDao: HealthDao,
+        feverProfile: String?,
+        random: kotlin.random.Random = kotlin.random.Random(42)
+    ) {
+        if (medicationDao.getAllDoseRecordsSync().size > 400) return
+        val medications = medicationDao.getAllMedicationsSync()
+        if (medications.isEmpty()) return
+
+        val zone = ZoneId.systemDefault()
+        val now = System.currentTimeMillis()
+        val today = LocalDate.now()
+        val records = mutableListOf<DoseRecordEntity>()
+
+        for (med in medications) {
+            var date = today.minusDays(364)
+            while (!date.isAfter(today)) {
+                for (timeStr in med.times) {
+                    try {
+                        val time = LocalTime.parse(timeStr)
+                        val millis = LocalDateTime.of(date, time)
+                            .atZone(zone).toInstant().toEpochMilli()
+                        if (millis > now) continue
+                        val taken = random.nextInt(100) < 82
+                        records.add(
+                            DoseRecordEntity(
+                                medicationId = med.id,
+                                scheduledDateTime = millis,
+                                status = if (taken) DoseRecordEntity.STATUS_TAKEN else DoseRecordEntity.STATUS_PENDING,
+                                takenAt = if (taken) millis + 60_000 else null
+                            )
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                date = date.plusDays(1)
+            }
+        }
+        if (records.isNotEmpty()) medicationDao.insertDoseRecords(records)
+
+        if (feverProfile != null) {
+            val events = mutableListOf<HealthEventEntity>()
+            for (i in 0 until 12) {
+                val day = today.minusDays(random.nextInt(360).toLong())
+                val hour = 8 + random.nextInt(12)
+                val millis = LocalDateTime.of(day, LocalTime.of(hour, random.nextInt(60)))
+                    .atZone(zone).toInstant().toEpochMilli()
+                val temp = 37.5f + random.nextInt(20) / 10f
+                events.add(
+                    HealthEventEntity(
+                        profile = feverProfile,
+                        timestamp = millis,
+                        type = HealthEventEntity.TYPE_FEVER,
+                        title = "Febre",
+                        value = String.format(java.util.Locale.US, "%.1f", temp)
+                    )
+                )
+            }
+            healthDao.insertEvents(events)
+        }
+    }
+
     suspend fun exportBackup(): String {
         val medications = medicationDao.getAllMedicationsSync()
         val doses = medicationDao.getAllDoseRecordsSync()

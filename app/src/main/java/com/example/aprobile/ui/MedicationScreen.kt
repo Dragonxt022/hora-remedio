@@ -324,6 +324,7 @@ fun MedicationScreen(
                                 onAppLockChange = { viewModel.setAppLockEnabled(it) },
                                 onOpenPrivacy = { viewModel.openPrivacy() },
                                 onManageProfiles = { viewModel.openProfileManager() },
+                                onSeedDemo = { viewModel.seedDemoData() },
                                 onUpgrade = { viewModel.openPaywall() },
                                 onLoginGoogle = { viewModel.loginWithGoogle() },
                                 onLogout = { viewModel.logout() }

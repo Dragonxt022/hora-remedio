@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.aprobile.BuildConfig
 import com.example.aprobile.R
 
 @Composable
@@ -64,6 +65,7 @@ fun ProfileScreen(
     onAppLockChange: (Boolean) -> Unit,
     onOpenPrivacy: () -> Unit,
     onManageProfiles: () -> Unit,
+    onSeedDemo: () -> Unit,
     onUpgrade: () -> Unit,
     onLoginGoogle: () -> Unit,
     onLogout: () -> Unit
@@ -307,6 +309,37 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(R.string.profile_logout))
             }
+        }
+
+        if (BuildConfig.DEBUG) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.dev_tools),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = stringResource(R.string.dev_seed_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Button(onClick = onSeedDemo, shape = RoundedCornerShape(12.dp)) {
+                        Text(stringResource(R.string.dev_seed_year))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         Spacer(modifier = Modifier.height(24.dp))

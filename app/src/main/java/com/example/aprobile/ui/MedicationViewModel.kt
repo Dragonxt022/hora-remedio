@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter
 
 class MedicationViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val database: AppDatabase
     private val repository: MedicationRepository
     private val appointmentRepository: AppointmentRepository
     private val healthRepository: HealthRepository
@@ -52,7 +53,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     private val _healthProfileName = MutableStateFlow("Eu")
 
     init {
-        val database = AppDatabase.getDatabase(application)
+        database = AppDatabase.getDatabase(application)
         repository = MedicationRepository(database.medicationDao(), application)
         appointmentRepository = AppointmentRepository(database.appointmentDao())
         healthRepository = HealthRepository(database.healthDao())
@@ -241,6 +242,12 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     fun completeOnboarding() {
         viewModelScope.launch {
             settingsRepository.setOnboardingDone(true)
+        }
+    }
+
+    fun seedDemoData() {
+        viewModelScope.launch {
+            repository.seedOneYearData(database.healthDao(), _healthProfileName.value)
         }
     }
 

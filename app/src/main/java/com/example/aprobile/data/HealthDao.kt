@@ -25,6 +25,9 @@ interface HealthDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: HealthEventEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvents(events: List<HealthEventEntity>)
+
     @Delete
     suspend fun deleteEvent(event: HealthEventEntity): Int
 

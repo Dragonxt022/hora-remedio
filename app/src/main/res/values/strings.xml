@@ -254,6 +254,9 @@
     <string name="med_allergy_warning">Atenção: alergia registrada a \"%1$s\"</string>
     <string name="profile_version">Hora do Remédio • versão %1$s (build %2$d)</string>
     <string name="manage_profiles">Gerenciar perfis</string>
+    <string name="dev_tools">Ferramentas de desenvolvedor</string>
+    <string name="dev_seed_year">Simular 1 ano de dados</string>
+    <string name="dev_seed_desc">Gera ~1 ano de histórico de doses e alguns episódios de febre para testar filtros e gráficos. Só aparece em builds de debug.</string>
     <string name="profile_new_placeholder">Novo perfil (ex: Mãe, Pai, Pet)</string>
     <string name="action_add">Adicionar</string>
     <string name="action_rename">Renomear</string>
