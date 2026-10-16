@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -296,7 +297,7 @@ fun AddEditMedicationDialog(
                                 text = suggestion,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { name = suggestion }
+                                    .clickable(role = Role.Button) { name = suggestion }
                                     .padding(horizontal = 16.dp, vertical = 10.dp),
                                 style = MaterialTheme.typography.bodyMedium
                             )

@@ -61,6 +61,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -648,7 +649,7 @@ private fun RowScope.BottomNavItem(
         modifier = Modifier
             .weight(1f)
             .fillMaxHeight()
-            .clickable(onClick = onClick),
+            .clickable(role = Role.Tab, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Box(

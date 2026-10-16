@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -271,7 +272,7 @@ fun DoseItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),
@@ -422,7 +423,7 @@ fun MedicationMasterCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),
@@ -603,7 +604,7 @@ fun BarChart(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .clickable(role = Role.Button, enabled = onClick != null) { onClick?.invoke() }
             .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),
@@ -779,7 +780,7 @@ fun DoseGroupCard(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable(onClick = onClick)
+                    .clickable(role = Role.Button, onClick = onClick)
                     .padding(14.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

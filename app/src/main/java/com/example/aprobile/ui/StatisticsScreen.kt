@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -128,7 +129,7 @@ fun StatisticsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { detail = streakDetail }
+                    .clickable(role = Role.Button) { detail = streakDetail }
                     .padding(16.dp)
             ) {
                 Text(
@@ -179,7 +180,7 @@ fun StatisticsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { detail = adherenceDetail }
+                    .clickable(role = Role.Button) { detail = adherenceDetail }
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -211,7 +212,7 @@ fun StatisticsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { detail = historyDetail }
+                    .clickable(role = Role.Button) { detail = historyDetail }
                     .padding(20.dp)
             ) {
                 Text(
@@ -403,7 +404,7 @@ private fun StatRow(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = glassColor),

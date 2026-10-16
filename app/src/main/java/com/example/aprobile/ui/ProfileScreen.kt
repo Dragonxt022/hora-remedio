@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -119,7 +120,7 @@ fun ProfileScreen(
                 .size(96.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .clickable { photoLauncher.launch("image/*") }
+                .clickable(role = Role.Button) { photoLauncher.launch("image/*") }
         ) {
             if (mainProfilePhoto != null) {
                 AsyncImage(
