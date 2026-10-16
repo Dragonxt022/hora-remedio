@@ -143,6 +143,7 @@ fun AddEditMedicationDialog(
 
     var expandedProfile by remember { mutableStateOf(false) }
     var expandedColor by remember { mutableStateOf(false) }
+    var expandedSchedule by remember { mutableStateOf(false) }
 
     val times = remember {
         mutableStateListOf<String>().apply {
@@ -523,27 +524,44 @@ fun AddEditMedicationDialog(
                     Switch(checked = vibrateEnabled, onCheckedChange = { vibrateEnabled = it })
                 }
 
-                Text(
-                    text = stringResource(R.string.med_schedule_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 4.dp)
+                val scheduleOptions = listOf(
+                    MedicationEntity.SCHEDULE_DAILY to R.string.schedule_daily,
+                    MedicationEntity.SCHEDULE_WEEKLY_DAYS to R.string.schedule_weekly,
+                    MedicationEntity.SCHEDULE_AS_NEED to R.string.schedule_as_needed
+                )
+                val selectedScheduleLabel = stringResource(
+                    scheduleOptions.firstOrNull { it.first == scheduleType }?.second ?: R.string.schedule_daily
                 )
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ExposedDropdownMenuBox(
+                    expanded = expandedSchedule,
+                    onExpandedChange = { expandedSchedule = !expandedSchedule },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    listOf(
-                        MedicationEntity.SCHEDULE_DAILY to R.string.schedule_daily,
-                        MedicationEntity.SCHEDULE_WEEKLY_DAYS to R.string.schedule_weekly,
-                        MedicationEntity.SCHEDULE_AS_NEED to R.string.schedule_as_needed
-                    ).forEach { (value, labelRes) ->
-                        FilterChip(
-                            selected = scheduleType == value,
-                            onClick = { scheduleType = value },
-                            label = { Text(stringResource(labelRes)) }
-                        )
+                    OutlinedTextField(
+                        value = selectedScheduleLabel,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.med_schedule_title)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedSchedule) },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedSchedule,
+                        onDismissRequest = { expandedSchedule = false }
+                    ) {
+                        scheduleOptions.forEach { (value, labelRes) ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(labelRes)) },
+                                onClick = {
+                                    scheduleType = value
+                                    expandedSchedule = false
+                                }
+                            )
+                        }
                     }
                 }
 
