@@ -188,16 +188,13 @@ fun HealthScreen(
         }
 
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(R.string.health_diary),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = {
                         if (uiState.isPremium) {
@@ -215,13 +212,15 @@ fun HealthScreen(
                         } else {
                             onUpgrade()
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        stringResource(if (uiState.isPremium) R.string.health_export else R.string.health_export_locked),
-                        style = MaterialTheme.typography.labelMedium
+                        text = stringResource(if (uiState.isPremium) R.string.health_export else R.string.health_export_locked),
+                        maxLines = 1
                     )
                 }
             }
