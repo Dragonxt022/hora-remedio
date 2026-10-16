@@ -2,15 +2,20 @@ package com.example.aprobile.ui
 
 import android.app.Activity
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -159,18 +164,10 @@ fun MedicationScreen(
                     topBar = {
                         TopAppBar(
                             title = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = if (isDetail) Icons.Default.Medication else currentDestination.icon,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.padding(end = 8.dp)
-                                    )
-                                    Text(
-                                        text = stringResource(if (isDetail) R.string.title_detail else currentDestination.titleRes),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                                Text(
+                                    text = stringResource(if (isDetail) R.string.title_detail else currentDestination.titleRes),
+                                    fontWeight = FontWeight.Bold
+                                )
                             },
                             navigationIcon = {
                                 if (isDetail || currentRoute == AppDestination.PROFILE.route) {
@@ -217,35 +214,41 @@ fun MedicationScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
                         ) {
-                            NavigationBar(
+                            Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(64.dp)
-                                    .shadow(12.dp, RoundedCornerShape(28.dp))
-                                    .clip(RoundedCornerShape(28.dp))
+                                    .height(60.dp)
+                                    .shadow(12.dp, RoundedCornerShape(30.dp))
                                     .border(
                                         BorderStroke(1.dp, glassBorderColor(uiState.isDarkMode)),
-                                        RoundedCornerShape(28.dp)
+                                        RoundedCornerShape(30.dp)
                                     ),
-                                containerColor = glassSurfaceElevatedColor(uiState.isDarkMode),
-                                tonalElevation = 0.dp
+                                shape = RoundedCornerShape(30.dp),
+                                color = glassSurfaceElevatedColor(uiState.isDarkMode)
                             ) {
-                                AppDestination.entries.filter { it != AppDestination.PROFILE }.forEach { dest ->
-                                    NavigationBarItem(
-                                        selected = currentRoute == dest.route,
-                                        onClick = {
-                                            if (currentRoute != dest.route) {
-                                                navController.navigate(dest.route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    AppDestination.entries.filter { it != AppDestination.PROFILE }.forEach { dest ->
+                                        BottomNavItem(
+                                            destination = dest,
+                                            selected = currentRoute == dest.route,
+                                            onClick = {
+                                                if (currentRoute != dest.route) {
+                                                    navController.navigate(dest.route) {
+                                                        popUpTo(navController.graph.findStartDestination().id) {
+                                                            saveState = true
+                                                        }
+                                                        launchSingleTop = true
+                                                        restoreState = true
                                                     }
-                                                    launchSingleTop = true
-                                                    restoreState = true
                                                 }
                                             }
-                                        },
-                                        icon = { Icon(dest.icon, contentDescription = stringResource(dest.labelRes)) }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -502,6 +505,41 @@ fun MedicationScreen(
                         Text(stringResource(R.string.action_cancel))
                     }
                 }
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.BottomNavItem(
+    destination: AppDestination,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val contentColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+        else MaterialTheme.colorScheme.onSurfaceVariant,
+        label = "navItemColor"
+    )
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(width = 48.dp, height = 32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = destination.icon,
+                contentDescription = stringResource(destination.labelRes),
+                tint = contentColor,
+                modifier = Modifier.size(22.dp)
             )
         }
     }
