@@ -30,15 +30,15 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Aceitar licenças e instalar SDK
+      - name: Instalar SDK (platform 37)
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platform-tools" > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
-            || sdkmanager --channel=3 "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          export ANDROID_HOME="$ANDROID_SDK_ROOT"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -type f -name sdkmanager 2>/dev/null | head -n 1)"
+          echo "sdkmanager: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
+            || "$SDKMANAGER" --channel=3 "platform-tools" "platforms;android-37" "build-tools;37.0.0" > /dev/null 2>&1 \
             || true
 
       - name: Escrever configuração de assinatura
