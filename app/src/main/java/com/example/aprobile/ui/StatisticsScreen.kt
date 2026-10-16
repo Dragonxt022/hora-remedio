@@ -73,25 +73,24 @@ fun StatisticsScreen(
             colors = CardDefaults.cardColors(containerColor = glassColor),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(16.dp)
             ) {
                 Text(
                     text = stringResource(R.string.streak_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = if (uiState.currentStreak > 0) {
                         "\uD83D\uDD25 " + pluralStringResource(R.plurals.streak_days, uiState.currentStreak, uiState.currentStreak)
                     } else {
                         stringResource(R.string.streak_none)
                     },
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = if (uiState.currentStreak > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
