@@ -231,6 +231,11 @@
     <string name="health_event_date">Data</string>
     <string name="health_event_time">Hora</string>
     <string name="health_add_event">Novo registro</string>
+    <string name="health_event_photo_add">Anexar foto</string>
+    <string name="health_event_photo_change">Trocar foto</string>
+    <string name="health_event_photo_remove">Remover foto</string>
+    <string name="health_temperature">Temperatura</string>
+    <string name="health_temperature_empty">Registre ao menos duas febres com valor para ver o gráfico.</string>
     <string name="err_health_title">Informe um título.</string>
     <string name="health_type_symptom">Sintoma</string>
     <string name="health_type_fever">Febre</string>

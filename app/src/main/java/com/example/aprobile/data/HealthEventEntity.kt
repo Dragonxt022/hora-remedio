@@ -16,7 +16,8 @@ data class HealthEventEntity(
     val type: String,
     val title: String,
     val value: String? = null,
-    val notes: String? = null
+    val notes: String? = null,
+    val photoUri: String? = null
 ) {
     companion object {
         const val TYPE_SYMPTOM = "SYMPTOM"

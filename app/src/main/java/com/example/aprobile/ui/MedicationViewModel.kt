@@ -668,7 +668,8 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         title: String,
         value: String?,
         notes: String?,
-        timestamp: Long
+        timestamp: Long,
+        photoUri: String?
     ) {
         val profileName = _healthProfileName.value
         viewModelScope.launch {
@@ -679,7 +680,8 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     type = type,
                     title = title,
                     value = value?.takeIf { it.isNotBlank() },
-                    notes = notes?.takeIf { it.isNotBlank() }
+                    notes = notes?.takeIf { it.isNotBlank() },
+                    photoUri = photoUri
                 )
             )
         }

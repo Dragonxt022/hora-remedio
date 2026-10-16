@@ -231,6 +231,11 @@
     <string name="health_event_date">Date</string>
     <string name="health_event_time">Time</string>
     <string name="health_add_event">New entry</string>
+    <string name="health_event_photo_add">Attach photo</string>
+    <string name="health_event_photo_change">Change photo</string>
+    <string name="health_event_photo_remove">Remove photo</string>
+    <string name="health_temperature">Temperature</string>
+    <string name="health_temperature_empty">Log at least two fevers with a value to see the chart.</string>
     <string name="err_health_title">Enter a title.</string>
     <string name="health_type_symptom">Symptom</string>
     <string name="health_type_fever">Fever</string>

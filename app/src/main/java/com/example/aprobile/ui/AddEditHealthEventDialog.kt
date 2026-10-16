@@ -2,12 +2,21 @@ package com.example.aprobile.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import androidx.annotation.StringRes
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import java.io.File
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +32,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,7 +55,7 @@ private val eventTypeOptions: List<Pair<String, Int>> = listOf(
 @Composable
 fun AddEditHealthEventDialog(
     onDismiss: () -> Unit,
-    onSave: (type: String, title: String, value: String?, notes: String?, timestamp: Long) -> Unit
+    onSave: (type: String, title: String, value: String?, notes: String?, timestamp: Long, photoUri: String?) -> Unit
 ) {
     val context = LocalContext.current
     val errTitle = stringResource(R.string.err_health_title)
@@ -54,6 +64,22 @@ fun AddEditHealthEventDialog(
     var title by remember { mutableStateOf("") }
     var value by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var photoPath by remember { mutableStateOf<String?>(null) }
+
+    val photoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            try {
+                val dir = File(context.filesDir, "photos").apply { mkdirs() }
+                val file = File(dir, "evt_${System.currentTimeMillis()}.jpg")
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    file.outputStream().use { output -> input.copyTo(output) }
+                }
+                photoPath = file.absolutePath
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -159,6 +185,38 @@ fun AddEditHealthEventDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Button(
+                        onClick = { photoLauncher.launch("image/*") },
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            stringResource(
+                                if (photoPath == null) R.string.health_event_photo_add
+                                else R.string.health_event_photo_change
+                            )
+                        )
+                    }
+                    if (photoPath != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TextButton(onClick = { photoPath = null }) {
+                            Text(stringResource(R.string.health_event_photo_remove))
+                        }
+                    }
+                }
+
+                photoPath?.let { path ->
+                    AsyncImage(
+                        model = File(path),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
+
                 if (errorMessage != null) {
                     Text(
                         text = errorMessage!!,
@@ -175,7 +233,7 @@ fun AddEditHealthEventDialog(
                         errorMessage = errTitle
                         return@Button
                     }
-                    onSave(type, title.trim(), value.trim().ifBlank { null }, notes.trim().ifBlank { null }, timestamp)
+                    onSave(type, title.trim(), value.trim().ifBlank { null }, notes.trim().ifBlank { null }, timestamp, photoPath)
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {

@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.android.billing.ktx)
+    implementation(libs.coil.compose)
 
     // Credentials / Google Sign-In
     implementation("androidx.credentials:credentials:1.6.0")

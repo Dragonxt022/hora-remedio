@@ -89,10 +89,26 @@ class MigrationTest {
         db.close()
     }
 
+    @Test
+    fun migrate7To8_addsPhotoColumn() {
+        var db = helper.createDatabase(TEST_DB_7_8, 7)
+        db.close()
+
+        db = helper.runMigrationsAndValidate(TEST_DB_7_8, 8, true, AppDatabase.MIGRATION_7_8)
+
+        db.execSQL("INSERT INTO health_events (profile, timestamp, type, title, photoUri) VALUES ('Eu', 1, 'FEVER', 'Febre', '/x/y.jpg')")
+        val cursor = db.query("SELECT photoUri FROM health_events")
+        assertTrue(cursor.moveToFirst())
+        assertEquals("/x/y.jpg", cursor.getString(0))
+        cursor.close()
+        db.close()
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
         private const val TEST_DB_4_5 = "migration-test-4-5"
         private const val TEST_DB_5_6 = "migration-test-5-6"
         private const val TEST_DB_6_7 = "migration-test-6-7"
+        private const val TEST_DB_7_8 = "migration-test-7-8"
     }
 }

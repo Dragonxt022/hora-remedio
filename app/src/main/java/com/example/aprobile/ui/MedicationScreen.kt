@@ -418,8 +418,8 @@ fun MedicationScreen(
         if (uiState.isHealthEventDialogOpen) {
             AddEditHealthEventDialog(
                 onDismiss = { viewModel.closeHealthEventDialog() },
-                onSave = { type, title, value, notes, timestamp ->
-                    viewModel.saveHealthEvent(type, title, value, notes, timestamp)
+                onSave = { type, title, value, notes, timestamp, photoUri ->
+                    viewModel.saveHealthEvent(type, title, value, notes, timestamp, photoUri)
                 }
             )
         }

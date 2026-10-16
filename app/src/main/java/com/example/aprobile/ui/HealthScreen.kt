@@ -2,6 +2,7 @@ package com.example.aprobile.ui
 
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -46,15 +47,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.aprobile.R
 import com.example.aprobile.data.HealthEventEntity
+import com.example.aprobile.domain.HealthMetrics
 import com.example.aprobile.domain.ReportCsv
+import java.io.File
 
 @Composable
 fun HealthScreen(
@@ -102,6 +111,17 @@ fun HealthScreen(
                 borderColor = borderColor,
                 onEditProfile = onEditProfile
             )
+        }
+
+        val temperaturePoints = HealthMetrics.temperaturePoints(uiState.healthEvents)
+        if (temperaturePoints.size >= 2) {
+            item {
+                TemperatureChartCard(
+                    points = temperaturePoints,
+                    glassColor = glassColor,
+                    borderColor = borderColor
+                )
+            }
         }
 
         item {
@@ -162,6 +182,7 @@ fun HealthScreen(
                         subtitle = formatDetailDateTime(item.record.scheduledDateTime) +
                             (if (item.medication.dosage.isNotBlank()) " • ${item.medication.dosage}" else ""),
                         onDelete = null,
+                        photoPath = null,
                         glassColor = glassColor,
                         borderColor = borderColor
                     )
@@ -172,6 +193,7 @@ fun HealthScreen(
                         subtitle = formatDetailDateTime(item.event.timestamp) +
                             (item.event.notes?.let { " • $it" } ?: ""),
                         onDelete = { onDeleteEvent(item.event) },
+                        photoPath = item.event.photoUri,
                         glassColor = glassColor,
                         borderColor = borderColor
                     )
@@ -293,6 +315,7 @@ private fun TimelineRow(
     title: String,
     subtitle: String,
     onDelete: (() -> Unit)?,
+    photoPath: String?,
     glassColor: Color,
     borderColor: Color
 ) {
@@ -310,13 +333,24 @@ private fun TimelineRow(
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+            if (photoPath != null) {
+                AsyncImage(
+                    model = File(photoPath),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                }
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -331,3 +365,68 @@ private fun TimelineRow(
         }
     }
 }
+
+@Composable
+private fun TemperatureChartCard(
+    points: List<Pair<Long, Float>>,
+    glassColor: Color,
+    borderColor: Color
+) {
+    val temps = points.map { it.second }
+    val minTemp = temps.minOrNull() ?: return
+    val maxTemp = temps.maxOrNull() ?: return
+    val lastTemp = points.last().second
+    val lineColor = MaterialTheme.colorScheme.primary
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = glassColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.health_temperature),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${formatTemp(lastTemp)} °C   •   min ${formatTemp(minTemp)}  •  max ${formatTemp(maxTemp)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Canvas(modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp)) {
+                val width = size.width
+                val height = size.height
+                val verticalSpan = (maxTemp - minTemp).let { if (it < 0.5f) 1f else it }
+                val minTime = points.first().first
+                val maxTime = points.last().first
+                val timeSpan = (maxTime - minTime).let { if (it <= 0L) 1L else it }
+                val pad = 14f
+
+                fun px(t: Long) = pad + (t - minTime).toFloat() / timeSpan.toFloat() * (width - 2 * pad)
+                fun py(v: Float) = height - pad - (v - minTemp) / verticalSpan * (height - 2 * pad)
+
+                val path = Path()
+                points.forEachIndexed { index, (t, v) ->
+                    val x = px(t)
+                    val y = py(v)
+                    if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                }
+                drawPath(path = path, color = lineColor, style = Stroke(width = 4f))
+                points.forEach { (t, v) ->
+                    drawCircle(color = lineColor, radius = 7f, center = Offset(px(t), py(v)))
+                }
+            }
+        }
+    }
+}
+
+private fun formatTemp(value: Float): String =
+    if (value % 1f == 0f) value.toInt().toString() else String.format("%.1f", value)
