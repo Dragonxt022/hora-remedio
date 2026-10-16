@@ -195,6 +195,10 @@
     <string name="checkin_saved_title">Registro salvo</string>
     <string name="checkin_setting">Check-in diário</string>
     <string name="checkin_setting_desc">Pergunta uma vez ao dia como você se sente</string>
+    <string name="account_section">Sua conta</string>
+    <string name="notifications_row">Notificações</string>
+    <string name="settings_row">Configurações</string>
+    <string name="dark_mode_row">Modo noturno · preto total</string>
     <string name="dev_test_checkin">Testar check-in diário</string>
 
     <string name="appt_dialog_new">Nova Consulta</string>

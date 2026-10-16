@@ -195,6 +195,10 @@
     <string name="checkin_saved_title">Entry saved</string>
     <string name="checkin_setting">Daily check-in</string>
     <string name="checkin_setting_desc">Asks once a day how you feel</string>
+    <string name="account_section">Your account</string>
+    <string name="notifications_row">Notifications</string>
+    <string name="settings_row">Settings</string>
+    <string name="dark_mode_row">Dark mode · total black</string>
     <string name="dev_test_checkin">Test daily check-in</string>
 
     <string name="appt_dialog_new">New appointment</string>
