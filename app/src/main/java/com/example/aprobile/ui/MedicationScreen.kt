@@ -77,6 +77,8 @@ import coil.compose.AsyncImage
 import java.io.File
 
 private const val DETAIL_ROUTE = "medication/{medicationId}"
+private const val NOTIFICATIONS_ROUTE = "notifications"
+private const val SETTINGS_ROUTE = "settings"
 
 private fun detailRoute(medicationId: Long) = "medication/$medicationId"
 
@@ -152,6 +154,13 @@ fun MedicationScreen(
     val currentDestination = AppDestination.entries.firstOrNull { it.route == currentRoute }
         ?: AppDestination.DOSES
     val isDetail = currentRoute?.startsWith("medication/") == true
+    val isSubScreen = currentRoute == NOTIFICATIONS_ROUTE || currentRoute == SETTINGS_ROUTE
+    val topTitleRes = when (currentRoute) {
+        NOTIFICATIONS_ROUTE -> R.string.notifications_row
+        SETTINGS_ROUTE -> R.string.settings_row
+        else -> if (isDetail) R.string.title_detail else currentDestination.titleRes
+    }
+    val showBack = isDetail || currentRoute == AppDestination.PROFILE.route || isSubScreen
 
     AprobileTheme(darkTheme = uiState.isDarkMode) {
         val bgColors = if (uiState.isDarkMode) {
@@ -176,12 +185,12 @@ fun MedicationScreen(
                         TopAppBar(
                             title = {
                                 Text(
-                                    text = stringResource(if (isDetail) R.string.title_detail else currentDestination.titleRes),
+                                    text = stringResource(topTitleRes),
                                     fontWeight = FontWeight.Bold
                                 )
                             },
                             navigationIcon = {
-                                if (isDetail || currentRoute == AppDestination.PROFILE.route) {
+                                if (showBack) {
                                     IconButton(onClick = { navController.popBackStack() }) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -241,6 +250,7 @@ fun MedicationScreen(
                         )
                     },
                     bottomBar = {
+                        if (!isSubScreen) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -284,9 +294,10 @@ fun MedicationScreen(
                                 }
                             }
                         }
+                        }
                     },
                     floatingActionButton = {
-                        if (currentDestination.showFab && !isDetail) {
+                        if (currentDestination.showFab && !isDetail && !isSubScreen) {
                             FloatingActionButton(
                                 onClick = {
                                     when (currentDestination) {
@@ -377,17 +388,13 @@ fun MedicationScreen(
                                 mainProfilePhoto = uiState.mainProfilePhoto,
                                 userEmail = uiState.userEmail,
                                 isLoggedIn = uiState.isLoggedIn,
-                                snoozeMinutes = uiState.snoozeMinutes,
                                 isPremium = uiState.isPremium,
-                                appLockEnabled = uiState.appLockEnabled,
-                                dailyCheckInEnabled = uiState.dailyCheckInEnabled,
                                 isDarkMode = uiState.isDarkMode,
                                 onRenameMainProfile = { viewModel.renameMainProfile(it) },
                                 onSetProfilePhoto = { viewModel.setMainProfilePhoto(it) },
-                                onSnoozeChange = { viewModel.setSnoozeMinutes(it) },
-                                onAppLockChange = { viewModel.setAppLockEnabled(it) },
-                                onDailyCheckInChange = { viewModel.setDailyCheckInEnabled(it) },
                                 onDarkModeChange = { if (it != uiState.isDarkMode) viewModel.toggleDarkMode() },
+                                onOpenNotifications = { navController.navigate(NOTIFICATIONS_ROUTE) },
+                                onOpenSettings = { navController.navigate(SETTINGS_ROUTE) },
                                 onOpenPrivacy = { viewModel.openPrivacy() },
                                 onManageProfiles = { viewModel.openProfileManager() },
                                 onSeedDemo = { viewModel.seedDemoData() },
@@ -395,6 +402,23 @@ fun MedicationScreen(
                                 onUpgrade = { viewModel.openPaywall() },
                                 onLoginGoogle = { viewModel.loginWithGoogle() },
                                 onLogout = { viewModel.logout() }
+                            )
+                        }
+
+                        composable(NOTIFICATIONS_ROUTE) {
+                            NotificationsSettingsScreen(
+                                dailyCheckInEnabled = uiState.dailyCheckInEnabled,
+                                onDailyCheckInChange = { viewModel.setDailyCheckInEnabled(it) },
+                                onTestCheckIn = { viewModel.sendCheckInNow() }
+                            )
+                        }
+
+                        composable(SETTINGS_ROUTE) {
+                            SettingsScreen(
+                                snoozeMinutes = uiState.snoozeMinutes,
+                                appLockEnabled = uiState.appLockEnabled,
+                                onSnoozeChange = { viewModel.setSnoozeMinutes(it) },
+                                onAppLockChange = { viewModel.setAppLockEnabled(it) }
                             )
                         }
 
