@@ -254,6 +254,16 @@
     <string name="pdf_not_taken">Doses não tomadas: %1$d</string>
     <string name="pdf_history">Histórico de Doses</string>
     <string name="pdf_table_header">Data/Hora            Medicamento                 Perfil       Status</string>
+    <string name="pdf_adherence">Adesão</string>
+    <string name="pdf_adherence_value">%1$d%% (%2$d de %3$d doses)</string>
+    <string name="pdf_symptoms">Sintomas e registros de saúde</string>
+    <string name="pdf_no_symptoms">Nenhum sintoma registrado.</string>
+    <string name="pdf_stock">Estoque</string>
+    <string name="pdf_stock_none">Nenhum medicamento com estoque controlado.</string>
+    <string name="pdf_stock_untracked">estoque não controlado</string>
+    <string name="pdf_stock_no_schedule">sem uso diário</string>
+    <string name="pdf_stock_runs_out_soon">acaba hoje/amanhã</string>
+    <string name="pdf_stock_days">acaba em %1$d dias</string>
 
     <string name="nav_health">Saúde</string>
     <string name="title_health">Saúde</string>

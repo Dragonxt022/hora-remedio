@@ -254,6 +254,16 @@
     <string name="pdf_not_taken">Missed doses: %1$d</string>
     <string name="pdf_history">Dose history</string>
     <string name="pdf_table_header">Date/Time            Medication                   Profile      Status</string>
+    <string name="pdf_adherence">Adherence</string>
+    <string name="pdf_adherence_value">%1$d%% (%2$d of %3$d doses)</string>
+    <string name="pdf_symptoms">Symptoms and health records</string>
+    <string name="pdf_no_symptoms">No symptom recorded.</string>
+    <string name="pdf_stock">Stock</string>
+    <string name="pdf_stock_none">No medication with tracked stock.</string>
+    <string name="pdf_stock_untracked">stock not tracked</string>
+    <string name="pdf_stock_no_schedule">no daily use</string>
+    <string name="pdf_stock_runs_out_soon">runs out today/tomorrow</string>
+    <string name="pdf_stock_days">runs out in %1$d days</string>
 
     <string name="nav_health">Health</string>
     <string name="title_health">Health</string>

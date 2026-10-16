@@ -330,7 +330,8 @@ fun StatisticsScreen(
                             context,
                             uiState.allMedications,
                             uiState.allDoseRecords,
-                            uiState.activeHealthProfile
+                            uiState.activeHealthProfile,
+                            uiState.healthEvents
                         )
                         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
                         val intent = Intent(Intent.ACTION_SEND).apply {
