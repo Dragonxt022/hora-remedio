@@ -153,9 +153,9 @@
     <string name="med_dosage_placeholder">e.g. 500 mg or 1 tablet</string>
     <string name="med_profile_label">Profile / caregiver</string>
     <string name="med_color_label">Accent color</string>
-    <string name="med_stock_label">Current stock</string>
+    <string name="med_stock_label">Stock</string>
     <string name="med_stock_placeholder">e.g. 20</string>
-    <string name="med_low_label">Low alert</string>
+    <string name="med_low_label">Low</string>
     <string name="med_low_placeholder">e.g. 5</string>
     <string name="med_instructions_label">Instructions (optional)</string>
     <string name="med_instructions_placeholder">e.g. Take after lunch</string>

@@ -153,9 +153,9 @@
     <string name="med_dosage_placeholder">Ex: 500 mg ou 1 comprimido</string>
     <string name="med_profile_label">Perfil / Responsável</string>
     <string name="med_color_label">Cor de Destaque</string>
-    <string name="med_stock_label">Estoque Atual</string>
+    <string name="med_stock_label">Estoque</string>
     <string name="med_stock_placeholder">Ex: 20</string>
-    <string name="med_low_label">Aviso Baixo</string>
+    <string name="med_low_label">Aviso</string>
     <string name="med_low_placeholder">Ex: 5</string>
     <string name="med_instructions_label">Instruções de uso (opcional)</string>
     <string name="med_instructions_placeholder">Ex: Tomar após o almoço</string>
