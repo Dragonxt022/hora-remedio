@@ -313,13 +313,15 @@ fun MedicationScreen(
 
                         composable(AppDestination.PROFILE.route) {
                             ProfileScreen(
-                                userName = uiState.userName,
+                                mainProfileName = uiState.mainProfileName,
+                                mainProfilePhoto = uiState.mainProfilePhoto,
                                 userEmail = uiState.userEmail,
                                 isLoggedIn = uiState.isLoggedIn,
                                 snoozeMinutes = uiState.snoozeMinutes,
                                 isPremium = uiState.isPremium,
                                 appLockEnabled = uiState.appLockEnabled,
-                                onUpdateName = { viewModel.updateUserName(it) },
+                                onRenameMainProfile = { viewModel.renameMainProfile(it) },
+                                onSetProfilePhoto = { viewModel.setMainProfilePhoto(it) },
                                 onSnoozeChange = { viewModel.setSnoozeMinutes(it) },
                                 onAppLockChange = { viewModel.setAppLockEnabled(it) },
                                 onOpenPrivacy = { viewModel.openPrivacy() },

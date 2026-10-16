@@ -39,4 +39,10 @@ interface HealthDao {
 
     @Query("SELECT COUNT(*) FROM health_events WHERE profile = :name")
     suspend fun countEventsForProfile(name: String): Int
+
+    @Query("DELETE FROM health_events")
+    suspend fun deleteAllEvents()
+
+    @Query("DELETE FROM health_profiles")
+    suspend fun deleteAllProfiles()
 }

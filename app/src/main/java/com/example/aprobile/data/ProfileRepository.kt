@@ -43,6 +43,11 @@ class ProfileRepository(
         profileDao.deleteProfile(name)
     }
 
+    suspend fun setProfilePhoto(name: String, path: String?) {
+        val existing = profileDao.getAllProfilesSync().firstOrNull { it.name == name } ?: return
+        profileDao.insertProfile(existing.copy(photoUri = path))
+    }
+
     suspend fun isProfileInUse(name: String): Boolean {
         if (medicationDao.countMedicationsForProfile(name) > 0) return true
         if (healthDao.countEventsForProfile(name) > 0) return true

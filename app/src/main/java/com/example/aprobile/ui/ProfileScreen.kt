@@ -43,7 +43,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import java.io.File
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,13 +62,15 @@ import com.example.aprobile.R
 
 @Composable
 fun ProfileScreen(
-    userName: String,
+    mainProfileName: String,
+    mainProfilePhoto: String?,
     userEmail: String,
     isLoggedIn: Boolean,
     snoozeMinutes: Int,
     isPremium: Boolean,
     appLockEnabled: Boolean,
-    onUpdateName: (String) -> Unit,
+    onRenameMainProfile: (String) -> Unit,
+    onSetProfilePhoto: (String?) -> Unit,
     onSnoozeChange: (Int) -> Unit,
     onAppLockChange: (Boolean) -> Unit,
     onOpenPrivacy: () -> Unit,
@@ -70,7 +80,7 @@ fun ProfileScreen(
     onLoginGoogle: () -> Unit,
     onLogout: () -> Unit
 ) {
-    var editableName by remember(userName) { mutableStateOf(userName) }
+    var editableName by remember(mainProfileName) { mutableStateOf(mainProfileName) }
     val context = LocalContext.current
     val versionInfo = remember {
         try {
@@ -84,6 +94,21 @@ fun ProfileScreen(
             name to code
         } catch (e: Exception) {
             "1.0" to 0L
+        }
+    }
+
+    val photoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            try {
+                val dir = File(context.filesDir, "photos").apply { mkdirs() }
+                val file = File(dir, "profile_${System.currentTimeMillis()}.jpg")
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    file.outputStream().use { output -> input.copyTo(output) }
+                }
+                onSetProfilePhoto(file.absolutePath)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -102,13 +127,23 @@ fun ProfileScreen(
                 .height(96.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer)
+                .clickable { photoLauncher.launch("image/*") }
         ) {
-            Text(
-                text = if (editableName.isNotBlank()) editableName.take(1).uppercase() else "U",
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            if (mainProfilePhoto != null) {
+                AsyncImage(
+                    model = File(mainProfilePhoto),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Text(
+                    text = if (editableName.isNotBlank()) editableName.take(1).uppercase() else "U",
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
 
         Card(
@@ -191,14 +226,28 @@ fun ProfileScreen(
 
         OutlinedTextField(
             value = editableName,
-            onValueChange = {
-                editableName = it
-                onUpdateName(it)
-            },
+            onValueChange = { editableName = it },
             label = { Text(stringResource(R.string.profile_name)) },
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
+            keyboardActions = KeyboardActions(onDone = { onRenameMainProfile(editableName) }),
             modifier = Modifier.fillMaxWidth()
+        )
+
+        if (editableName.trim().isNotEmpty() && editableName.trim() != mainProfileName) {
+            Button(
+                onClick = { onRenameMainProfile(editableName) },
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.profile_save_name))
+            }
+        }
+
+        Text(
+            text = stringResource(R.string.profile_change_photo),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Text(

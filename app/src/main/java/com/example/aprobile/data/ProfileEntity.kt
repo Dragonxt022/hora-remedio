@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class ProfileEntity(
     @PrimaryKey
     val name: String,
-    val sortOrder: Int = 0
+    val sortOrder: Int = 0,
+    val photoUri: String? = null
 )

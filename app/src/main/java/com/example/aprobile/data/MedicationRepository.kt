@@ -252,10 +252,4 @@ class MedicationRepository(
         }
     }
 
-    suspend fun deleteAllData() {
-        val existing = medicationDao.getAllMedicationsSync()
-        existing.forEach { AlarmScheduler.cancelAlarmsForMedication(context, it.id, it.times) }
-        medicationDao.deleteAllDoseRecords()
-        medicationDao.deleteAllMedications()
-    }
 }

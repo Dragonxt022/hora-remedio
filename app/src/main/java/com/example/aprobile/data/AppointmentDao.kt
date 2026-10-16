@@ -22,4 +22,7 @@ interface AppointmentDao {
 
     @Delete
     suspend fun deleteAppointment(appointment: AppointmentEntity): Int
+
+    @Query("DELETE FROM appointments")
+    suspend fun deleteAllAppointments()
 }

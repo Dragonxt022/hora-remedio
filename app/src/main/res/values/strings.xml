@@ -72,7 +72,9 @@
     <string name="export_pdf">Exportar relatório (PDF)</string>
     <string name="share_report">Compartilhar relatório</string>
 
-    <string name="profile_name">Seu Nome</string>
+    <string name="profile_name">Nome do perfil principal</string>
+    <string name="profile_save_name">Salvar nome</string>
+    <string name="profile_change_photo">Alterar foto (toque no avatar)</string>
     <string name="profile_google_login">Entrar com o Google</string>
     <string name="profile_logout">Sair da Conta</string>
     <string name="profile_synced">Sincronizado na Nuvem</string>
@@ -231,6 +233,14 @@
     <string name="health_event_date">Data</string>
     <string name="health_event_time">Hora</string>
     <string name="health_add_event">Novo registro</string>
+    <string name="search_diary">Pesquisar no diário…</string>
+    <string name="search_appointment">Pesquisar consulta…</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_appointment_all">Todas</string>
+    <string name="filter_upcoming">Próximas</string>
+    <string name="filter_past">Passadas</string>
+    <string name="health_no_results">Nenhum registro encontrado.</string>
+    <string name="appt_no_results">Nenhuma consulta encontrada.</string>
     <string name="health_event_photo_add">Anexar foto</string>
     <string name="health_event_photo_change">Trocar foto</string>
     <string name="health_event_photo_remove">Remover foto</string>

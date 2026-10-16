@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Notes
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -43,8 +44,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,6 +87,25 @@ fun HealthScreen(
     val borderColor = glassBorderColor(uiState.isDarkMode)
     val realProfiles = uiState.availableProfiles.filter { it != "Todos" }
 
+    var query by remember { mutableStateOf("") }
+    var typeFilter by remember { mutableStateOf<String?>(null) }
+
+    val filteredTimeline = uiState.healthTimeline.filter { item ->
+        val typeOk = when (item) {
+            is HealthTimelineItem.Event -> typeFilter == null || item.event.type == typeFilter
+            is HealthTimelineItem.Dose -> typeFilter == null
+        }
+        val textOk = query.isBlank() || when (item) {
+            is HealthTimelineItem.Event ->
+                listOfNotNull(item.event.title, item.event.value, item.event.notes)
+                    .any { it.contains(query, ignoreCase = true) }
+            is HealthTimelineItem.Dose ->
+                item.medication.name.contains(query, ignoreCase = true) ||
+                    item.medication.dosage.contains(query, ignoreCase = true)
+        }
+        typeOk && textOk
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -99,9 +124,45 @@ fun HealthScreen(
                         FilterChip(
                             selected = uiState.healthProfileName == profile,
                             onClick = { onSelectHealthProfile(profile) },
-                            label = { Text(profile) }
+                            label = { Text(if (profile == "Todos") stringResource(R.string.profile_all) else profile) }
                         )
                     }
+                }
+            }
+        }
+
+        item {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = { Text(stringResource(R.string.search_diary)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true,
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val typeOptions = listOf(
+                    null to R.string.filter_all,
+                    HealthEventEntity.TYPE_SYMPTOM to R.string.health_type_symptom,
+                    HealthEventEntity.TYPE_FEVER to R.string.health_type_fever,
+                    HealthEventEntity.TYPE_PRESSURE to R.string.health_type_pressure,
+                    HealthEventEntity.TYPE_NOTE to R.string.health_type_note
+                )
+                typeOptions.forEach { (type, labelRes) ->
+                    FilterChip(
+                        selected = typeFilter == type,
+                        onClick = { typeFilter = type },
+                        label = { Text(stringResource(labelRes)) }
+                    )
                 }
             }
         }
@@ -166,17 +227,21 @@ fun HealthScreen(
             }
         }
 
-        if (uiState.healthTimeline.isEmpty()) {
+        if (filteredTimeline.isEmpty()) {
             item {
                 Text(
-                    text = stringResource(R.string.health_timeline_empty),
+                    text = if (uiState.healthTimeline.isEmpty()) {
+                        stringResource(R.string.health_timeline_empty)
+                    } else {
+                        stringResource(R.string.health_no_results)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
             }
         } else {
-            items(uiState.healthTimeline) { item ->
+            items(filteredTimeline) { item ->
                 when (item) {
                     is HealthTimelineItem.Dose -> TimelineRow(
                         icon = Icons.Default.Medication,

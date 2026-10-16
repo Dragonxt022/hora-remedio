@@ -64,6 +64,8 @@ data class MedicationUiState(
     val selectedProfile: String = "Todos",
     val availableProfiles: List<String> = listOf("Todos"),
     val managedProfiles: List<String> = emptyList(),
+    val mainProfileName: String = "Eu",
+    val mainProfilePhoto: String? = null,
     val isProfileManagerOpen: Boolean = false,
     val searchQuery: String = "",
     val isAddEditOpen: Boolean = false,

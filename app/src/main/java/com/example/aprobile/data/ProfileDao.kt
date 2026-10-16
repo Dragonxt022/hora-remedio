@@ -23,4 +23,7 @@ interface ProfileDao {
 
     @Query("UPDATE profiles SET name = :newName WHERE name = :oldName")
     suspend fun renameProfile(oldName: String, newName: String)
+
+    @Query("DELETE FROM profiles")
+    suspend fun deleteAllProfiles()
 }

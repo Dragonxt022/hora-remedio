@@ -72,7 +72,9 @@
     <string name="export_pdf">Export report (PDF)</string>
     <string name="share_report">Share report</string>
 
-    <string name="profile_name">Your name</string>
+    <string name="profile_name">Main profile name</string>
+    <string name="profile_save_name">Save name</string>
+    <string name="profile_change_photo">Change photo (tap the avatar)</string>
     <string name="profile_google_login">Sign in with Google</string>
     <string name="profile_logout">Sign out</string>
     <string name="profile_synced">Synced to the cloud</string>
@@ -231,6 +233,14 @@
     <string name="health_event_date">Date</string>
     <string name="health_event_time">Time</string>
     <string name="health_add_event">New entry</string>
+    <string name="search_diary">Search the diary…</string>
+    <string name="search_appointment">Search appointments…</string>
+    <string name="filter_all">All</string>
+    <string name="filter_appointment_all">All</string>
+    <string name="filter_upcoming">Upcoming</string>
+    <string name="filter_past">Past</string>
+    <string name="health_no_results">No entries found.</string>
+    <string name="appt_no_results">No appointments found.</string>
     <string name="health_event_photo_add">Attach photo</string>
     <string name="health_event_photo_change">Change photo</string>
     <string name="health_event_photo_remove">Remove photo</string>

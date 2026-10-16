@@ -91,6 +91,8 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                 _uiState.update {
                     it.copy(
                         managedProfiles = names,
+                        mainProfileName = names.firstOrNull() ?: "Eu",
+                        mainProfilePhoto = profiles.firstOrNull()?.photoUri,
                         availableProfiles = listOf("Todos") + names,
                         healthProfileName = newHealth,
                         selectedProfile = newSelected,
@@ -119,6 +121,18 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
 
     fun deleteProfile(name: String) {
         viewModelScope.launch { profileRepository.deleteProfile(name) }
+    }
+
+    fun renameMainProfile(newName: String) {
+        val old = _uiState.value.mainProfileName
+        val trimmed = newName.trim()
+        if (trimmed.isBlank() || trimmed == old) return
+        viewModelScope.launch { profileRepository.renameProfile(old, trimmed) }
+    }
+
+    fun setMainProfilePhoto(path: String?) {
+        val name = _uiState.value.mainProfileName
+        viewModelScope.launch { profileRepository.setProfilePhoto(name, path) }
     }
 
     private fun resolveHealthProfile(profile: String): String {
@@ -236,7 +250,25 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     suspend fun deleteAllData() {
-        repository.deleteAllData()
+        val context = getApplication<Application>()
+        val medicationDao = database.medicationDao()
+
+        medicationDao.getAllMedicationsSync().forEach {
+            com.example.aprobile.notifications.AlarmScheduler.cancelAlarmsForMedication(context, it.id, it.times)
+        }
+
+        medicationDao.deleteAllDoseRecords()
+        medicationDao.deleteAllMedications()
+        database.appointmentDao().deleteAllAppointments()
+        database.healthDao().deleteAllEvents()
+        database.healthDao().deleteAllProfiles()
+        database.profileDao().deleteAllProfiles()
+        database.profileDao().insertProfile(com.example.aprobile.data.ProfileEntity(name = "Eu", sortOrder = 0))
+
+        java.io.File(context.filesDir, "photos").listFiles()?.forEach { it.delete() }
+
+        _healthProfileName.value = "Eu"
+        _uiState.update { it.copy(healthProfileName = "Eu", healthProfile = null) }
     }
 
     fun completeOnboarding() {
