@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="Hora do Remédio">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00C08A"/>
+      <stop offset="1" stop-color="#006F51"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" rx="28" fill="url(#bg)"/>
+
+  <!-- Capsule icon -->
+  <g transform="rotate(45 170 160)">
+    <rect x="70" y="115" width="200" height="90" rx="45" fill="#FFFFFF"/>
+    <rect x="166" y="126" width="9" height="68" fill="#00A878"/>
+  </g>
+
+  <!-- Title -->
+  <text x="320" y="152" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="66" font-weight="700" fill="#FFFFFF">Hora do Remédio</text>
+  <text x="322" y="205" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="27" fill="#D6F5EA">Medication reminders for Android</text>
+
+  <!-- Version pill -->
+  <g>
+    <rect x="322" y="232" width="120" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.18"/>
+    <text x="382" y="258" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF">v1.1</text>
+  </g>
+</svg>
