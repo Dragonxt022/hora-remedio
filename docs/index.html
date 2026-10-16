@@ -137,18 +137,24 @@
   @media(min-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:940px){.grid{grid-template-columns:repeat(4,1fr)}}
   .card{
-    background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px 20px;
+    background:var(--card);border:1px solid var(--border);border-radius:22px;padding:0 18px 22px;
     transition:transform .18s ease, background .18s ease, border-color .18s ease;
-    text-align:center;
+    text-align:center;overflow:hidden;
   }
-  .card:hover{transform:translateY(-4px);background:var(--card-2);border-color:rgba(47,224,192,.35)}
-  .card .ic{
-    width:52px;height:52px;border-radius:15px;background:var(--grad);
-    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
-    box-shadow:0 8px 22px rgba(18,179,154,.3);
+  .card:hover{transform:translateY(-5px);background:var(--card-2);border-color:rgba(47,224,192,.35)}
+  .card .shot{
+    height:212px;margin:0 -18px 14px;display:flex;justify-content:center;align-items:flex-start;
+    padding-top:20px;overflow:hidden;
+    background:radial-gradient(320px 210px at 50% -12%, rgba(47,224,192,.18), transparent 70%);
+    border-bottom:1px solid var(--border);
   }
-  .card .ic svg{width:24px;height:24px;fill:#04120f}
-  .card h3{margin:0 0 6px;font-size:1.05rem;letter-spacing:-.01em}
+  .card .shot .mini{
+    width:104px;border-radius:20px;padding:5px;background:#0b1513;
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 16px 36px rgba(0,0,0,.55), 0 0 26px rgba(47,224,192,.22);
+  }
+  .card .shot .mini img{width:100%;display:block;border-radius:15px}
+  .card h3{margin:0 0 6px;font-size:1.06rem;letter-spacing:-.01em}
   .card p{margin:0;color:var(--muted);font-size:.9rem}
 
   /* SHOTS */
@@ -248,14 +254,38 @@
       <h2>Feito para quem não pode esquecer</h2>
       <p class="lead">Simples no dia a dia, completo quando você precisa.</p>
       <div class="grid">
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm1-15h-2v6l5 3 1-1.7-4-2.3V7z"/></svg></div><h3>Lembretes confiáveis</h3><p>Alarme no horário exato, com som e vibração, mesmo com o app fechado.</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2z"/></svg></div><h3>Esquemas flexíveis</h3><p>Diário, dias da semana ou "quando necessário" (SOS).</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 6h18v3H3zm0 5h18v3H3zm0 5h12v3H3z"/></svg></div><h3>Doses agrupadas</h3><p>Tudo do dia num só cartão, com barra de progresso do que já tomou.</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4 8 4 8-4zm-8 6l-8-4v8l8 4 8-4V9l-8 4z"/></svg></div><h3>Controle de estoque</h3><p>Baixa a cada dose e avisa quando estiver acabando ou esgotar.</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm-8 1a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0 2c-2.7 0-8 1.3-8 4v3h9v-3c0-1 .4-2 1-2.7A6 6 0 0 0 8 14zm8 0c-2.7 0-8 1.3-8 4v3h16v-3c0-2.7-5.3-4-8-4z"/></svg></div><h3>Perfis</h3><p>Você, sua mãe, seu pai ou até seu pet — separados e com foto.</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 13h4l3 8 4-16 3 8h4v2h-5.5L14 9l-4 16-3-8H3z"/></svg></div><h3>Diário & gráficos</h3><p>Febre, pressão e glicemia com gráficos ao longo do tempo.</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM8 13h8v2H8zm0 4h8v2H8z"/></svg></div><h3>Relatórios PDF/CSV</h3><p>Leve adesão, sintomas e estoque para a consulta.</p></div>
-        <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 9.3-8 10-4.6-.7-8-5-8-10V6l8-4zm-1 12l5-5-1.4-1.4L11 11.2 9.4 9.6 8 11l3 3z"/></svg></div><h3>Backup & criptografia</h3><p>Backup completo (inclui fotos) e banco protegido com AES‑256.</p></div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/01-doses.png" alt="Tela de doses" loading="lazy"></span></div>
+          <h3>Lembretes confiáveis</h3><p>Alarme no horário exato, com som e vibração, mesmo com o app fechado.</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/07-detalhe.png" alt="Esquema de uso e horários" loading="lazy"></span></div>
+          <h3>Esquemas flexíveis</h3><p>Diário, dias da semana ou "quando necessário" (SOS).</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/01-doses.png" alt="Doses agrupadas" loading="lazy"></span></div>
+          <h3>Doses agrupadas</h3><p>Tudo do dia num só cartão, com barra de progresso do que já tomou.</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/02-remedios.png" alt="Controle de estoque" loading="lazy"></span></div>
+          <h3>Controle de estoque</h3><p>Baixa a cada dose e avisa quando estiver acabando ou esgotar.</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/06-perfil.png" alt="Perfis" loading="lazy"></span></div>
+          <h3>Perfis</h3><p>Você, sua mãe, seu pai ou até seu pet — separados e com foto.</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/04-saude.png" alt="Diário de saúde e gráficos" loading="lazy"></span></div>
+          <h3>Diário & gráficos</h3><p>Febre, pressão e glicemia com gráficos ao longo do tempo.</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/05-estatisticas.png" alt="Estatísticas e relatórios" loading="lazy"></span></div>
+          <h3>Relatórios PDF/CSV</h3><p>Leve adesão, sintomas e estoque para a consulta.</p>
+        </div>
+        <div class="card">
+          <div class="shot"><span class="mini"><img src="screenshots/06-perfil.png" alt="Backup e privacidade" loading="lazy"></span></div>
+          <h3>Backup & criptografia</h3><p>Backup completo (inclui fotos) e banco protegido com AES‑256.</p>
+        </div>
       </div>
     </div>
   </section>
