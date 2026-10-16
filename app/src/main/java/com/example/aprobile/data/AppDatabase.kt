@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
     entities = [
@@ -99,13 +100,25 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private const val DB_NAME = "medication_database"
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
+                val appContext = context.applicationContext
+
+                // Carrega a lib nativa do SQLCipher antes de abrir/factory.
+                System.loadLibrary("sqlcipher")
+
+                val passphrase = DatabaseKeyStore.getOrCreatePassphrase(appContext)
+                DatabaseEncryptionMigrator.migrateIfNeeded(appContext, DB_NAME, passphrase)
+                val factory = SupportOpenHelperFactory(passphrase.toByteArray())
+
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
+                    appContext,
                     AppDatabase::class.java,
-                    "medication_database"
+                    DB_NAME
                 )
+                    .openHelperFactory(factory)
                     .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                     .build()
                 INSTANCE = instance
