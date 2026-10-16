@@ -243,6 +243,10 @@
     <string name="health_export">Export diary (CSV)</string>
     <string name="health_export_locked">Export diary (Premium)</string>
     <string name="health_login_hint">Pick a profile to see the medical record</string>
+    <string name="tip_complete_health_title">Complete the health record</string>
+    <string name="tip_complete_health_text">Add blood type, allergies and conditions for %1$s to keep everything handy.</string>
+    <string name="tip_complete_health_action">Complete</string>
+    <string name="med_allergy_warning">Warning: recorded allergy to \"%1$s\"</string>
 
     <string name="privacy_policy_open">View privacy policy</string>
     <string name="privacy_policy_title">Privacy Policy</string>

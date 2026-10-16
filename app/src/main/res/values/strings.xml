@@ -243,6 +243,10 @@
     <string name="health_export">Exportar diário (CSV)</string>
     <string name="health_export_locked">Exportar diário (Premium)</string>
     <string name="health_login_hint">Escolha um perfil para ver o prontuário</string>
+    <string name="tip_complete_health_title">Complete o prontuário de saúde</string>
+    <string name="tip_complete_health_text">Adicione tipo sanguíneo, alergias e condições de %1$s para ter tudo à mão.</string>
+    <string name="tip_complete_health_action">Completar</string>
+    <string name="med_allergy_warning">Atenção: alergia registrada a \"%1$s\"</string>
 
     <string name="privacy_policy_open">Ver política de privacidade</string>
     <string name="privacy_policy_title">Política de Privacidade</string>

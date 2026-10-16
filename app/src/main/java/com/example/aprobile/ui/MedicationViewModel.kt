@@ -47,6 +47,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     val uiState: StateFlow<MedicationUiState> = _uiState.asStateFlow()
 
     private val _filters = MutableStateFlow(FilterParams())
+    private val _healthProfileName = MutableStateFlow("Eu")
 
     init {
         val database = AppDatabase.getDatabase(application)
@@ -74,12 +75,26 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeHealth() {
         viewModelScope.launch {
+            _healthProfileName
+                .flatMapLatest { name -> healthRepository.getProfile(name) }
+                .collect { profile ->
+                    _uiState.update { it.copy(healthProfile = profile) }
+                }
+        }
+
+        // Prontuário do perfil ativo global — usado pela dica na aba Doses e pelo alerta de alergia
+        viewModelScope.launch {
             _filters
                 .map { resolveHealthProfile(it.selectedProfile) }
                 .distinctUntilChanged()
-                .flatMapLatest { profileName -> healthRepository.getProfile(profileName) }
+                .flatMapLatest { name -> healthRepository.getProfile(name) }
                 .collect { profile ->
-                    _uiState.update { it.copy(healthProfile = profile) }
+                    _uiState.update {
+                        it.copy(
+                            activeHealthProfile = profile,
+                            activeHealthProfileName = resolveHealthProfile(_filters.value.selectedProfile)
+                        )
+                    }
                 }
         }
 
@@ -88,21 +103,15 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                 healthRepository.allEvents,
                 repository.allDoseRecords,
                 repository.allMedications,
-                _filters
-            ) { events, doses, meds, filters ->
+                _healthProfileName
+            ) { events, doses, meds, profileName ->
                 val medMap = meds.associateBy { it.id }
-                val active = filters.selectedProfile
-                val isAll = active == "Todos"
-                val medIds = if (isAll) {
-                    meds.map { it.id }.toSet()
-                } else {
-                    meds.filter { it.profile.equals(active, true) }.map { it.id }.toSet()
-                }
+                val medIds = meds.filter { it.profile.equals(profileName, true) }.map { it.id }.toSet()
                 val doseItems = doses
                     .filter { it.medicationId in medIds && it.status == DoseRecordEntity.STATUS_TAKEN }
                     .mapNotNull { dose -> medMap[dose.medicationId]?.let { HealthTimelineItem.Dose(it, dose) } }
                 val eventItems = events
-                    .filter { isAll || it.profile.equals(active, true) }
+                    .filter { it.profile.equals(profileName, true) }
                     .map { HealthTimelineItem.Event(it) }
                 (doseItems + eventItems).sortedByDescending { it.timestamp }
             }.collect { timeline ->
@@ -220,6 +229,10 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     .distinct()
                     .sorted()
                 val profiles = listOf("Todos") + profilesWithData
+                if (profilesWithData.isNotEmpty() && _healthProfileName.value !in profilesWithData) {
+                    _healthProfileName.value = profilesWithData.first()
+                }
+                val healthProfileName = _healthProfileName.value
 
                 val now = System.currentTimeMillis()
                 val zone = ZoneId.systemDefault()
@@ -288,6 +301,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     profileStats = profileStats,
                     medicationStats = medicationStats,
                     appointments = appointments,
+                    healthProfileName = healthProfileName,
                     isLoading = false
                 )
             }.collect { newState ->
@@ -309,6 +323,11 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     fun setStatsPeriod(period: StatsPeriod) {
         _filters.update { it.copy(statsPeriod = period) }
         _uiState.update { it.copy(statsPeriod = period) }
+    }
+
+    fun selectHealthProfile(name: String) {
+        _healthProfileName.value = name
+        _uiState.update { it.copy(healthProfileName = name) }
     }
 
     fun toggleDarkMode() {
@@ -573,7 +592,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         emergencyContact: String?,
         notes: String?
     ) {
-        val profileName = resolveHealthProfile(_uiState.value.selectedProfile)
+        val profileName = _healthProfileName.value
         viewModelScope.launch {
             healthRepository.saveProfile(
                 HealthProfileEntity(
@@ -606,7 +625,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         notes: String?,
         timestamp: Long
     ) {
-        val profileName = resolveHealthProfile(_uiState.value.selectedProfile)
+        val profileName = _healthProfileName.value
         viewModelScope.launch {
             healthRepository.insertEvent(
                 HealthEventEntity(

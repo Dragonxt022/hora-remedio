@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.aprobile.R
 import com.example.aprobile.data.MedicationEntity
+import com.example.aprobile.domain.AllergyMatcher
 import com.example.aprobile.domain.MedicationCatalog
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -77,6 +79,7 @@ fun formatDisplayTime(timeStr: String): String {
 @Composable
 fun AddEditMedicationDialog(
     medicationToEdit: MedicationEntity?,
+    allergies: String? = null,
     onDismiss: () -> Unit,
     onSave: (
         name: String,
@@ -200,6 +203,31 @@ fun AddEditMedicationDialog(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
+                    }
+                }
+
+                val allergyMatch = AllergyMatcher.firstMatch(name, allergies)
+                if (allergyMatch != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.errorContainer)
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.width(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.med_allergy_warning, allergyMatch),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
                     }
                 }
 

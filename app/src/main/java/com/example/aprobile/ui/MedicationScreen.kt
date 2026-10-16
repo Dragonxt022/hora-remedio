@@ -259,7 +259,14 @@ fun MedicationScreen(
                                 onToggleDose = { viewModel.toggleDoseStatus(it) },
                                 onEdit = { viewModel.openEditMedicationDialog(it) },
                                 onDelete = { viewModel.requestDeleteMedication(it) },
-                                onOpenDetail = { navController.navigate(detailRoute(it.id)) }
+                                onOpenDetail = { navController.navigate(detailRoute(it.id)) },
+                                onOpenHealth = {
+                                    navController.navigate(AppDestination.HEALTH.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
                             )
                         }
 
@@ -289,7 +296,7 @@ fun MedicationScreen(
                         composable(AppDestination.HEALTH.route) {
                             HealthScreen(
                                 uiState = uiState,
-                                onSelectProfile = { viewModel.selectProfile(it) },
+                                onSelectHealthProfile = { viewModel.selectHealthProfile(it) },
                                 onEditProfile = { viewModel.openEditHealthProfileDialog() },
                                 onDeleteEvent = { viewModel.requestDeleteHealthEvent(it) },
                                 onUpgrade = { viewModel.openPaywall() }
@@ -344,6 +351,7 @@ fun MedicationScreen(
         if (uiState.isAddEditOpen) {
             AddEditMedicationDialog(
                 medicationToEdit = uiState.medicationToEdit,
+                allergies = uiState.activeHealthProfile?.allergies,
                 onDismiss = { viewModel.closeAddEditDialog() },
                 onSave = { name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled ->
                     viewModel.saveMedication(name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled)
