@@ -177,10 +177,35 @@ fun HealthScreen(
         }
 
         val temperaturePoints = HealthMetrics.temperaturePoints(uiState.healthEvents)
+        val glucosePoints = HealthMetrics.glucosePoints(uiState.healthEvents)
+        val pressurePoints = HealthMetrics.pressurePoints(uiState.healthEvents)
+
         if (temperaturePoints.size >= 2) {
             item {
-                TemperatureChartCard(
+                MetricChartCard(
+                    title = stringResource(R.string.health_temperature),
+                    unit = "°C",
                     points = temperaturePoints,
+                    glassColor = glassColor,
+                    borderColor = borderColor
+                )
+            }
+        }
+        if (glucosePoints.size >= 2) {
+            item {
+                MetricChartCard(
+                    title = stringResource(R.string.health_glucose_chart),
+                    unit = "mg/dL",
+                    points = glucosePoints,
+                    glassColor = glassColor,
+                    borderColor = borderColor
+                )
+            }
+        }
+        if (pressurePoints.size >= 2) {
+            item {
+                PressureChartCard(
+                    points = pressurePoints,
                     glassColor = glassColor,
                     borderColor = borderColor
                 )
@@ -433,15 +458,17 @@ private fun TimelineRow(
 }
 
 @Composable
-private fun TemperatureChartCard(
+private fun MetricChartCard(
+    title: String,
+    unit: String,
     points: List<Pair<Long, Float>>,
     glassColor: Color,
     borderColor: Color
 ) {
-    val temps = points.map { it.second }
-    val minTemp = temps.minOrNull() ?: return
-    val maxTemp = temps.maxOrNull() ?: return
-    val lastTemp = points.last().second
+    val values = points.map { it.second }
+    val minValue = values.minOrNull() ?: return
+    val maxValue = values.maxOrNull() ?: return
+    val lastValue = points.last().second
     val lineColor = MaterialTheme.colorScheme.primary
 
     Card(
@@ -454,13 +481,13 @@ private fun TemperatureChartCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.health_temperature),
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${formatTemp(lastTemp)} °C   •   min ${formatTemp(minTemp)}  •  max ${formatTemp(maxTemp)}",
+                text = "${formatTemp(lastValue)} $unit   •   min ${formatTemp(minValue)}  •  max ${formatTemp(maxValue)}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -470,14 +497,14 @@ private fun TemperatureChartCard(
                 .height(160.dp)) {
                 val width = size.width
                 val height = size.height
-                val verticalSpan = (maxTemp - minTemp).let { if (it < 0.5f) 1f else it }
+                val verticalSpan = (maxValue - minValue).let { if (it < 0.5f) 1f else it }
                 val minTime = points.first().first
                 val maxTime = points.last().first
                 val timeSpan = (maxTime - minTime).let { if (it <= 0L) 1L else it }
                 val pad = 14f
 
                 fun px(t: Long) = pad + (t - minTime).toFloat() / timeSpan.toFloat() * (width - 2 * pad)
-                fun py(v: Float) = height - pad - (v - minTemp) / verticalSpan * (height - 2 * pad)
+                fun py(v: Float) = height - pad - (v - minValue) / verticalSpan * (height - 2 * pad)
 
                 val path = Path()
                 points.forEachIndexed { index, (t, v) ->
@@ -488,6 +515,79 @@ private fun TemperatureChartCard(
                 drawPath(path = path, color = lineColor, style = Stroke(width = 4f))
                 points.forEach { (t, v) ->
                     drawCircle(color = lineColor, radius = 7f, center = Offset(px(t), py(v)))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PressureChartCard(
+    points: List<Triple<Long, Int, Int>>,
+    glassColor: Color,
+    borderColor: Color
+) {
+    val systolicColor = MaterialTheme.colorScheme.primary
+    val diastolicColor = MaterialTheme.colorScheme.tertiary
+    val maxValue = points.maxOf { it.second }
+    val minValue = points.minOf { it.third }
+    val lastSys = points.last().second
+    val lastDia = points.last().third
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(BorderStroke(1.2.dp, borderColor), shape = RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = glassColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.health_pressure_chart),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "$lastSys/$lastDia mmHg   •   $minValue–$maxValue",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Canvas(modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp)) {
+                val width = size.width
+                val height = size.height
+                val span = (maxValue - minValue).let { if (it < 5) 10f else it.toFloat() }
+                val minTime = points.first().first
+                val maxTime = points.last().first
+                val timeSpan = (maxTime - minTime).let { if (it <= 0L) 1L else it }
+                val pad = 14f
+
+                fun px(t: Long) = pad + (t - minTime).toFloat() / timeSpan.toFloat() * (width - 2 * pad)
+                fun py(v: Int) = height - pad - (v - minValue) / span * (height - 2 * pad)
+
+                val sysPath = Path()
+                val diaPath = Path()
+                points.forEachIndexed { index, p ->
+                    val x = px(p.first)
+                    val sysY = py(p.second)
+                    val diaY = py(p.third)
+                    if (index == 0) {
+                        sysPath.moveTo(x, sysY)
+                        diaPath.moveTo(x, diaY)
+                    } else {
+                        sysPath.lineTo(x, sysY)
+                        diaPath.lineTo(x, diaY)
+                    }
+                }
+                drawPath(path = sysPath, color = systolicColor, style = Stroke(width = 4f))
+                drawPath(path = diaPath, color = diastolicColor, style = Stroke(width = 4f))
+                points.forEach { p ->
+                    drawCircle(color = systolicColor, radius = 7f, center = Offset(px(p.first), py(p.second)))
+                    drawCircle(color = diastolicColor, radius = 7f, center = Offset(px(p.first), py(p.third)))
                 }
             }
         }

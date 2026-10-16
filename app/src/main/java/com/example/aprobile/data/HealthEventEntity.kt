@@ -23,6 +23,7 @@ data class HealthEventEntity(
         const val TYPE_SYMPTOM = "SYMPTOM"
         const val TYPE_FEVER = "FEVER"
         const val TYPE_PRESSURE = "PRESSURE"
+        const val TYPE_GLUCOSE = "GLUCOSE"
         const val TYPE_NOTE = "NOTE"
     }
 }

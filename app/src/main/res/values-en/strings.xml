@@ -260,7 +260,10 @@
     <string name="health_type_symptom">Symptom</string>
     <string name="health_type_fever">Fever</string>
     <string name="health_type_pressure">Pressure</string>
+    <string name="health_type_glucose">Glucose</string>
     <string name="health_type_note">Note</string>
+    <string name="health_pressure_chart">Blood pressure</string>
+    <string name="health_glucose_chart">Glucose</string>
     <string name="health_type_other">Other</string>
     <string name="health_delete_title">Delete entry</string>
     <string name="health_delete_text">Remove this diary entry?</string>

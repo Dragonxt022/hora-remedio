@@ -48,6 +48,7 @@ private val eventTypeOptions: List<Pair<String, Int>> = listOf(
     HealthEventEntity.TYPE_SYMPTOM to R.string.health_type_symptom,
     HealthEventEntity.TYPE_FEVER to R.string.health_type_fever,
     HealthEventEntity.TYPE_PRESSURE to R.string.health_type_pressure,
+    HealthEventEntity.TYPE_GLUCOSE to R.string.health_type_glucose,
     HealthEventEntity.TYPE_NOTE to R.string.health_type_note,
     "OTHER" to R.string.health_type_other
 )
@@ -152,7 +153,16 @@ fun AddEditHealthEventDialog(
                     value = value,
                     onValueChange = { value = it },
                     label = { Text(stringResource(R.string.health_event_value)) },
-                    placeholder = { Text(stringResource(R.string.health_event_value_placeholder)) },
+                    placeholder = {
+                        Text(
+                            when (type) {
+                                HealthEventEntity.TYPE_PRESSURE -> "120/80"
+                                HealthEventEntity.TYPE_GLUCOSE -> "110"
+                                HealthEventEntity.TYPE_FEVER -> "38,5"
+                                else -> stringResource(R.string.health_event_value_placeholder)
+                            }
+                        )
+                    },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()

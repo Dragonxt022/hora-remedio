@@ -260,7 +260,10 @@
     <string name="health_type_symptom">Sintoma</string>
     <string name="health_type_fever">Febre</string>
     <string name="health_type_pressure">Pressão</string>
+    <string name="health_type_glucose">Glicemia</string>
     <string name="health_type_note">Nota</string>
+    <string name="health_pressure_chart">Pressão</string>
+    <string name="health_glucose_chart">Glicemia</string>
     <string name="health_type_other">Outro</string>
     <string name="health_delete_title">Excluir registro</string>
     <string name="health_delete_text">Remover este registro do diário?</string>

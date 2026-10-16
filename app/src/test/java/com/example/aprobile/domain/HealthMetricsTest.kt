@@ -28,4 +28,30 @@ class HealthMetricsTest {
         val events = listOf(event(HealthEventEntity.TYPE_NOTE, "x", 1))
         assertEquals(0, HealthMetrics.temperaturePoints(events).size)
     }
+
+    @Test
+    fun glucosePoints_onlyGlucoseNumeric() {
+        val events = listOf(
+            event(HealthEventEntity.TYPE_GLUCOSE, "110", 100),
+            event(HealthEventEntity.TYPE_GLUCOSE, "95,5", 200),
+            event(HealthEventEntity.TYPE_FEVER, "38", 150)
+        )
+        val points = HealthMetrics.glucosePoints(events)
+        assertEquals(2, points.size)
+        assertEquals(100L to 110f, points[0])
+        assertEquals(200L to 95.5f, points[1])
+    }
+
+    @Test
+    fun pressurePoints_parsesSystolicDiastolic() {
+        val events = listOf(
+            event(HealthEventEntity.TYPE_PRESSURE, "120/80", 100),
+            event(HealthEventEntity.TYPE_PRESSURE, " 130 / 85 ", 50),
+            event(HealthEventEntity.TYPE_PRESSURE, "invalido", 200)
+        )
+        val points = HealthMetrics.pressurePoints(events)
+        assertEquals(2, points.size)
+        assertEquals(Triple(50L, 130, 85), points[0])
+        assertEquals(Triple(100L, 120, 80), points[1])
+    }
 }
