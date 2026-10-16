@@ -3,8 +3,25 @@ package com.example.aprobile.ui
 import com.example.aprobile.data.AppointmentEntity
 import com.example.aprobile.data.DoseRecordEntity
 import com.example.aprobile.data.DoseWithMedication
+import com.example.aprobile.data.HealthEventEntity
+import com.example.aprobile.data.HealthProfileEntity
 import com.example.aprobile.data.MedicationEntity
 import java.time.LocalDate
+
+sealed interface HealthTimelineItem {
+    val timestamp: Long
+
+    data class Dose(
+        val medication: MedicationEntity,
+        val record: DoseRecordEntity
+    ) : HealthTimelineItem {
+        override val timestamp: Long get() = record.scheduledDateTime
+    }
+
+    data class Event(val event: HealthEventEntity) : HealthTimelineItem {
+        override val timestamp: Long get() = event.timestamp
+    }
+}
 
 data class ProfileStat(
     val profile: String,
@@ -62,6 +79,12 @@ data class MedicationUiState(
     val isAppointmentDialogOpen: Boolean = false,
     val appointmentToEdit: AppointmentEntity? = null,
     val appointmentToDelete: AppointmentEntity? = null,
+    val healthProfile: HealthProfileEntity? = null,
+    val healthEvents: List<HealthEventEntity> = emptyList(),
+    val healthTimeline: List<HealthTimelineItem> = emptyList(),
+    val isHealthProfileDialogOpen: Boolean = false,
+    val isHealthEventDialogOpen: Boolean = false,
+    val healthEventToDelete: HealthEventEntity? = null,
     val isLoading: Boolean = true,
     val adherenceRate: Int = 0,
     val overallTaken: Int = 0,

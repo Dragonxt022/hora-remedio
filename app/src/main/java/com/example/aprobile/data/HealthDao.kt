@@ -1,0 +1,30 @@
+package com.example.aprobile.data
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface HealthDao {
+
+    @Query("SELECT * FROM health_profiles WHERE profile = :profile LIMIT 1")
+    fun getProfile(profile: String): Flow<HealthProfileEntity?>
+
+    @Query("SELECT * FROM health_profiles WHERE profile = :profile LIMIT 1")
+    suspend fun getProfileSync(profile: String): HealthProfileEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertProfile(profile: HealthProfileEntity)
+
+    @Query("SELECT * FROM health_events ORDER BY timestamp DESC")
+    fun getAllEvents(): Flow<List<HealthEventEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvent(event: HealthEventEntity): Long
+
+    @Delete
+    suspend fun deleteEvent(event: HealthEventEntity): Int
+}

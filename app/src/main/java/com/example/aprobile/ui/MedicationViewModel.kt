@@ -9,6 +9,9 @@ import com.example.aprobile.data.AppointmentEntity
 import com.example.aprobile.data.AppointmentRepository
 import com.example.aprobile.data.BillingRepository
 import com.example.aprobile.data.DoseRecordEntity
+import com.example.aprobile.data.HealthEventEntity
+import com.example.aprobile.data.HealthProfileEntity
+import com.example.aprobile.data.HealthRepository
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.data.MedicationRepository
@@ -16,10 +19,14 @@ import com.example.aprobile.data.SettingsRepository
 import com.example.aprobile.domain.AdherenceStreak
 import com.example.aprobile.domain.DoseAdherence
 import com.example.aprobile.domain.PremiumLimits
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -32,6 +39,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
 
     private val repository: MedicationRepository
     private val appointmentRepository: AppointmentRepository
+    private val healthRepository: HealthRepository
     private val settingsRepository: SettingsRepository
     private val billingRepository: BillingRepository
 
@@ -44,6 +52,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         val database = AppDatabase.getDatabase(application)
         repository = MedicationRepository(database.medicationDao(), application)
         appointmentRepository = AppointmentRepository(database.appointmentDao())
+        healthRepository = HealthRepository(database.healthDao())
         settingsRepository = SettingsRepository(application)
         billingRepository = BillingRepository(application)
 
@@ -54,6 +63,57 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
 
         observeSettings()
         observeData()
+        observeHealth()
+    }
+
+    private fun resolveHealthProfile(profile: String): String {
+        if (profile != "Todos") return profile
+        return _uiState.value.availableProfiles.firstOrNull { it != "Todos" } ?: "Eu"
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeHealth() {
+        viewModelScope.launch {
+            _filters
+                .map { resolveHealthProfile(it.selectedProfile) }
+                .distinctUntilChanged()
+                .flatMapLatest { profileName -> healthRepository.getProfile(profileName) }
+                .collect { profile ->
+                    _uiState.update { it.copy(healthProfile = profile) }
+                }
+        }
+
+        viewModelScope.launch {
+            combine(
+                healthRepository.allEvents,
+                repository.allDoseRecords,
+                repository.allMedications,
+                _filters
+            ) { events, doses, meds, filters ->
+                val medMap = meds.associateBy { it.id }
+                val active = filters.selectedProfile
+                val isAll = active == "Todos"
+                val medIds = if (isAll) {
+                    meds.map { it.id }.toSet()
+                } else {
+                    meds.filter { it.profile.equals(active, true) }.map { it.id }.toSet()
+                }
+                val doseItems = doses
+                    .filter { it.medicationId in medIds && it.status == DoseRecordEntity.STATUS_TAKEN }
+                    .mapNotNull { dose -> medMap[dose.medicationId]?.let { HealthTimelineItem.Dose(it, dose) } }
+                val eventItems = events
+                    .filter { isAll || it.profile.equals(active, true) }
+                    .map { HealthTimelineItem.Event(it) }
+                (doseItems + eventItems).sortedByDescending { it.timestamp }
+            }.collect { timeline ->
+                _uiState.update {
+                    it.copy(
+                        healthTimeline = timeline,
+                        healthEvents = timeline.filterIsInstance<HealthTimelineItem.Event>().map { item -> item.event }
+                    )
+                }
+            }
+        }
     }
 
     private fun observeSettings() {
@@ -494,6 +554,88 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
 
     fun cancelDeleteAppointment() {
         _uiState.update { it.copy(appointmentToDelete = null) }
+    }
+
+    fun openEditHealthProfileDialog() {
+        _uiState.update { it.copy(isHealthProfileDialogOpen = true) }
+    }
+
+    fun closeHealthProfileDialog() {
+        _uiState.update { it.copy(isHealthProfileDialogOpen = false) }
+    }
+
+    fun saveHealthProfile(
+        bloodType: String?,
+        allergies: String?,
+        conditions: String?,
+        weight: String?,
+        height: String?,
+        emergencyContact: String?,
+        notes: String?
+    ) {
+        val profileName = resolveHealthProfile(_uiState.value.selectedProfile)
+        viewModelScope.launch {
+            healthRepository.saveProfile(
+                HealthProfileEntity(
+                    profile = profileName,
+                    bloodType = bloodType?.takeIf { it.isNotBlank() },
+                    allergies = allergies?.takeIf { it.isNotBlank() },
+                    conditions = conditions?.takeIf { it.isNotBlank() },
+                    weight = weight?.takeIf { it.isNotBlank() },
+                    height = height?.takeIf { it.isNotBlank() },
+                    emergencyContact = emergencyContact?.takeIf { it.isNotBlank() },
+                    notes = notes?.takeIf { it.isNotBlank() }
+                )
+            )
+        }
+        closeHealthProfileDialog()
+    }
+
+    fun openAddHealthEventDialog() {
+        _uiState.update { it.copy(isHealthEventDialogOpen = true) }
+    }
+
+    fun closeHealthEventDialog() {
+        _uiState.update { it.copy(isHealthEventDialogOpen = false) }
+    }
+
+    fun saveHealthEvent(
+        type: String,
+        title: String,
+        value: String?,
+        notes: String?,
+        timestamp: Long
+    ) {
+        val profileName = resolveHealthProfile(_uiState.value.selectedProfile)
+        viewModelScope.launch {
+            healthRepository.insertEvent(
+                HealthEventEntity(
+                    profile = profileName,
+                    timestamp = timestamp,
+                    type = type,
+                    title = title,
+                    value = value?.takeIf { it.isNotBlank() },
+                    notes = notes?.takeIf { it.isNotBlank() }
+                )
+            )
+        }
+        closeHealthEventDialog()
+    }
+
+    fun requestDeleteHealthEvent(event: HealthEventEntity) {
+        _uiState.update { it.copy(healthEventToDelete = event) }
+    }
+
+    fun confirmDeleteHealthEvent() {
+        val event = _uiState.value.healthEventToDelete ?: return
+        viewModelScope.launch {
+            healthRepository.deleteEvent(event)
+            _uiState.update { it.copy(healthEventToDelete = null) }
+        }
+    }
+
+    fun cancelDeleteHealthEvent() {
+        _uiState.update { it.copy(healthEventToDelete = null) }
     }
 
     fun formatScheduledTime(scheduledDateTimeMillis: Long): String {
