@@ -247,6 +247,14 @@
     <string name="tip_complete_health_text">Add blood type, allergies and conditions for %1$s to keep everything handy.</string>
     <string name="tip_complete_health_action">Complete</string>
     <string name="med_allergy_warning">Warning: recorded allergy to \"%1$s\"</string>
+    <string name="profile_version">Med Reminder • version %1$s (build %2$d)</string>
+    <string name="manage_profiles">Manage profiles</string>
+    <string name="profile_new_placeholder">New profile (e.g. Mom, Dad, Pet)</string>
+    <string name="action_add">Add</string>
+    <string name="action_rename">Rename</string>
+    <string name="profile_in_use">In use — can\'t delete</string>
+    <string name="profile_manage_hint">Add, rename or remove profiles. Renaming updates medications and the medical record.</string>
+    <string name="pdf_record_section">Medical record</string>
 
     <string name="privacy_policy_open">View privacy policy</string>
     <string name="privacy_policy_title">Privacy Policy</string>

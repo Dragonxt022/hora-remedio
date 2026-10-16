@@ -247,6 +247,14 @@
     <string name="tip_complete_health_text">Adicione tipo sanguíneo, alergias e condições de %1$s para ter tudo à mão.</string>
     <string name="tip_complete_health_action">Completar</string>
     <string name="med_allergy_warning">Atenção: alergia registrada a \"%1$s\"</string>
+    <string name="profile_version">Hora do Remédio • versão %1$s (build %2$d)</string>
+    <string name="manage_profiles">Gerenciar perfis</string>
+    <string name="profile_new_placeholder">Novo perfil (ex: Mãe, Pai, Pet)</string>
+    <string name="action_add">Adicionar</string>
+    <string name="action_rename">Renomear</string>
+    <string name="profile_in_use">Em uso — não pode excluir</string>
+    <string name="profile_manage_hint">Adicione, renomeie ou remova perfis. Renomear atualiza os medicamentos e o prontuário.</string>
+    <string name="pdf_record_section">Prontuário</string>
 
     <string name="privacy_policy_open">Ver política de privacidade</string>
     <string name="privacy_policy_title">Política de Privacidade</string>

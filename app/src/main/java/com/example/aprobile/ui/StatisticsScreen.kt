@@ -239,7 +239,12 @@ fun StatisticsScreen(
             onClick = {
                 if (uiState.isPremium) {
                     try {
-                        val file = ReportPdf.generate(context, uiState.allMedications, uiState.allDoseRecords)
+                        val file = ReportPdf.generate(
+                            context,
+                            uiState.allMedications,
+                            uiState.allDoseRecords,
+                            uiState.activeHealthProfile
+                        )
                         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
                         val intent = Intent(Intent.ACTION_SEND).apply {
                             type = "application/pdf"

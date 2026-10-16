@@ -161,6 +161,9 @@ class MedicationRepository(
         }
     }
 
+    suspend fun existingProfileNames(): List<String> =
+        medicationDao.getAllMedicationsSync().map { it.profile.ifBlank { "Eu" } }.distinct()
+
     suspend fun exportBackup(): String {
         val medications = medicationDao.getAllMedicationsSync()
         val doses = medicationDao.getAllDoseRecordsSync()

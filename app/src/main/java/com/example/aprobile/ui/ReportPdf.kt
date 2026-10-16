@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import com.example.aprobile.R
 import com.example.aprobile.data.DoseRecordEntity
+import com.example.aprobile.data.HealthProfileEntity
 import com.example.aprobile.data.MedicationEntity
 import java.io.File
 import java.io.FileOutputStream
@@ -26,7 +27,8 @@ object ReportPdf {
     fun generate(
         context: Context,
         medications: List<MedicationEntity>,
-        doses: List<DoseRecordEntity>
+        doses: List<DoseRecordEntity>,
+        healthProfile: HealthProfileEntity? = null
     ): File {
         val document = PdfDocument()
 
@@ -55,6 +57,28 @@ object ReportPdf {
         canvas.drawText(context.getString(R.string.pdf_recorded, total), MARGIN, y, textPaint); y += 14f
         canvas.drawText(context.getString(R.string.pdf_taken, taken), MARGIN, y, textPaint); y += 14f
         canvas.drawText(context.getString(R.string.pdf_not_taken, total - taken), MARGIN, y, textPaint); y += 24f
+
+        if (healthProfile != null) {
+            val recordLines = listOfNotNull(
+                healthProfile.bloodType?.let { context.getString(R.string.health_blood_type) to it },
+                healthProfile.allergies?.let { context.getString(R.string.health_allergies) to it },
+                healthProfile.conditions?.let { context.getString(R.string.health_conditions) to it },
+                healthProfile.weight?.let { context.getString(R.string.health_weight) to it },
+                healthProfile.height?.let { context.getString(R.string.health_height) to it },
+                healthProfile.emergencyContact?.let { context.getString(R.string.health_emergency) to it },
+                healthProfile.notes?.let { context.getString(R.string.health_notes) to it }
+            )
+            if (recordLines.isNotEmpty()) {
+                canvas.drawText(
+                    context.getString(R.string.pdf_record_section) + " — " + healthProfile.profile,
+                    MARGIN, y, sectionPaint
+                ); y += 18f
+                recordLines.forEach { (label, value) ->
+                    canvas.drawText("$label: $value", MARGIN, y, textPaint); y += 14f
+                }
+                y += 10f
+            }
+        }
 
         canvas.drawText(context.getString(R.string.pdf_history), MARGIN, y, sectionPaint); y += 18f
         canvas.drawText(context.getString(R.string.pdf_table_header), MARGIN, y, smallPaint); y += 14f

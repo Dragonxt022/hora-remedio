@@ -63,6 +63,8 @@ data class MedicationUiState(
     val totalDosesCount: Int = 0,
     val selectedProfile: String = "Todos",
     val availableProfiles: List<String> = listOf("Todos"),
+    val managedProfiles: List<String> = emptyList(),
+    val isProfileManagerOpen: Boolean = false,
     val searchQuery: String = "",
     val isAddEditOpen: Boolean = false,
     val medicationToEdit: MedicationEntity? = null,

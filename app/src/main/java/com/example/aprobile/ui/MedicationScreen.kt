@@ -323,6 +323,7 @@ fun MedicationScreen(
                                 onSnoozeChange = { viewModel.setSnoozeMinutes(it) },
                                 onAppLockChange = { viewModel.setAppLockEnabled(it) },
                                 onOpenPrivacy = { viewModel.openPrivacy() },
+                                onManageProfiles = { viewModel.openProfileManager() },
                                 onUpgrade = { viewModel.openPaywall() },
                                 onLoginGoogle = { viewModel.loginWithGoogle() },
                                 onLogout = { viewModel.logout() }
@@ -352,6 +353,7 @@ fun MedicationScreen(
             AddEditMedicationDialog(
                 medicationToEdit = uiState.medicationToEdit,
                 allergies = uiState.activeHealthProfile?.allergies,
+                profileOptions = uiState.managedProfiles.ifEmpty { listOf("Eu") },
                 onDismiss = { viewModel.closeAddEditDialog() },
                 onSave = { name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled ->
                     viewModel.saveMedication(name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled)
@@ -389,6 +391,17 @@ fun MedicationScreen(
                         Text(stringResource(R.string.action_cancel))
                     }
                 }
+            )
+        }
+
+        if (uiState.isProfileManagerOpen) {
+            ProfileManagerDialog(
+                profiles = uiState.managedProfiles,
+                inUseProfiles = uiState.allMedications.map { it.profile }.toSet(),
+                onDismiss = { viewModel.closeProfileManager() },
+                onAdd = { viewModel.addProfile(it) },
+                onRename = { old, new -> viewModel.renameProfile(old, new) },
+                onDelete = { viewModel.deleteProfile(it) }
             )
         }
 

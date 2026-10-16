@@ -74,9 +74,25 @@ class MigrationTest {
         db.close()
     }
 
+    @Test
+    fun migrate6To7_createsProfilesTable() {
+        var db = helper.createDatabase(TEST_DB_6_7, 6)
+        db.close()
+
+        db = helper.runMigrationsAndValidate(TEST_DB_6_7, 7, true, AppDatabase.MIGRATION_6_7)
+
+        db.execSQL("INSERT INTO profiles (name, sortOrder) VALUES ('Eu', 0)")
+        val cursor = db.query("SELECT name FROM profiles")
+        assertTrue(cursor.moveToFirst())
+        assertEquals("Eu", cursor.getString(0))
+        cursor.close()
+        db.close()
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
         private const val TEST_DB_4_5 = "migration-test-4-5"
         private const val TEST_DB_5_6 = "migration-test-5-6"
+        private const val TEST_DB_6_7 = "migration-test-6-7"
     }
 }

@@ -27,4 +27,13 @@ interface HealthDao {
 
     @Delete
     suspend fun deleteEvent(event: HealthEventEntity): Int
+
+    @Query("UPDATE health_events SET profile = :newName WHERE profile = :oldName")
+    suspend fun renameProfile(oldName: String, newName: String)
+
+    @Query("DELETE FROM health_profiles WHERE profile = :name")
+    suspend fun deleteProfile(name: String)
+
+    @Query("SELECT COUNT(*) FROM health_events WHERE profile = :name")
+    suspend fun countEventsForProfile(name: String): Int
 }

@@ -22,6 +22,12 @@ interface MedicationDao {
     @Query("DELETE FROM medications")
     suspend fun deleteAllMedications()
 
+    @Query("UPDATE medications SET profile = :newName WHERE profile = :oldName")
+    suspend fun renameProfile(oldName: String, newName: String)
+
+    @Query("SELECT COUNT(*) FROM medications WHERE profile = :name")
+    suspend fun countMedicationsForProfile(name: String): Int
+
     @Query("SELECT * FROM medications WHERE enabled = 1")
     suspend fun getActiveMedicationsSync(): List<MedicationEntity>
 

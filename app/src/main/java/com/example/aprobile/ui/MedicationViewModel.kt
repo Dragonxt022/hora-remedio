@@ -15,6 +15,7 @@ import com.example.aprobile.data.HealthRepository
 import com.example.aprobile.data.DoseWithMedication
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.data.MedicationRepository
+import com.example.aprobile.data.ProfileRepository
 import com.example.aprobile.data.SettingsRepository
 import com.example.aprobile.domain.AdherenceStreak
 import com.example.aprobile.domain.DoseAdherence
@@ -40,6 +41,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     private val repository: MedicationRepository
     private val appointmentRepository: AppointmentRepository
     private val healthRepository: HealthRepository
+    private val profileRepository: ProfileRepository
     private val settingsRepository: SettingsRepository
     private val billingRepository: BillingRepository
 
@@ -54,6 +56,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         repository = MedicationRepository(database.medicationDao(), application)
         appointmentRepository = AppointmentRepository(database.appointmentDao())
         healthRepository = HealthRepository(database.healthDao())
+        profileRepository = ProfileRepository(database.profileDao(), database.medicationDao(), database.healthDao())
         settingsRepository = SettingsRepository(application)
         billingRepository = BillingRepository(application)
 
@@ -62,9 +65,59 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
             repository.scheduleAllActiveAlarms()
         }
 
+        viewModelScope.launch {
+            profileRepository.seedIfEmpty(repository.existingProfileNames())
+        }
+
         observeSettings()
         observeData()
         observeHealth()
+        observeProfiles()
+    }
+
+    private fun observeProfiles() {
+        viewModelScope.launch {
+            profileRepository.allProfiles.collect { profiles ->
+                val names = profiles.map { it.name }
+                val currentHealth = _healthProfileName.value
+                val newHealth = if (names.isNotEmpty() && currentHealth !in names) names.first() else currentHealth
+                if (newHealth != currentHealth) _healthProfileName.value = newHealth
+
+                val currentSelected = _filters.value.selectedProfile
+                val newSelected = if (currentSelected != "Todos" && currentSelected !in names) "Todos" else currentSelected
+                if (newSelected != currentSelected) _filters.update { it.copy(selectedProfile = newSelected) }
+
+                _uiState.update {
+                    it.copy(
+                        managedProfiles = names,
+                        availableProfiles = listOf("Todos") + names,
+                        healthProfileName = newHealth,
+                        selectedProfile = newSelected,
+                        activeHealthProfileName = if (newHealth.isNotBlank()) newHealth else it.activeHealthProfileName
+                    )
+                }
+            }
+        }
+    }
+
+    fun openProfileManager() {
+        _uiState.update { it.copy(isProfileManagerOpen = true) }
+    }
+
+    fun closeProfileManager() {
+        _uiState.update { it.copy(isProfileManagerOpen = false) }
+    }
+
+    fun addProfile(name: String) {
+        viewModelScope.launch { profileRepository.addProfile(name) }
+    }
+
+    fun renameProfile(oldName: String, newName: String) {
+        viewModelScope.launch { profileRepository.renameProfile(oldName, newName) }
+    }
+
+    fun deleteProfile(name: String) {
+        viewModelScope.launch { profileRepository.deleteProfile(name) }
     }
 
     private fun resolveHealthProfile(profile: String): String {
@@ -228,12 +281,6 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     .map { it.profile.ifBlank { "Eu" } }
                     .distinct()
                     .sorted()
-                val profiles = listOf("Todos") + profilesWithData
-                if (profilesWithData.isNotEmpty() && _healthProfileName.value !in profilesWithData) {
-                    _healthProfileName.value = profilesWithData.first()
-                }
-                val healthProfileName = _healthProfileName.value
-
                 val now = System.currentTimeMillis()
                 val zone = ZoneId.systemDefault()
                 val elapsedDoses = allDoses.filter { DoseAdherence.isElapsed(it.scheduledDateTime, now) }
@@ -292,7 +339,6 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     todayDoses = dosesWithMed,
                     takenDosesCount = takenCount,
                     totalDosesCount = totalCount,
-                    availableProfiles = profiles,
                     adherenceRate = adherence,
                     overallTaken = overallTaken,
                     overallTotal = overallTotal,
@@ -301,7 +347,6 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     profileStats = profileStats,
                     medicationStats = medicationStats,
                     appointments = appointments,
-                    healthProfileName = healthProfileName,
                     isLoading = false
                 )
             }.collect { newState ->

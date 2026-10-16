@@ -80,6 +80,7 @@ fun formatDisplayTime(timeStr: String): String {
 fun AddEditMedicationDialog(
     medicationToEdit: MedicationEntity?,
     allergies: String? = null,
+    profileOptions: List<String> = listOf("Eu"),
     onDismiss: () -> Unit,
     onSave: (
         name: String,
@@ -103,12 +104,11 @@ fun AddEditMedicationDialog(
     var instructions by remember { mutableStateOf(medicationToEdit?.instructions ?: "") }
     var currentQuantityStr by remember { mutableStateOf(medicationToEdit?.currentQuantity?.toString() ?: "") }
     var lowStockAlertStr by remember { mutableStateOf(medicationToEdit?.lowStockAlert?.toString() ?: "") }
-    var profile by remember { mutableStateOf(medicationToEdit?.profile ?: "Eu") }
+    var profile by remember { mutableStateOf(medicationToEdit?.profile ?: profileOptions.firstOrNull() ?: "Eu") }
     var colorTag by remember { mutableStateOf(medicationToEdit?.colorTag ?: "Azul") }
     var soundEnabled by remember { mutableStateOf(medicationToEdit?.soundEnabled ?: true) }
     var vibrateEnabled by remember { mutableStateOf(medicationToEdit?.vibrateEnabled ?: true) }
 
-    val profileOptions = listOf("Eu", "Mãe", "Pai", "Pet", "Outro")
     val colorOptions = listOf("Azul", "Verde", "Vermelho", "Roxo", "Laranja")
 
     var expandedProfile by remember { mutableStateOf(false) }

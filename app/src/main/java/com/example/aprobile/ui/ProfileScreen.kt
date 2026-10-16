@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Lock
@@ -41,9 +42,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.os.Build
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.aprobile.R
 
@@ -59,11 +63,27 @@ fun ProfileScreen(
     onSnoozeChange: (Int) -> Unit,
     onAppLockChange: (Boolean) -> Unit,
     onOpenPrivacy: () -> Unit,
+    onManageProfiles: () -> Unit,
     onUpgrade: () -> Unit,
     onLoginGoogle: () -> Unit,
     onLogout: () -> Unit
 ) {
     var editableName by remember(userName) { mutableStateOf(userName) }
+    val context = LocalContext.current
+    val versionInfo = remember {
+        try {
+            val info = context.packageManager.getPackageInfo(context.packageName, 0)
+            val name = info.versionName ?: "1.0"
+            val code = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                info.longVersionCode
+            } else {
+                @Suppress("DEPRECATION") info.versionCode.toLong()
+            }
+            name to code
+        } catch (e: Exception) {
+            "1.0" to 0L
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -253,6 +273,11 @@ fun ProfileScreen(
             }
         }
 
+        TextButton(onClick = onManageProfiles, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Default.Group, contentDescription = null)
+            Text("  " + stringResource(R.string.manage_profiles))
+        }
+
         TextButton(onClick = onOpenPrivacy, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Default.Security, contentDescription = null)
             Text("  " + stringResource(R.string.privacy_open))
@@ -283,5 +308,15 @@ fun ProfileScreen(
                 Text(stringResource(R.string.profile_logout))
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = stringResource(R.string.profile_version, versionInfo.first, versionInfo.second),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
