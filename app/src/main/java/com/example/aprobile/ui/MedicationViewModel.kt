@@ -2,8 +2,11 @@ package com.example.aprobile.ui
 
 import android.app.Activity
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.aprobile.BuildConfig
+import com.example.aprobile.R
 import com.example.aprobile.data.AppDatabase
 import com.example.aprobile.data.AppointmentEntity
 import com.example.aprobile.data.AppointmentRepository
@@ -556,12 +559,20 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
 
     fun activatePremium() = grantPremium()
 
+    private fun onBillingUnavailable() {
+        if (BuildConfig.DEBUG) {
+            grantPremium()
+        } else {
+            Toast.makeText(getApplication(), R.string.premium_unavailable, Toast.LENGTH_LONG).show()
+        }
+    }
+
     fun purchasePremium(activity: Activity?) {
         billingRepository.onEntitlement = { grantPremium() }
         if (activity == null) {
-            grantPremium()
+            onBillingUnavailable()
         } else {
-            billingRepository.connectAndPurchase(activity) { grantPremium() }
+            billingRepository.connectAndPurchase(activity) { onBillingUnavailable() }
         }
     }
 
@@ -570,9 +581,9 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     fun restorePremium(activity: Activity?) {
         billingRepository.onEntitlement = { grantPremium() }
         if (activity == null) {
-            grantPremium()
+            onBillingUnavailable()
         } else {
-            billingRepository.restorePurchase { grantPremium() }
+            billingRepository.restorePurchase { onBillingUnavailable() }
         }
     }
 

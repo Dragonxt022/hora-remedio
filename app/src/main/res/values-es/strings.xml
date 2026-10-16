@@ -48,7 +48,8 @@
     <string name="paywall_subscribe">Suscribirse a Premium</string>
     <string name="paywall_restore">Restaurar compra</string>
     <string name="paywall_later">Ahora no</string>
-    <string name="paywall_note">Cobro por Google Play (integración próximamente)</string>
+    <string name="paywall_note">Cobro procesado por Google Play</string>
+    <string name="premium_unavailable">Premium no está disponible en este momento. Inténtalo más tarde.</string>
     <string name="premium_active">Premium activo</string>
     <string name="premium_go">Hazte Premium</string>
     <string name="premium_cta_desc">Desbloquea informes y medicamentos ilimitados</string>
