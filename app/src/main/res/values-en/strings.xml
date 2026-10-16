@@ -205,6 +205,11 @@
     <string name="settings_row">Settings</string>
     <string name="dark_mode_row">Dark mode · total black</string>
     <string name="dev_test_checkin">Test daily check-in</string>
+    <string name="dev_premium_on">Enable Premium (test)</string>
+    <string name="dev_premium_off">Disable Premium (test)</string>
+    <string name="thanks_title">Thanks for your support! 💚</string>
+    <string name="thanks_text">You\'re now Premium. Enjoy unlimited medicines, profiles, reports and statistics.</string>
+    <string name="thanks_action">Done</string>
 
     <string name="appt_dialog_new">New appointment</string>
     <string name="appt_dialog_edit">Edit appointment</string>

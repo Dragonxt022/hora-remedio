@@ -422,6 +422,7 @@ fun MedicationScreen(
                                 onManageProfiles = { viewModel.openProfileManager() },
                                 onSeedDemo = { viewModel.seedDemoData() },
                                 onTestCheckIn = { viewModel.sendCheckInNow() },
+                                onTogglePremiumTest = { viewModel.setPremiumForTest(it) },
                                 onUpgrade = { viewModel.openPaywall() },
                                 onLoginGoogle = { viewModel.loginWithGoogle() },
                                 onLogout = { viewModel.logout() }
@@ -584,6 +585,23 @@ fun MedicationScreen(
                 onDismiss = { viewModel.closePaywall() },
                 onSubscribe = { viewModel.purchasePremium(activity) },
                 onRestore = { viewModel.restorePremium(activity) }
+            )
+        }
+
+        if (uiState.showThanksDialog) {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissThanksDialog() },
+                shape = RoundedCornerShape(24.dp),
+                title = { Text(stringResource(R.string.thanks_title), fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.thanks_text)) },
+                confirmButton = {
+                    Button(
+                        onClick = { viewModel.dismissThanksDialog() },
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(stringResource(R.string.thanks_action))
+                    }
+                }
             )
         }
 

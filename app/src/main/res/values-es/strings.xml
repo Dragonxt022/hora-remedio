@@ -205,6 +205,11 @@
     <string name="settings_row">Ajustes</string>
     <string name="dark_mode_row">Modo oscuro · negro total</string>
     <string name="dev_test_checkin">Probar registro diario</string>
+    <string name="dev_premium_on">Activar Premium (prueba)</string>
+    <string name="dev_premium_off">Desactivar Premium (prueba)</string>
+    <string name="thanks_title">¡Gracias por tu apoyo! 💚</string>
+    <string name="thanks_text">Ahora eres Premium. Disfruta de medicamentos, perfiles, informes y estadísticas sin límites.</string>
+    <string name="thanks_action">Listo</string>
 
     <string name="appt_dialog_new">Nueva Consulta</string>
     <string name="appt_dialog_edit">Editar Consulta</string>

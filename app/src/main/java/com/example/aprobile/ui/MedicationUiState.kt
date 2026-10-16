@@ -77,6 +77,7 @@ data class MedicationUiState(
     val onboardingDone: Boolean = false,
     val isPremium: Boolean = false,
     val isPaywallOpen: Boolean = false,
+    val showThanksDialog: Boolean = false,
     val appLockEnabled: Boolean = false,
     val isAppUnlocked: Boolean = false,
     val isPrivacyOpen: Boolean = false,

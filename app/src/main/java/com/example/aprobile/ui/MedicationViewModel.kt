@@ -567,8 +567,21 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun dismissThanksDialog() {
+        _uiState.update { it.copy(showThanksDialog = false) }
+    }
+
+    fun setPremiumForTest(enabled: Boolean) {
+        if (!BuildConfig.LICENSE_TEST) return
+        viewModelScope.launch { settingsRepository.setPremium(enabled) }
+        _uiState.update { it.copy(isPremium = enabled, isPaywallOpen = false, showThanksDialog = enabled) }
+    }
+
     fun purchasePremium(activity: Activity?) {
-        billingRepository.onEntitlement = { grantPremium() }
+        billingRepository.onEntitlement = {
+            grantPremium()
+            _uiState.update { it.copy(showThanksDialog = true) }
+        }
         if (activity == null) {
             onBillingUnavailable()
         } else {

@@ -68,6 +68,7 @@ fun ProfileScreen(
     onManageProfiles: () -> Unit,
     onSeedDemo: () -> Unit,
     onTestCheckIn: () -> Unit,
+    onTogglePremiumTest: (Boolean) -> Unit,
     onUpgrade: () -> Unit,
     onLoginGoogle: () -> Unit,
     onLogout: () -> Unit
@@ -252,6 +253,11 @@ fun ProfileScreen(
                     }
                     Button(onClick = onTestCheckIn, shape = RoundedCornerShape(12.dp)) {
                         Text(stringResource(R.string.dev_test_checkin))
+                    }
+                    if (BuildConfig.LICENSE_TEST) {
+                        Button(onClick = { onTogglePremiumTest(!isPremium) }, shape = RoundedCornerShape(12.dp)) {
+                            Text(stringResource(if (isPremium) R.string.dev_premium_off else R.string.dev_premium_on))
+                        }
                     }
                 }
             }

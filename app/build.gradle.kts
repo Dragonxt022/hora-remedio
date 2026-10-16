@@ -52,7 +52,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "LICENSE_TEST", "true")
+        }
         release {
+            buildConfigField("boolean", "LICENSE_TEST", "false")
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
             } else {
