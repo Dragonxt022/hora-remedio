@@ -99,7 +99,8 @@ enum class AppDestination(
 @Composable
 fun MedicationScreen(
     viewModel: MedicationViewModel = viewModel(),
-    initialMedicationId: Long? = null
+    initialMedicationId: Long? = null,
+    openAddMedication: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -137,6 +138,12 @@ fun MedicationScreen(
     LaunchedEffect(initialMedicationId) {
         if (initialMedicationId != null && initialMedicationId > 0) {
             navController.navigate(detailRoute(initialMedicationId))
+        }
+    }
+
+    LaunchedEffect(openAddMedication) {
+        if (openAddMedication) {
+            viewModel.openAddMedicationDialog()
         }
     }
 

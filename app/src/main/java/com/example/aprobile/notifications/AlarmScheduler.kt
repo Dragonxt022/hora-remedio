@@ -55,7 +55,8 @@ object AlarmScheduler {
         timeStr: String,
         minutes: Int = 15,
         soundEnabled: Boolean = true,
-        vibrateEnabled: Boolean = true
+        vibrateEnabled: Boolean = true,
+        medicationProfile: String = ""
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
         val triggerAtMillis = System.currentTimeMillis() + (minutes * 60 * 1000L)
@@ -64,6 +65,7 @@ object AlarmScheduler {
             putExtra(AlarmReceiver.EXTRA_MEDICATION_ID, medicationId)
             putExtra(AlarmReceiver.EXTRA_MEDICATION_NAME, medicationName)
             putExtra(AlarmReceiver.EXTRA_MEDICATION_DOSAGE, medicationDosage)
+            putExtra(AlarmReceiver.EXTRA_MEDICATION_PROFILE, medicationProfile)
             putExtra(AlarmReceiver.EXTRA_MEDICATION_TIME, timeStr)
             putExtra(AlarmReceiver.EXTRA_SCHEDULED_MILLIS, triggerAtMillis)
             putExtra(AlarmReceiver.EXTRA_SOUND_ENABLED, soundEnabled)
@@ -108,6 +110,7 @@ object AlarmScheduler {
             putExtra(AlarmReceiver.EXTRA_MEDICATION_ID, medication.id)
             putExtra(AlarmReceiver.EXTRA_MEDICATION_NAME, medication.name)
             putExtra(AlarmReceiver.EXTRA_MEDICATION_DOSAGE, medication.dosage)
+            putExtra(AlarmReceiver.EXTRA_MEDICATION_PROFILE, medication.profile)
             putExtra(AlarmReceiver.EXTRA_MEDICATION_TIME, timeStr)
             putExtra(AlarmReceiver.EXTRA_SCHEDULED_MILLIS, triggerAtMillis)
             putExtra(AlarmReceiver.EXTRA_SOUND_ENABLED, medication.soundEnabled)

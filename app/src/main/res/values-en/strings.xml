@@ -297,6 +297,11 @@
     <string name="refill_channel">Refill</string>
     <string name="refill_title">Low stock</string>
     <string name="refill_text">%1$s: only %2$d units left. Consider buying more.</string>
+    <string name="tile_loading">Updating…</string>
+    <string name="tile_no_doses">No pending doses</string>
+    <string name="tile_next">Next: %1$s at %2$s</string>
+    <string name="shortcut_new_med_short">New medication</string>
+    <string name="shortcut_new_med_long">Add a medication</string>
 
     <string name="notification_channel_name">Medication reminders</string>
     <string name="notification_channel_desc">Notifications for your medication times</string>

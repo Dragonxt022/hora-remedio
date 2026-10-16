@@ -297,6 +297,11 @@
     <string name="refill_channel">Recompra de estoque</string>
     <string name="refill_title">Estoque baixo</string>
     <string name="refill_text">%1$s: restam apenas %2$d unidades. Considere comprar mais.</string>
+    <string name="tile_loading">Atualizando…</string>
+    <string name="tile_no_doses">Sem doses pendentes</string>
+    <string name="tile_next">Próxima: %1$s às %2$s</string>
+    <string name="shortcut_new_med_short">Novo remédio</string>
+    <string name="shortcut_new_med_long">Cadastrar um medicamento</string>
 
     <string name="notification_channel_name">Lembretes de Medicamentos</string>
     <string name="notification_channel_desc">Notificações para os horários dos remédios</string>

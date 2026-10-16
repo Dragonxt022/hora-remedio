@@ -12,13 +12,17 @@ import com.example.aprobile.ui.MedicationScreen
 class MainActivity : FragmentActivity() {
 
     private val deepLinkMedicationId = mutableStateOf<Long?>(null)
+    private val openAddMedication = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         handleIntent(intent)
         setContent {
-            MedicationScreen(initialMedicationId = deepLinkMedicationId.value)
+            MedicationScreen(
+                initialMedicationId = deepLinkMedicationId.value,
+                openAddMedication = openAddMedication.value
+            )
         }
     }
 
@@ -31,6 +35,9 @@ class MainActivity : FragmentActivity() {
         val id = intent?.getLongExtra(AlarmReceiver.EXTRA_MEDICATION_ID, -1L) ?: -1L
         if (id > 0) {
             deepLinkMedicationId.value = id
+        }
+        if (intent?.getStringExtra("shortcut_action") == "add_medication") {
+            openAddMedication.value = true
         }
     }
 }

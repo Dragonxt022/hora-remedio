@@ -31,6 +31,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val medicationId = intent.getLongExtra(EXTRA_MEDICATION_ID, -1L)
         val medicationName = intent.getStringExtra(EXTRA_MEDICATION_NAME) ?: "Medicamento"
         val medicationDosage = intent.getStringExtra(EXTRA_MEDICATION_DOSAGE) ?: ""
+        val medicationProfile = intent.getStringExtra(EXTRA_MEDICATION_PROFILE) ?: ""
         val medicationTime = intent.getStringExtra(EXTRA_MEDICATION_TIME) ?: ""
         val scheduledMillis = intent.getLongExtra(EXTRA_SCHEDULED_MILLIS, resolveScheduledMillis(medicationTime))
         val soundEnabled = intent.getBooleanExtra(EXTRA_SOUND_ENABLED, true)
@@ -65,7 +66,8 @@ class AlarmReceiver : BroadcastReceiver() {
                         medicationTime,
                         minutes,
                         soundEnabled,
-                        vibrateEnabled
+                        vibrateEnabled,
+                        medicationProfile
                     )
                 }
                 cancelNotification(context, notificationId)
@@ -78,6 +80,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     medicationId = medicationId,
                     name = medicationName,
                     dosage = medicationDosage,
+                    profile = medicationProfile,
                     time = medicationTime,
                     scheduledMillis = scheduledMillis,
                     notificationId = notificationId,
@@ -136,6 +139,7 @@ class AlarmReceiver : BroadcastReceiver() {
         medicationId: Long,
         name: String,
         dosage: String,
+        profile: String,
         time: String,
         scheduledMillis: Long,
         notificationId: Int,
@@ -154,8 +158,8 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val takenIntent = actionIntent(context, ACTION_TAKEN, medicationId, name, dosage, time, scheduledMillis, soundEnabled, vibrateEnabled, notificationId)
-        val snoozeIntent = actionIntent(context, ACTION_SNOOZE, medicationId, name, dosage, time, scheduledMillis, soundEnabled, vibrateEnabled, notificationId)
+        val takenIntent = actionIntent(context, ACTION_TAKEN, medicationId, name, dosage, profile, time, scheduledMillis, soundEnabled, vibrateEnabled, notificationId)
+        val snoozeIntent = actionIntent(context, ACTION_SNOOZE, medicationId, name, dosage, profile, time, scheduledMillis, soundEnabled, vibrateEnabled, notificationId)
 
         val bodyText = if (dosage.isNotBlank()) {
             "Hora de tomar $name ($dosage) - $time"
@@ -179,6 +183,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .addAction(0, context.getString(R.string.notification_action_taken), takenIntent)
             .addAction(0, context.getString(R.string.notification_action_snooze), snoozeIntent)
 
+        if (profile.isNotBlank()) builder.setSubText(profile)
         builder.setSilent(!soundEnabled)
 
         val notificationManager =
@@ -192,6 +197,7 @@ class AlarmReceiver : BroadcastReceiver() {
         medicationId: Long,
         name: String,
         dosage: String,
+        profile: String,
         time: String,
         scheduledMillis: Long,
         soundEnabled: Boolean,
@@ -203,6 +209,7 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra(EXTRA_MEDICATION_ID, medicationId)
             putExtra(EXTRA_MEDICATION_NAME, name)
             putExtra(EXTRA_MEDICATION_DOSAGE, dosage)
+            putExtra(EXTRA_MEDICATION_PROFILE, profile)
             putExtra(EXTRA_MEDICATION_TIME, time)
             putExtra(EXTRA_SCHEDULED_MILLIS, scheduledMillis)
             putExtra(EXTRA_SOUND_ENABLED, soundEnabled)
@@ -241,6 +248,7 @@ class AlarmReceiver : BroadcastReceiver() {
         const val EXTRA_MEDICATION_ID = "extra_medication_id"
         const val EXTRA_MEDICATION_NAME = "extra_medication_name"
         const val EXTRA_MEDICATION_DOSAGE = "extra_medication_dosage"
+        const val EXTRA_MEDICATION_PROFILE = "extra_medication_profile"
         const val EXTRA_MEDICATION_TIME = "extra_medication_time"
         const val EXTRA_SCHEDULED_MILLIS = "extra_scheduled_millis"
         const val EXTRA_SOUND_ENABLED = "extra_sound_enabled"

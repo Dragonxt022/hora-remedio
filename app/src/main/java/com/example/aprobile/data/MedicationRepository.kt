@@ -149,7 +149,8 @@ class MedicationRepository(
             timeStr,
             minutes,
             medication.soundEnabled,
-            medication.vibrateEnabled
+            medication.vibrateEnabled,
+            medication.profile
         )
     }
 
