@@ -118,6 +118,9 @@ dependencies {
     implementation("androidx.credentials:credentials:1.6.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
 
+    // Leitor de código de barras (Google Code Scanner)
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation("org.json:json:20240303")

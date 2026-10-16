@@ -183,6 +183,10 @@
     <string name="err_med_times">Agrega al menos un horario.</string>
     <string name="err_med_days">Selecciona al menos un día de la semana.</string>
     <string name="err_med_qty">Informa la cantidad actual en stock.</string>
+    <string name="barcode_label">Código de barras (opcional)</string>
+    <string name="barcode_scan_cd">Escanear código de barras</string>
+    <string name="barcode_hint">Escanea el código del medicamento para guardarlo con el registro.</string>
+    <string name="err_med_scan">No se pudo leer el código. Inténtalo de nuevo.</string>
     <string name="stock_track_title">Controlar stock</string>
     <string name="stock_track_desc">Descuenta en cada dosis y avisa cuando se esté agotando</string>
     <string name="refill_out_title">Medicamento agotado</string>
@@ -223,6 +227,7 @@
     <string name="detail_dosage">Dosis: %1$s</string>
     <string name="detail_times">Horarios: %1$s</string>
     <string name="detail_instructions">Instrucciones: %1$s</string>
+    <string name="detail_barcode">Código de barras: %1$s</string>
     <string name="detail_adherence">Adherencia</string>
     <string name="detail_taken_count">%1$d tomadas</string>
     <string name="detail_missed_pending">%1$d pendientes/perdidas</string>

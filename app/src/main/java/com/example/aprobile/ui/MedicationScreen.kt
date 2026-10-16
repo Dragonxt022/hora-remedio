@@ -471,8 +471,8 @@ fun MedicationScreen(
                 allergies = uiState.activeHealthProfile?.allergies,
                 profileOptions = uiState.managedProfiles.ifEmpty { listOf("Eu") },
                 onDismiss = { viewModel.closeAddEditDialog() },
-                onSave = { name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek ->
-                    viewModel.saveMedication(name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek)
+                onSave = { name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek, barcode ->
+                    viewModel.saveMedication(name, dosage, instructions, times, currentQuantity, lowStockAlert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek, barcode)
                 }
             )
         }

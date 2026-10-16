@@ -355,7 +355,10 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
 
                 val filteredMedications = medications.filter { med ->
                     val profileMatch = currentProfile == "Todos" || med.profile.equals(currentProfile, ignoreCase = true)
-                    val queryMatch = query.isEmpty() || med.name.lowercase().contains(query) || med.dosage.lowercase().contains(query)
+                    val queryMatch = query.isEmpty() ||
+                        med.name.lowercase().contains(query) ||
+                        med.dosage.lowercase().contains(query) ||
+                        (med.barcode?.contains(query) == true)
                     profileMatch && queryMatch
                 }
 
@@ -593,7 +596,8 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         soundEnabled: Boolean,
         vibrateEnabled: Boolean,
         scheduleType: String,
-        daysOfWeek: String
+        daysOfWeek: String,
+        barcode: String?
     ) {
         viewModelScope.launch {
             val medToEdit = _uiState.value.medicationToEdit
@@ -610,7 +614,8 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     soundEnabled = soundEnabled,
                     vibrateEnabled = vibrateEnabled,
                     scheduleType = scheduleType,
-                    daysOfWeek = daysOfWeek
+                    daysOfWeek = daysOfWeek,
+                    barcode = barcode
                 )
                 repository.insertMedication(newMed)
             } else {
@@ -626,7 +631,8 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
                     soundEnabled = soundEnabled,
                     vibrateEnabled = vibrateEnabled,
                     scheduleType = scheduleType,
-                    daysOfWeek = daysOfWeek
+                    daysOfWeek = daysOfWeek,
+                    barcode = barcode
                 )
                 repository.updateMedication(updated, medToEdit.times)
             }

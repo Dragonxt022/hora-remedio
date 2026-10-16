@@ -1,5 +1,6 @@
 package com.example.aprobile.ui
 
+import android.app.Activity
 import android.app.TimePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -57,6 +59,9 @@ import com.example.aprobile.R
 import com.example.aprobile.data.MedicationEntity
 import com.example.aprobile.domain.AllergyMatcher
 import com.example.aprobile.domain.MedicationCatalog
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -96,7 +101,8 @@ fun AddEditMedicationDialog(
         soundEnabled: Boolean,
         vibrateEnabled: Boolean,
         scheduleType: String,
-        daysOfWeek: String
+        daysOfWeek: String,
+        barcode: String?
     ) -> Unit
 ) {
     val context = LocalContext.current
@@ -104,6 +110,7 @@ fun AddEditMedicationDialog(
     val errMedTimes = stringResource(R.string.err_med_times)
     val errMedDays = stringResource(R.string.err_med_days)
     val errMedQty = stringResource(R.string.err_med_qty)
+    val errMedScan = stringResource(R.string.err_med_scan)
 
     var name by remember { mutableStateOf(medicationToEdit?.name ?: "") }
     var dosage by remember { mutableStateOf(medicationToEdit?.dosage ?: "") }
@@ -115,6 +122,7 @@ fun AddEditMedicationDialog(
     var soundEnabled by remember { mutableStateOf(medicationToEdit?.soundEnabled ?: true) }
     var vibrateEnabled by remember { mutableStateOf(medicationToEdit?.vibrateEnabled ?: true) }
     var trackStock by remember { mutableStateOf(medicationToEdit?.currentQuantity != null) }
+    var barcode by remember { mutableStateOf(medicationToEdit?.barcode) }
     var scheduleType by remember { mutableStateOf(medicationToEdit?.scheduleType ?: MedicationEntity.SCHEDULE_DAILY) }
     val daysSelected = remember {
         mutableStateListOf<Int>().apply {
@@ -161,6 +169,32 @@ fun AddEditMedicationDialog(
             initialTime.minute,
             false
         ).show()
+    }
+
+    fun startBarcodeScan() {
+        val activity = context as? Activity
+        if (activity == null) {
+            errorMessage = errMedScan
+            return
+        }
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(
+                Barcode.FORMAT_EAN_13,
+                Barcode.FORMAT_EAN_8,
+                Barcode.FORMAT_UPC_A,
+                Barcode.FORMAT_UPC_E,
+                Barcode.FORMAT_CODE_128
+            )
+            .build()
+        GmsBarcodeScanning.getClient(activity, options).startScan()
+            .addOnSuccessListener { scanned ->
+                val value = scanned.rawValue
+                if (!value.isNullOrBlank()) {
+                    barcode = value
+                    errorMessage = null
+                }
+            }
+            .addOnFailureListener { errorMessage = errMedScan }
     }
 
     AlertDialog(
@@ -255,6 +289,33 @@ fun AddEditMedicationDialog(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = barcode ?: "",
+                        onValueChange = { barcode = it.ifBlank { null } },
+                        label = { Text(stringResource(R.string.barcode_label)) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = { startBarcodeScan() }) {
+                        Icon(
+                            imageVector = Icons.Default.QrCodeScanner,
+                            contentDescription = stringResource(R.string.barcode_scan_cd),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.barcode_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 ExposedDropdownMenuBox(
@@ -545,7 +606,7 @@ fun AddEditMedicationDialog(
                     val qty = if (trackStock) currentQuantityStr.toIntOrNull() else null
                     val alert = if (trackStock) lowStockAlertStr.toIntOrNull() else null
                     val days = daysSelected.sorted().joinToString(",")
-                    onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, days)
+                    onSave(name.trim(), dosage.trim(), instructions.trim(), times.toList(), qty, alert, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, days, barcode?.trim()?.ifBlank { null })
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {

@@ -21,7 +21,8 @@ data class MedicationEntity(
     val soundEnabled: Boolean = true,
     val vibrateEnabled: Boolean = true,
     val scheduleType: String = SCHEDULE_DAILY,
-    val daysOfWeek: String = "" // "1,3,5" (seg=1 ... dom=7), usado quando scheduleType = WEEKLY_DAYS
+    val daysOfWeek: String = "", // "1,3,5" (seg=1 ... dom=7), usado quando scheduleType = WEEKLY_DAYS
+    val barcode: String? = null // código de barras (EAN/UPC) lido pelo scanner
 ) {
     companion object {
         const val SCHEDULE_DAILY = "DAILY"

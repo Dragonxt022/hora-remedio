@@ -172,6 +172,15 @@ fun MedicationDetailScreen(
                             )
                         }
 
+                        if (!medication.barcode.isNullOrBlank()) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(R.string.detail_barcode, medication.barcode),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
                         medication.currentQuantity?.let { qty ->
                             val alert = medication.lowStockAlert ?: 5
                             Spacer(modifier = Modifier.height(6.dp))

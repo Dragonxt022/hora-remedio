@@ -138,6 +138,24 @@ class MigrationTest {
         db.close()
     }
 
+    @Test
+    fun migrate10To11_addsBarcodeColumn() {
+        var db = helper.createDatabase(TEST_DB_10_11, 10)
+        db.close()
+
+        db = helper.runMigrationsAndValidate(TEST_DB_10_11, 11, true, AppDatabase.MIGRATION_10_11)
+
+        db.execSQL(
+            "INSERT INTO medications (name, dosage, times, startDate, enabled, profile, colorTag, soundEnabled, vibrateEnabled, scheduleType, daysOfWeek, barcode) " +
+                "VALUES ('X', '1', '08:00', 1, 1, 'Eu', 'Azul', 1, 1, 'DAILY', '', '7891234567890')"
+        )
+        val cursor = db.query("SELECT barcode FROM medications")
+        assertTrue(cursor.moveToFirst())
+        assertEquals("7891234567890", cursor.getString(0))
+        cursor.close()
+        db.close()
+    }
+
     companion object {
         private const val TEST_DB = "migration-test"
         private const val TEST_DB_4_5 = "migration-test-4-5"
@@ -146,5 +164,6 @@ class MigrationTest {
         private const val TEST_DB_7_8 = "migration-test-7-8"
         private const val TEST_DB_8_9 = "migration-test-8-9"
         private const val TEST_DB_9_10 = "migration-test-9-10"
+        private const val TEST_DB_10_11 = "migration-test-10-11"
     }
 }

@@ -183,6 +183,10 @@
     <string name="err_med_times">Add at least one time.</string>
     <string name="err_med_days">Select at least one day of the week.</string>
     <string name="err_med_qty">Enter the current stock quantity.</string>
+    <string name="barcode_label">Barcode (optional)</string>
+    <string name="barcode_scan_cd">Scan barcode</string>
+    <string name="barcode_hint">Scan the medication code to save it with the entry.</string>
+    <string name="err_med_scan">Couldn\'t read the code. Try again.</string>
     <string name="stock_track_title">Track stock</string>
     <string name="stock_track_desc">Decreases with each dose and warns when running low</string>
     <string name="refill_out_title">Medication out of stock</string>
@@ -223,6 +227,7 @@
     <string name="detail_dosage">Dosage: %1$s</string>
     <string name="detail_times">Times: %1$s</string>
     <string name="detail_instructions">Instructions: %1$s</string>
+    <string name="detail_barcode">Barcode: %1$s</string>
     <string name="detail_adherence">Adherence</string>
     <string name="detail_taken_count">%1$d taken</string>
     <string name="detail_missed_pending">%1$d pending/missed</string>
