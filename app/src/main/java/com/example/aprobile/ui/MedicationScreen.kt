@@ -165,7 +165,7 @@ fun MedicationScreen(
                                 }
                             },
                             navigationIcon = {
-                                if (isDetail) {
+                                if (isDetail || currentRoute == AppDestination.PROFILE.route) {
                                     IconButton(onClick = { navController.popBackStack() }) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -176,6 +176,19 @@ fun MedicationScreen(
                                 }
                             },
                             actions = {
+                                IconButton(onClick = {
+                                    navController.navigate(AppDestination.PROFILE.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = stringResource(R.string.title_profile),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
                                 IconButton(onClick = { viewModel.toggleDarkMode() }) {
                                     Icon(
                                         imageVector = if (uiState.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
@@ -194,7 +207,7 @@ fun MedicationScreen(
                         NavigationBar(
                             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f)
                         ) {
-                            AppDestination.entries.forEach { dest ->
+                            AppDestination.entries.filter { it != AppDestination.PROFILE }.forEach { dest ->
                                 NavigationBarItem(
                                     selected = currentRoute == dest.route,
                                     onClick = {

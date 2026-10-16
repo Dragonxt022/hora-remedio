@@ -4,8 +4,9 @@
     <string name="nav_doses">Doses</string>
     <string name="nav_medications">Remédios</string>
     <string name="nav_appointments">Consultas</string>
-    <string name="nav_statistics">Estatísticas</string>
+    <string name="nav_statistics">Estat.</string>
     <string name="nav_profile">Perfil</string>
+    <string name="profile_all">Todos</string>
 
     <string name="title_doses">Hora do Remédio</string>
     <string name="title_medications">Meus Remédios</string>
@@ -31,7 +32,10 @@
     <string name="inventory_runs_out_soon">Acaba hoje ou amanhã</string>
     <string name="inventory_reorder">Recompra sugerida</string>
     <string name="streak_title">Sequência de adesão</string>
-    <string name="streak_days">%1$d dias em sequência</string>
+    <plurals name="streak_days">
+        <item quantity="one">%d dia em sequência</item>
+        <item quantity="other">%d dias em sequência</item>
+    </plurals>
     <string name="streak_none">Nenhuma sequência ainda</string>
 
     <string name="paywall_title">Seja Premium</string>

@@ -50,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -161,7 +162,7 @@ fun SearchAndFilterBar(
                     FilterChip(
                         selected = selectedProfile == profile,
                         onClick = { onSelectProfile(profile) },
-                        label = { Text(profile) }
+                        label = { Text(if (profile == "Todos") stringResource(R.string.profile_all) else profile) }
                     )
                 }
             }
@@ -220,7 +221,7 @@ fun DailySummaryCard(takenCount: Int, totalCount: Int, streak: Int, isDarkMode: 
             if (streak > 0) {
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "\uD83D\uDD25 " + stringResource(R.string.streak_days, streak),
+                    text = "\uD83D\uDD25 " + pluralStringResource(R.plurals.streak_days, streak, streak),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary

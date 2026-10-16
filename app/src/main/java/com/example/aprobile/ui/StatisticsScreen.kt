@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ fun StatisticsScreen(
                 )
                 Text(
                     text = if (uiState.currentStreak > 0) {
-                        "\uD83D\uDD25 " + stringResource(R.string.streak_days, uiState.currentStreak)
+                        "\uD83D\uDD25 " + pluralStringResource(R.plurals.streak_days, uiState.currentStreak, uiState.currentStreak)
                     } else {
                         stringResource(R.string.streak_none)
                     },

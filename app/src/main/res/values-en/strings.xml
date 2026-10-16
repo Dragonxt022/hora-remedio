@@ -6,6 +6,7 @@
     <string name="nav_appointments">Visits</string>
     <string name="nav_statistics">Stats</string>
     <string name="nav_profile">Profile</string>
+    <string name="profile_all">All</string>
 
     <string name="title_doses">Med Reminder</string>
     <string name="title_medications">My Meds</string>
@@ -31,7 +32,10 @@
     <string name="inventory_runs_out_soon">Runs out today or tomorrow</string>
     <string name="inventory_reorder">Refill suggested</string>
     <string name="streak_title">Adherence streak</string>
-    <string name="streak_days">%1$d days in a row</string>
+    <plurals name="streak_days">
+        <item quantity="one">%d day in a row</item>
+        <item quantity="other">%d days in a row</item>
+    </plurals>
     <string name="streak_none">No streak yet</string>
 
     <string name="paywall_title">Go Premium</string>

@@ -75,7 +75,7 @@ fun HealthScreen(
                         FilterChip(
                             selected = uiState.selectedProfile == profile,
                             onClick = { onSelectProfile(profile) },
-                            label = { Text(profile) }
+                            label = { Text(if (profile == "Todos") stringResource(R.string.profile_all) else profile) }
                         )
                     }
                 }
