@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -55,6 +56,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,6 +73,8 @@ import androidx.navigation.navArgument
 import com.example.aprobile.ui.theme.AprobileTheme
 import com.example.aprobile.ui.theme.glassBorderColor
 import com.example.aprobile.ui.theme.glassSurfaceElevatedColor
+import coil.compose.AsyncImage
+import java.io.File
 
 private const val DETAIL_ROUTE = "medication/{medicationId}"
 
@@ -188,11 +192,32 @@ fun MedicationScreen(
                                         restoreState = true
                                     }
                                 }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = stringResource(R.string.title_profile),
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
+                                    val photo = uiState.mainProfilePhoto
+                                    if (photo != null) {
+                                        AsyncImage(
+                                            model = File(photo),
+                                            contentDescription = stringResource(R.string.title_profile),
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .clip(CircleShape)
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.primaryContainer),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = uiState.mainProfileName.take(1).uppercase().ifBlank { "U" },
+                                                style = MaterialTheme.typography.labelLarge,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        }
+                                    }
                                 }
                                 IconButton(onClick = { viewModel.toggleDarkMode() }) {
                                     Icon(
