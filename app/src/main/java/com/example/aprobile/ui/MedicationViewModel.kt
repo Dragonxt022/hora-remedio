@@ -243,10 +243,39 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
         _uiState.update { it.copy(isPrivacyOpen = false) }
     }
 
-    suspend fun exportBackup(): String = repository.exportBackup()
+    suspend fun exportBackup(): String {
+        val data = com.example.aprobile.data.BackupData(
+            medications = database.medicationDao().getAllMedicationsSync(),
+            doses = database.medicationDao().getAllDoseRecordsSync(),
+            appointments = database.appointmentDao().getAllAppointmentsSync(),
+            healthProfiles = database.healthDao().getAllProfilesSync(),
+            healthEvents = database.healthDao().getAllEventsSync(),
+            profiles = database.profileDao().getAllProfilesSync()
+        )
+        return com.example.aprobile.data.BackupManager.export(getApplication(), data)
+    }
 
     suspend fun importBackup(json: String) {
-        repository.importBackup(json)
+        val context = getApplication<Application>()
+        val data = com.example.aprobile.data.BackupManager.import(context, json)
+
+        database.medicationDao().deleteAllDoseRecords()
+        database.medicationDao().deleteAllMedications()
+        database.appointmentDao().deleteAllAppointments()
+        database.healthDao().deleteAllEvents()
+        database.healthDao().deleteAllProfiles()
+        database.profileDao().deleteAllProfiles()
+
+        database.medicationDao().insertMedications(data.medications)
+        database.medicationDao().insertDoseRecords(data.doses)
+        database.appointmentDao().insertAppointments(data.appointments)
+        database.healthDao().insertProfiles(data.healthProfiles)
+        database.healthDao().insertEvents(data.healthEvents)
+        database.profileDao().insertProfiles(data.profiles)
+
+        data.medications.filter { it.enabled }.forEach {
+            com.example.aprobile.notifications.AlarmScheduler.scheduleAlarmsForMedication(context, it)
+        }
     }
 
     suspend fun deleteAllData() {
@@ -618,26 +647,27 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
             val cleanedDoctor = doctor?.takeIf { it.isNotBlank() }
             val cleanedLocation = location?.takeIf { it.isNotBlank() }
             val cleanedNotes = notes?.takeIf { it.isNotBlank() }
+            val appContext = getApplication<Application>()
             if (toEdit == null) {
-                appointmentRepository.insert(
-                    AppointmentEntity(
-                        title = title,
-                        doctor = cleanedDoctor,
-                        location = cleanedLocation,
-                        dateTime = dateTime,
-                        notes = cleanedNotes
-                    )
+                val newAppt = AppointmentEntity(
+                    title = title,
+                    doctor = cleanedDoctor,
+                    location = cleanedLocation,
+                    dateTime = dateTime,
+                    notes = cleanedNotes
                 )
+                val id = appointmentRepository.insert(newAppt)
+                com.example.aprobile.notifications.AppointmentAlarmScheduler.schedule(appContext, newAppt.copy(id = id))
             } else {
-                appointmentRepository.update(
-                    toEdit.copy(
-                        title = title,
-                        doctor = cleanedDoctor,
-                        location = cleanedLocation,
-                        dateTime = dateTime,
-                        notes = cleanedNotes
-                    )
+                val updated = toEdit.copy(
+                    title = title,
+                    doctor = cleanedDoctor,
+                    location = cleanedLocation,
+                    dateTime = dateTime,
+                    notes = cleanedNotes
                 )
+                appointmentRepository.update(updated)
+                com.example.aprobile.notifications.AppointmentAlarmScheduler.schedule(appContext, updated)
             }
             closeAppointmentDialog()
         }
@@ -650,6 +680,7 @@ class MedicationViewModel(application: Application) : AndroidViewModel(applicati
     fun confirmDeleteAppointment() {
         val appointment = _uiState.value.appointmentToDelete ?: return
         viewModelScope.launch {
+            com.example.aprobile.notifications.AppointmentAlarmScheduler.cancel(getApplication(), appointment.id)
             appointmentRepository.delete(appointment)
             _uiState.update { it.copy(appointmentToDelete = null) }
         }

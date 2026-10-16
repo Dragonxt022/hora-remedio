@@ -291,6 +291,13 @@
     <string name="privacy_policy_title">Política de Privacidade</string>
     <string name="privacy_policy_body">O Hora do Remédio respeita a sua privacidade.\n\nDados tratados: nome, perfis, medicamentos, horários, histórico de doses e observações que você cadastra.\n\nOnde ficam: todos os dados são armazenados apenas no seu aparelho (banco de dados local). Não enviamos seus dados para servidores.\n\nCompartilhamento: não compartilhamos seus dados com terceiros. Relatórios são gerados localmente e compartilhados apenas quando você escolhe.\n\nPermissões: notificações e alarmes são usados apenas para os lembretes; a biometria (opcional) serve para bloquear o app.\n\nSeus direitos: você pode exportar, importar ou excluir todos os dados a qualquer momento nesta tela.\n\nContato: suporte@horadoremedio.app</string>
 
+    <string name="appt_reminder_title">Lembrete de consulta</string>
+    <string name="appt_reminder_text">Consulta: %1$s • %2$s</string>
+    <string name="appt_reminder_channel">Lembretes de consultas</string>
+    <string name="refill_channel">Recompra de estoque</string>
+    <string name="refill_title">Estoque baixo</string>
+    <string name="refill_text">%1$s: restam apenas %2$d unidades. Considere comprar mais.</string>
+
     <string name="notification_channel_name">Lembretes de Medicamentos</string>
     <string name="notification_channel_desc">Notificações para os horários dos remédios</string>
     <string name="notification_channel_silent_name">Lembretes silenciosos</string>

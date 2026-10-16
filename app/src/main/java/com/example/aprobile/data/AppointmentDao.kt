@@ -14,6 +14,12 @@ interface AppointmentDao {
     @Query("SELECT * FROM appointments ORDER BY dateTime ASC")
     fun getAllAppointments(): Flow<List<AppointmentEntity>>
 
+    @Query("SELECT * FROM appointments")
+    suspend fun getAllAppointmentsSync(): List<AppointmentEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAppointments(appointments: List<AppointmentEntity>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAppointment(appointment: AppointmentEntity): Long
 

@@ -291,6 +291,13 @@
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="privacy_policy_body">Med Reminder respects your privacy.\n\nData processed: name, profiles, medications, times, dose history and notes you enter.\n\nWhere it lives: all data is stored only on your device (local database). We do not send your data to servers.\n\nSharing: we do not share your data with third parties. Reports are generated locally and shared only when you choose to.\n\nPermissions: notifications and alarms are used only for reminders; biometrics (optional) are used to lock the app.\n\nYour rights: you can export, import or delete all data at any time on this screen.\n\nContact: support@medreminder.app</string>
 
+    <string name="appt_reminder_title">Appointment reminder</string>
+    <string name="appt_reminder_text">Appointment: %1$s • %2$s</string>
+    <string name="appt_reminder_channel">Appointment reminders</string>
+    <string name="refill_channel">Refill</string>
+    <string name="refill_title">Low stock</string>
+    <string name="refill_text">%1$s: only %2$d units left. Consider buying more.</string>
+
     <string name="notification_channel_name">Medication reminders</string>
     <string name="notification_channel_desc">Notifications for your medication times</string>
     <string name="notification_channel_silent_name">Silent reminders</string>

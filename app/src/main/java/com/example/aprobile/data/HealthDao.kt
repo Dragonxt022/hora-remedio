@@ -22,6 +22,15 @@ interface HealthDao {
     @Query("SELECT * FROM health_events ORDER BY timestamp DESC")
     fun getAllEvents(): Flow<List<HealthEventEntity>>
 
+    @Query("SELECT * FROM health_events")
+    suspend fun getAllEventsSync(): List<HealthEventEntity>
+
+    @Query("SELECT * FROM health_profiles")
+    suspend fun getAllProfilesSync(): List<HealthProfileEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertProfiles(profiles: List<HealthProfileEntity>)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: HealthEventEntity): Long
 

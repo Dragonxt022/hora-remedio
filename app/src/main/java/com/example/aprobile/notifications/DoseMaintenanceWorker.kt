@@ -17,6 +17,9 @@ class DoseMaintenanceWorker(
             val repository = MedicationRepository(database.medicationDao(), applicationContext)
             repository.ensureDoseRecords()
             repository.scheduleAllActiveAlarms()
+            database.appointmentDao().getAllAppointmentsSync().forEach {
+                AppointmentAlarmScheduler.schedule(applicationContext, it)
+            }
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()

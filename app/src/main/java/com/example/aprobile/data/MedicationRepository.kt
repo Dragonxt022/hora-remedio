@@ -117,6 +117,10 @@ class MedicationRepository(
             if (medication != null && medication.currentQuantity != null && medication.currentQuantity > 0) {
                 val updatedMed = medication.copy(currentQuantity = medication.currentQuantity - 1)
                 medicationDao.updateMedication(updatedMed)
+                val newQty = updatedMed.currentQuantity ?: 0
+                if (newQty <= (updatedMed.lowStockAlert ?: 5)) {
+                    com.example.aprobile.notifications.Notifier.notifyRefill(context, updatedMed.id, updatedMed.name, newQty)
+                }
             }
         }
     }
@@ -228,27 +232,6 @@ class MedicationRepository(
                 )
             }
             healthDao.insertEvents(events)
-        }
-    }
-
-    suspend fun exportBackup(): String {
-        val medications = medicationDao.getAllMedicationsSync()
-        val doses = medicationDao.getAllDoseRecordsSync()
-        return BackupManager.export(medications, doses)
-    }
-
-    suspend fun importBackup(json: String) {
-        val data = BackupManager.parse(json)
-        val existing = medicationDao.getAllMedicationsSync()
-        existing.forEach { AlarmScheduler.cancelAlarmsForMedication(context, it.id, it.times) }
-
-        medicationDao.deleteAllDoseRecords()
-        medicationDao.deleteAllMedications()
-        medicationDao.insertMedications(data.medications)
-        medicationDao.insertDoseRecords(data.doses)
-
-        data.medications.filter { it.enabled }.forEach {
-            AlarmScheduler.scheduleAlarmsForMedication(context, it)
         }
     }
 
