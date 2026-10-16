@@ -2,7 +2,9 @@ package com.example.aprobile.ui
 
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -67,61 +69,79 @@ fun DosesScreen(
 ) {
     val view = LocalView.current
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        SearchAndFilterBar(
-            query = uiState.searchQuery,
-            onQueryChange = onQueryChange,
-            profiles = uiState.availableProfiles,
-            selectedProfile = uiState.selectedProfile,
-            onSelectProfile = onSelectProfile,
-            isDarkMode = uiState.isDarkMode
-        )
+    val hp = uiState.activeHealthProfile
+    val needsHealth = hp == null || listOf(
+        hp.bloodType, hp.allergies, hp.conditions, hp.weight,
+        hp.height, hp.emergencyContact, hp.notes
+    ).all { it.isNullOrBlank() }
+    val sosMeds = uiState.medications.filter { it.scheduleType == MedicationEntity.SCHEDULE_AS_NEED }
 
-        val hp = uiState.activeHealthProfile
-        val needsHealth = hp == null || listOf(
-            hp.bloodType, hp.allergies, hp.conditions, hp.weight,
-            hp.height, hp.emergencyContact, hp.notes
-        ).all { it.isNullOrBlank() }
-        if (needsHealth) {
-            SmartTipCard(
-                profileName = uiState.activeHealthProfileName,
-                isDarkMode = uiState.isDarkMode,
-                onClick = onOpenHealth
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        item {
+            SearchAndFilterBar(
+                query = uiState.searchQuery,
+                onQueryChange = onQueryChange,
+                profiles = uiState.availableProfiles,
+                selectedProfile = uiState.selectedProfile,
+                onSelectProfile = onSelectProfile,
+                isDarkMode = uiState.isDarkMode
             )
         }
 
-        DailySummaryCard(
-            takenCount = uiState.takenDosesCount,
-            totalCount = uiState.totalDosesCount,
-            streak = uiState.currentStreak,
-            isDarkMode = uiState.isDarkMode
-        )
+        if (needsHealth) {
+            item {
+                SmartTipCard(
+                    profileName = uiState.activeHealthProfileName,
+                    isDarkMode = uiState.isDarkMode,
+                    onClick = onOpenHealth
+                )
+            }
+        }
 
-        val sosMeds = uiState.medications.filter { it.scheduleType == MedicationEntity.SCHEDULE_AS_NEED }
+        item {
+            DailySummaryCard(
+                takenCount = uiState.takenDosesCount,
+                totalCount = uiState.totalDosesCount,
+                streak = uiState.currentStreak,
+                isDarkMode = uiState.isDarkMode
+            )
+        }
+
         if (sosMeds.isNotEmpty()) {
-            SosSection(meds = sosMeds, isDarkMode = uiState.isDarkMode, onLog = onLogAsNeeded)
+            item {
+                SosSection(meds = sosMeds, isDarkMode = uiState.isDarkMode, onLog = onLogAsNeeded)
+            }
         }
 
         if (uiState.isLoading && uiState.todayDoses.isEmpty()) {
-            LoadingStateView()
+            item {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp)) {
+                    LoadingStateView()
+                }
+            }
         } else if (uiState.todayDoses.isEmpty()) {
-            EmptyStateView(
-                message = stringResource(R.string.empty_doses),
-                onAddClick = onAddClick,
-                isDarkMode = uiState.isDarkMode
-            )
+            item {
+                EmptyStateView(
+                    message = stringResource(R.string.empty_doses),
+                    onAddClick = onAddClick,
+                    isDarkMode = uiState.isDarkMode
+                )
+            }
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                val doseGroups = uiState.todayDoses
-                    .groupBy { it.medication.id }
-                    .values
-                    .map { group -> group.sortedBy { it.doseRecord.scheduledDateTime } }
-                items(doseGroups, key = { it.first().medication.id }) { group ->
+            val doseGroups = uiState.todayDoses
+                .groupBy { it.medication.id }
+                .values
+                .map { group -> group.sortedBy { it.doseRecord.scheduledDateTime } }
+            items(doseGroups, key = { it.first().medication.id }) { group ->
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)) {
                     if (group.size == 1) {
                         val doseWithMed = group.first()
                         DoseItemCard(
